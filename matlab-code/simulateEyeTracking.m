@@ -11,11 +11,12 @@ run 'C:\Program Files\MATLAB\R2010a\VideoUtils_v1_2_4\install.m';
 vp = VideoPlayer(video_filename);
 
 %% Play video and collect the mouse positions.
-mousePositions = [];
-while ( true )
+num_frames = vp.NumFrames;
+mousePositions = zeros(num_frames,2);
+for i = 1:num_frames
    plot( vp );
    newPos = mouseMove();
-   mousePositions = [mousePositions; newPos];
+   mousePositions(i,:) = newPos;
 
    drawnow;  
    if ( ~vp.nextFrame )
