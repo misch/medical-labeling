@@ -24,3 +24,8 @@ for i = 1:num_frames
     vp.nextFrame;
     waitbar(i/num_frames,h,sprintf('%d / %d...',i, num_frames));
 end
+
+%% Releasing the VideoPlayer Object
+% After we have used the *VideoPlayer* object it is necessary to release it
+% using this command:
+clear vp;
