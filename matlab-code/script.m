@@ -29,8 +29,22 @@ file_names = dir([frames_dir, '\*.png']);
 num_frames = length(file_names);
 positive_ROIs = zeros(128,128,3,num_frames);
 
+h = waitbar(0,'Extracting ROIs...');
 for i = 1:num_frames
     image_file = [frames_dir, file_names(i).name];
-    image = imread(image_file);
+    image = im2double(imread(image_file));
+   
     positive_ROIs(:,:,:,i) = getPositiveROI(image, framePositions(i,:));
+    
+    waitbar(i/num_frames);
+end
+close(h);
+
+% discard zero-ROIs
+positive_ROIs = positive_ROIs(:,:,:,any(any(any(positive_ROIs))));
+
+%% Show positive ROIs
+for i = 1:100
+    subplot(10,10,i);
+    imshow(positive_ROIs(:,:,:,i));
 end
