@@ -11,11 +11,11 @@ frames_dir = [dataset_folder,'input-frames/'];
 % videoToFrames(video_filename, frames_dir);
 
 %% Get Eye-Tracking information
-new_eye_tracking_positions = true;
+new_eye_tracking_positions = false;
 
 if (new_eye_tracking_positions)
     framePositions = simulateEyeTracking(video_filename);
-    save([dataset_folder,'new_framePositions.mat'],'framePositions');
+    save([dataset_folder,'framePositions.mat'],'framePositions');
 else
     filename = [dataset_folder, 'framePositions.mat'];
     load(filename); % framePositions.mat contains a variable 'framePositions'
@@ -27,7 +27,9 @@ showImagesAndEyeTrackingData(video_filename, framePositions);
 %% Extract Regions of Interest (ROI's)
 file_names = dir([frames_dir, '\*.png']);
 num_frames = length(file_names);
+
 positive_ROIs = zeros(128,128,3,num_frames);
+negative_ROIs = zeros(128,128,3,num_frames*2); % for each frame, define 2 negative ROIs
 
 h = waitbar(0,'Extracting ROIs...');
 for i = 1:num_frames
@@ -35,16 +37,28 @@ for i = 1:num_frames
     image = im2double(imread(image_file));
    
     positive_ROIs(:,:,:,i) = getPositiveROI(image, framePositions(i,:));
-    
+    negative_ROIs(:,:,:,2*i:2*i+1) = getNegativeROIs(image,framePositions(i,:));
     waitbar(i/num_frames);
 end
 close(h);
 
 % discard zero-ROIs
 positive_ROIs = positive_ROIs(:,:,:,any(any(any(positive_ROIs))));
+negative_ROIs = negative_ROIs(:,:,:,any(any(any(negative_ROIs))));
+
+% save ROIs to variable
+save([dataset_folder,'raw_ROIs.mat'],'positive_ROIs', 'negative_ROIs');
 
 %% Show positive ROIs
-for i = 1:100
-    subplot(10,10,i);
+figure(1);
+for i = 201:300
+    subplot(10,10,i-200);
     imshow(positive_ROIs(:,:,:,i));
+end
+
+%% Show negative ROIS
+figure(2);
+for i = 201:300
+    subplot(10,10,i-200);
+    imshow(negative_ROIs(:,:,:,i));
 end
