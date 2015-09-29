@@ -8,8 +8,6 @@ function showImagesAndEyeTrackingData(video_filename, framePositions)
 run 'C:\Program Files\MATLAB\R2010a\VideoUtils_v1_2_4\install.m';
 
 vp = VideoPlayer(video_filename);
-figure(1)
-hold on;
 i = 1;
 while (true)
    plot(vp)

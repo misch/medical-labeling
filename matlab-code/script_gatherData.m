@@ -1,18 +1,21 @@
-
-%% Define dataset and folders where to find them.
+%% Define data paths and actions
 dataset = 2;
-
 dataset_folder = ['../data/Training/Dataset',num2str(dataset),'/'];
-
 video_filename = [dataset_folder,'Video.avi'];
 frames_dir = [dataset_folder,'input-frames/'];
 
+store_video_frames = false;
+new_eye_tracking_positions = false;
+show_eye_tracking_data = true;
+extract_new_ROIs = false;
+show_ROIs = false;
+
 %% Store video frames to .png images
-% videoToFrames(video_filename, frames_dir);
+if (store_video_frames)
+    videoToFrames(video_filename, frames_dir);
+end
 
 %% Get Eye-Tracking information
-new_eye_tracking_positions = false;
-
 if (new_eye_tracking_positions)
     framePositions = simulateEyeTracking(video_filename);
     save([dataset_folder,'framePositions.mat'],'framePositions');
@@ -22,11 +25,11 @@ else
 end
 
 %% Show images with recorded mouse positions
-showImagesAndEyeTrackingData(video_filename, framePositions);
+if (show_eye_tracking_data)
+    showImagesAndEyeTrackingData(video_filename, framePositions);
+end
 
-%% Extract Regions of Interest (ROI's)
-extract_new_ROIs = false;
-
+%% Get Regions of Interest (ROI's)
 if (extract_new_ROIs)
     file_names = dir([frames_dir, '\*.png']);
     num_frames = length(file_names);
@@ -52,15 +55,13 @@ if (extract_new_ROIs)
     end
     close(h);
 else
-    filename = [dataset_folder, 'raw_ROIs.mat'];
-    load(filename); % raw_ROIs.mat contains a variables 'positive_ROIs' and 'negative_ROIs'
+    if not(exist('negative_ROIs','var') & exist('positive_ROIs','var'))
+        filename = [dataset_folder, 'raw_ROIs.mat'];
+        load(filename); % raw_ROIs.mat contains a variables 'positive_ROIs' and 'negative_ROIs'
+    end
 end
 
-
-
 %% Show ROIs
-show_ROIs = false;
-
 if (show_ROIs)
     figure(1);
     for i = 201:300
@@ -74,4 +75,3 @@ if (show_ROIs)
         imshow(negative_ROIs(:,:,:,i));
     end
 end
-

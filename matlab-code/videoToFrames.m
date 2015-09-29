@@ -1,5 +1,5 @@
 function videoToFrames(video_filename, frames_dir)
-% This script writes the single frames of a video into a .png images.
+% This script writes the single frames of a video to .png files.
 % You have to set the variables 'video_filename' and 'frames_dir'
 % correctly.
 
