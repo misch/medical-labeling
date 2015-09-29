@@ -4,11 +4,12 @@ dataset_folder = ['../data/Training/Dataset',num2str(dataset),'/'];
 video_filename = [dataset_folder,'Video.avi'];
 frames_dir = [dataset_folder,'input-frames/'];
 
-store_video_frames = false;
-new_eye_tracking_positions = false;
-show_eye_tracking_data = true;
-extract_new_ROIs = false;
-show_ROIs = false;
+store_video_frames          =   false;
+new_eye_tracking_positions  =   false;
+show_eye_tracking_data      =   false;
+extract_new_ROIs            =   false;
+show_ROIs                   =   false;
+preprocessing_ROIs          =   false;
 
 %% Store video frames to .png images
 if (store_video_frames)
@@ -74,4 +75,37 @@ if (show_ROIs)
         subplot(10,10,i-200);
         imshow(negative_ROIs(:,:,:,i));
     end
+end
+
+%% Preprocessing 
+% each ROI is
+%   - transformed into gray-scale
+%   - resized to 32x32 pixels
+%   - normalized in intensity (zero mean)
+
+% each column represents a data point / ROI (1024 pixels)
+if (preprocessing_ROIs)
+    processed_positive_ROIs = zeros(32,32,size(positive_ROIs,4));
+    processed_negative_ROIs = zeros(32,32,size(negative_ROIs,4));
+
+    h = waitbar(0,'Processing positive ROIs...');
+    for i = 1:size(positive_ROIs,4)
+        ROI = rgb2gray(positive_ROIs(:,:,:,i));
+        ROI = imresize(ROI, [32 32]); % uses bicubic interpolation instead of bilinear that was used in the paper    
+
+        processed_positive_ROIs(:,:,i) = ROI - mean(ROI(:));
+        waitbar(i/size(positive_ROIs,4));
+    end
+    close(h)
+
+    h = waitbar(0,'Processing negative ROIs...');
+    for i = 1:size(negative_ROIs,4)
+        ROI = rgb2gray(negative_ROIs(:,:,:,i));
+        ROI = imresize(ROI, [32 32]); % uses bicubic interpolation instead of bilinear that was used in the paper    
+        processed_negative_ROIs(:,:,i) = ROI - mean(ROI(:));
+        waitbar(i/size(negative_ROIs,4));
+    end
+    close(h);
+
+    save([dataset_folder,'processed_ROIs.mat'],'processed_positive_ROIs', 'processed_negative_ROIs');
 end
