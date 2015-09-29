@@ -1,5 +1,9 @@
 # data
 data/*
 
+
 # matlab
 *.asv
+
+# libsvm
+libsvm/*
