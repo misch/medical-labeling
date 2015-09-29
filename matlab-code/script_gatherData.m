@@ -25,40 +25,53 @@ end
 showImagesAndEyeTrackingData(video_filename, framePositions);
 
 %% Extract Regions of Interest (ROI's)
-file_names = dir([frames_dir, '\*.png']);
-num_frames = length(file_names);
+extract_new_ROIs = false;
 
-positive_ROIs = zeros(128,128,3,num_frames);
-negative_ROIs = zeros(128,128,3,num_frames*2); % for each frame, define 2 negative ROIs
+if (extract_new_ROIs)
+    file_names = dir([frames_dir, '\*.png']);
+    num_frames = length(file_names);
 
-h = waitbar(0,'Extracting ROIs...');
-for i = 1:num_frames
-    image_file = [frames_dir, file_names(i).name];
-    image = im2double(imread(image_file));
-   
-    positive_ROIs(:,:,:,i) = getPositiveROI(image, framePositions(i,:));
-    negative_ROIs(:,:,:,2*i:2*i+1) = getNegativeROIs(image,framePositions(i,:));
-    waitbar(i/num_frames);
+    positive_ROIs = zeros(128,128,3,num_frames);
+    negative_ROIs = zeros(128,128,3,num_frames*2); % for each frame, define 2 negative ROIs
+
+    h = waitbar(0,'Extracting ROIs...');
+    for i = 1:num_frames
+        image_file = [frames_dir, file_names(i).name];
+        image = im2double(imread(image_file));
+
+        positive_ROIs(:,:,:,i) = getPositiveROI(image, framePositions(i,:));
+        negative_ROIs(:,:,:,2*i:2*i+1) = getNegativeROIs(image,framePositions(i,:));
+        waitbar(i/num_frames);
+        
+        % discard zero-ROIs
+        positive_ROIs = positive_ROIs(:,:,:,any(any(any(positive_ROIs))));
+        negative_ROIs = negative_ROIs(:,:,:,any(any(any(negative_ROIs))));
+
+        % save ROIs to variable
+        save([dataset_folder,'raw_ROIs.mat'],'positive_ROIs', 'negative_ROIs');
+    end
+    close(h);
+else
+    filename = [dataset_folder, 'raw_ROIs.mat'];
+    load(filename); % raw_ROIs.mat contains a variables 'positive_ROIs' and 'negative_ROIs'
 end
-close(h);
 
-% discard zero-ROIs
-positive_ROIs = positive_ROIs(:,:,:,any(any(any(positive_ROIs))));
-negative_ROIs = negative_ROIs(:,:,:,any(any(any(negative_ROIs))));
 
-% save ROIs to variable
-save([dataset_folder,'raw_ROIs.mat'],'positive_ROIs', 'negative_ROIs');
 
-%% Show positive ROIs
-figure(1);
-for i = 201:300
-    subplot(10,10,i-200);
-    imshow(positive_ROIs(:,:,:,i));
+%% Show ROIs
+show_ROIs = false;
+
+if (show_ROIs)
+    figure(1);
+    for i = 201:300
+        subplot(10,10,i-200);
+        imshow(positive_ROIs(:,:,:,i));
+    end
+
+    figure(2);
+    for i = 201:300
+        subplot(10,10,i-200);
+        imshow(negative_ROIs(:,:,:,i));
+    end
 end
 
-%% Show negative ROIS
-figure(2);
-for i = 201:300
-    subplot(10,10,i-200);
-    imshow(negative_ROIs(:,:,:,i));
-end
