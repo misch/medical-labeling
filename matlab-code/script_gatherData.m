@@ -9,7 +9,7 @@ new_eye_tracking_positions  =   false;
 show_eye_tracking_data      =   false;
 extract_new_ROIs            =   false;
 show_ROIs                   =   false;
-preprocessing_ROIs          =   false;
+preprocessing_ROIs          =   true;
 
 %% Store video frames to .png images
 if (store_video_frames)
@@ -83,29 +83,33 @@ end
 %   - resized to 32x32 pixels
 %   - normalized in intensity (zero mean)
 
-% each column represents a data point / ROI (1024 pixels)
+% each row represents a data point / ROI (1024 pixels)
 if (preprocessing_ROIs)
-    processed_positive_ROIs = zeros(32,32,size(positive_ROIs,4));
-    processed_negative_ROIs = zeros(32,32,size(negative_ROIs,4));
-
+    processed_ROIs = zeros(size(positive_ROIs,4)+size(negative_ROIs,4),32*32);
+    labels = [ones(1,size(positive_ROIs,4)), -ones(1,size(negative_ROIs,4))];
+    
+    num_pos_ROIs = size(positive_ROIs,4);
     h = waitbar(0,'Processing positive ROIs...');
-    for i = 1:size(positive_ROIs,4)
-        ROI = rgb2gray(positive_ROIs(:,:,:,i));
-        ROI = imresize(ROI, [32 32]); % uses bicubic interpolation instead of bilinear that was used in the paper    
-
-        processed_positive_ROIs(:,:,i) = ROI - mean(ROI(:));
-        waitbar(i/size(positive_ROIs,4));
+    for i = 1:num_pos_ROIs
+        ROI = imresize(rgb2gray(positive_ROIs(:,:,:,i)), [32 32]); % bicubic interpolation instead of bilinear that was used in the paper    
+        ROI = ROI - mean(ROI(:));
+        processed_ROIs(i,:) = ROI(:);
+        waitbar(i/num_pos_ROIs);
     end
     close(h)
 
     h = waitbar(0,'Processing negative ROIs...');
-    for i = 1:size(negative_ROIs,4)
-        ROI = rgb2gray(negative_ROIs(:,:,:,i));
-        ROI = imresize(ROI, [32 32]); % uses bicubic interpolation instead of bilinear that was used in the paper    
-        processed_negative_ROIs(:,:,i) = ROI - mean(ROI(:));
-        waitbar(i/size(negative_ROIs,4));
+    num_neg_ROIs = size(negative_ROIs,4);
+    for i = 1:num_neg_ROIs
+        ROI = imresize(rgb2gray(negative_ROIs(:,:,:,i)), [32 32]); % bicubic interpolation instead of bilinear that was used in the paper    
+        ROI = ROI - mean(ROI(:));
+        processed_ROIs(i+num_pos_ROIs,:) = ROI(:);
+        waitbar(i/num_neg_ROIs);
     end
     close(h);
 
-    save([dataset_folder,'processed_ROIs.mat'],'processed_positive_ROIs', 'processed_negative_ROIs');
+    save([dataset_folder,'processed_ROIs.mat'],'processed_ROIs', 'labels');
+    
+    % accessing all the positive ROIs:
+    % processed_ROIs(labels > 0,:)
 end
