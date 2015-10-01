@@ -86,7 +86,7 @@ end
 % each row represents a data point / ROI (1024 pixels)
 if (preprocessing_ROIs)
     processed_ROIs = zeros(size(positive_ROIs,4)+size(negative_ROIs,4),32*32);
-    labels = [ones(1,size(positive_ROIs,4)), -ones(1,size(negative_ROIs,4))];
+    labels = [ones(size(positive_ROIs,4),1); -ones(size(negative_ROIs,4),1)];
     
     num_pos_ROIs = size(positive_ROIs,4);
     h = waitbar(0,'Processing positive ROIs...');

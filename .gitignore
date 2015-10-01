@@ -7,3 +7,4 @@ data/*
 
 # libsvm
 libsvm/*
+libsvm-matlab-README.txt
