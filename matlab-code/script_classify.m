@@ -1,5 +1,5 @@
 %% Define data paths and actions
-addpath('..\libsvm')
+addpath('../libsvm')
 
 dataset = 2;
 dataset_folder = ['../data/Training/Dataset',num2str(dataset),'/'];
