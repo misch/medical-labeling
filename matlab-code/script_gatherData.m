@@ -1,6 +1,6 @@
 %% Define data paths and actions
 dataset = 2;
-dataset_folder = ['../data/Training/Dataset',num2str(dataset),'/'];
+dataset_folder = ['../data/Dataset',num2str(dataset),'/'];
 video_filename = [dataset_folder,'Video.avi'];
 frames_dir = [dataset_folder,'input-frames/'];
 
@@ -9,7 +9,7 @@ new_eye_tracking_positions  =   false;
 show_eye_tracking_data      =   false;
 extract_new_ROIs            =   false;
 show_ROIs                   =   false;
-preprocessing_ROIs          =   true;
+preprocessing_ROIs          =   false;
 
 %% Store video frames to .png images
 if (store_video_frames)
