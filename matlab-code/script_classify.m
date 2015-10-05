@@ -27,5 +27,26 @@ model = svmtrain(train_labels, train_data);
 %% Test SVM
 [predicted_label, accuracy, decision_values] = svmpredict(test_labels, test_data, model);
 
-%% Plot ROC- and PR-curves
-% todo
+%% Evaluation 
+
+Ntest = size(test_data,1);
+[sorted_scores,idx] = sort(decision_values,'descend');
+sorted_test_labels = test_labels(idx);
+positives = sorted_test_labels == 1;
+
+% Precision-Recall-curve (PR)
+
+% Precision: TP / (TP + FP)
+% What fraction of the predicted positives are actually positive?
+precision = cumsum(positives)./(1:Ntest)'; % is less than 1 if the number of (actual) positives are found (hopefully, recall is 1 then)
+
+% Recall: TP / (TP + FN)
+% How many of the positive test labels are actually found?
+recall = cumsum(positives)/sum(positives); % is less than 1 if not yet all points are considered (hopefully, precision is 1 then)
+
+figure;
+plot(recall,precision);
+axis( [0 1 0 1] );
+title('precision-recall curve');
+xlabel('Recall');
+ylabel('Precision');

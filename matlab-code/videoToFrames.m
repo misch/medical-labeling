@@ -6,7 +6,7 @@ function videoToFrames(video_filename, frames_dir)
 %% install VideoUtils Toolbox
 run 'C:\Program Files\MATLAB\R2010a\VideoUtils_v1_2_4\install.m';
 % The VideoUtils Toolbox seems to have some trouble running on Ubuntu 14.04
-% LTS. It seems to look for libacodec53 which is not available in this
+% LTS. It seems to look for libavcodec53 which is not available in this
 % Ubuntu-version...
 
 %% load video
