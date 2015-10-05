@@ -58,7 +58,9 @@ if (extract_new_ROIs)
 else
     if not(exist('negative_ROIs','var') & exist('positive_ROIs','var'))
         filename = [dataset_folder, 'raw_ROIs.mat'];
-        load(filename); % raw_ROIs.mat contains a variables 'positive_ROIs' and 'negative_ROIs'
+        if (exist([dataset_folder,'raw_ROIs.mat'],'file') > 0)
+            load(filename); % raw_ROIs.mat contains a variables 'positive_ROIs' and 'negative_ROIs'
+        end
     end
 end
 
