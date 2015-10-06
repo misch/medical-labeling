@@ -5,8 +5,9 @@ dataset = 2;
 dataset_folder = ['../data/Dataset',num2str(dataset),'/'];
 
 load([dataset_folder, 'processed_ROIs']);
-
 normalized_data = normalizeData(processed_ROIs);
+
+processed_positives = normalized_data(labels == 1,:);
 
 %% Randomly select train and test data
 testPercent = 30;
@@ -14,15 +15,17 @@ testPercent = 30;
 test_indices = rand(1,size(normalized_data,1)) <= testPercent/100;
 train_indices = ~test_indices;
 
-train_data = normalized_data(train_indices,:);
-train_labels = labels(train_indices);
+% train_data = normalized_data(train_indices,:);
+% train_labels = labels(train_indices);
+train_data = processed_positives;
+train_labels = labels(labels == 1);
 
 test_data = normalized_data(test_indices,:);
 test_labels = labels(test_indices);
 
 %% Train SVM
 
-model = svmtrain(train_labels, train_data);
+model = svmtrain(train_labels, train_data,'-s 2');
 
 %% Test SVM
 [predicted_label, accuracy, decision_values] = svmpredict(test_labels, test_data, model);
