@@ -1,0 +1,32 @@
+How do I choose parameters for one-class SVM as training data are in only one class?
+
+--> 
+You have pre-specified true positive rate in mind and then search for parameters which achieve similar cross-validation accuracy. 
+
+==============================================
+
+Scaling in matlab?
+
+-->
+It is extremely easy to do scaling under MATLAB. The following one-line code scale each feature to the range of [0,1]:
+
+(data - repmat(min(data,[],1),size(data,1),1))*spdiags(1./(max(data,[],1)-min(data,[],1))',0,size(data,2),size(data,2))
+
+===========================================
+
+How can I use MATLAB interface for parameter selection? 
+
+-->
+One can do this by a simple loop. See the following example: 
+bestcv = 0;
+for log2c = -1:3,
+  for log2g = -4:1,
+    cmd = ['-v 5 -c ', num2str(2^log2c), ' -g ', num2str(2^log2g)];
+    cv = svmtrain(heart_scale_label, heart_scale_inst, cmd);
+    if (cv >= bestcv),
+      bestcv = cv; bestc = 2^log2c; bestg = 2^log2g;
+    end
+    fprintf('%g %g %g (best c=%g, g=%g, rate=%g)\n', log2c, log2g, cv, bestc, bestg, bestcv);
+  end
+end
+You may adjust the parameter range in the above loops.
