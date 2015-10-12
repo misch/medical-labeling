@@ -32,7 +32,7 @@ end
 
 %% Get Regions of Interest (ROI's)
 if (extract_new_ROIs)
-    file_names = dir([frames_dir, '\*.png']);
+    file_names = dir([frames_dir, '*.png']);
     num_frames = length(file_names);
 
     positive_ROIs = zeros(128,128,3,num_frames);
