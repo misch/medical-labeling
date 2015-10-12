@@ -47,8 +47,6 @@ if (extract_new_ROIs)
         negative_ROIs(:,:,:,2*i:2*i+1) = getNegativeROIs(image,framePositions(i,:));
         waitbar(i/num_frames);
         
-
-
     end
     
     % discard zero-ROIs
