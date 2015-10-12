@@ -3,33 +3,45 @@ addpath('../libsvm')
 
 dataset = 2;
 dataset_folder = ['../data/Dataset',num2str(dataset),'/'];
+frames_dir = [dataset_folder,'input-frames/'];
 
 load([dataset_folder, 'processed_ROIs']);
 [normalized_data, mu, sigma] = normalizeData(processed_ROIs);
 
-processed_positives = normalized_data(labels == 1,:);
+% processed_positives = normalized_data(labels == 1,:);
 
 %% Randomly select train and test data
-testPercent = 20;
+% testPercent = 20;
 
-test_indices = rand(1,size(normalized_data,1)) <= testPercent/100;
-train_indices = ~test_indices;
+% test_indices = rand(1,size(normalized_data,1)) <= testPercent/100;
+% train_indices = ~test_indices;
 
-% train_data = normalized_data(train_indices,:);
-% train_labels = labels(train_indices);
+% train_data = processed_positives;
+% train_labels = labels(labels == 1);
 
-train_data = processed_positives;
-train_labels = labels(labels == 1);
-
-test_data = normalized_data(test_indices,:);
-test_labels = labels(test_indices);
+% test_data = normalized_data(test_indices,:);
+% test_labels = labels(test_indices);
+train_data = normalized_data;
+train_labels = labels;
 
 %% Train SVM
-% todo: use libsvm cross-validation
-model = svmtrain(train_labels, train_data,'-s 2 -n 0.1 -t 2 -g 0.05');
+model = svmtrain(train_labels, train_data);
 
 %% Test SVM
-[predicted_label, accuracy, decision_values] = svmpredict(test_labels, test_data, model);
+% todo: test-data should be:
+%   from 20% of the frames, all the positions!
+frame_percentage = 20; % rough amount of test-frames
+
+file_names = dir([frames_dir, '*.png']);
+num_frames = length(file_names);
+frame_indices = find(rand(1,num_frames) <= testPercent/100);
+
+test_frames = zeros([size(imread([frames_dir,file_names(1).name])), num_frames]);
+for idx = frame_indices 
+    image_file = [frames_dir, file_names(idx).name];
+end
+
+% [predicted_label, accuracy, decision_values] = svmpredict(test_labels, test_data, model);
 
 %% Evaluation 
 
