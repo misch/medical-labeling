@@ -1,12 +1,12 @@
 %% Define data paths and actions
-dataset = 2;
+dataset = 1;
 dataset_folder = ['../data/Dataset',num2str(dataset),'/'];
-video_filename = [dataset_folder,'Video.avi'];
+video_filename = [dataset_folder,'video_uncompressed.avi'];
 frames_dir = [dataset_folder,'input-frames/'];
 
 store_video_frames          =   false;
 new_eye_tracking_positions  =   false;
-show_eye_tracking_data      =   false;
+show_eye_tracking_data      =   true;
 extract_new_ROIs            =   false;
 show_ROIs                   =   false;
 preprocessing_ROIs          =   false;
@@ -19,7 +19,7 @@ end
 %% Get Eye-Tracking information
 if (new_eye_tracking_positions)
     framePositions = simulateEyeTracking(video_filename);
-    save([dataset_folder,'framePositions.mat'],'framePositions');
+%     save([dataset_folder,'framePositions.mat'],'framePositions');
 else
     filename = [dataset_folder, 'framePositions.mat'];
     load(filename); % framePositions.mat contains a variable 'framePositions'
