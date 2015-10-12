@@ -7,7 +7,7 @@ frames_dir = [dataset_folder,'input-frames/'];
 store_video_frames          =   false;
 new_eye_tracking_positions  =   false;
 show_eye_tracking_data      =   true;
-extract_new_ROIs            =   false;
+extract_new_ROIs            =   true;
 show_ROIs                   =   false;
 preprocessing_ROIs          =   false;
 
@@ -47,13 +47,14 @@ if (extract_new_ROIs)
         negative_ROIs(:,:,:,2*i:2*i+1) = getNegativeROIs(image,framePositions(i,:));
         waitbar(i/num_frames);
         
-        % discard zero-ROIs
-        positive_ROIs = positive_ROIs(:,:,:,any(any(any(positive_ROIs))));
-        negative_ROIs = negative_ROIs(:,:,:,any(any(any(negative_ROIs))));
-
-        % save ROIs to variable
-        save([dataset_folder,'raw_ROIs.mat'],'positive_ROIs', 'negative_ROIs');
     end
+    
+    % discard zero-ROIs
+    positive_ROIs = positive_ROIs(:,:,:,any(any(any(positive_ROIs))));
+    negative_ROIs = negative_ROIs(:,:,:,any(any(any(negative_ROIs))));
+        
+    % save ROIs to variable
+    save([dataset_folder,'raw_ROIs.mat'],'positive_ROIs', 'negative_ROIs');
     close(h);
 else
     if not(exist('negative_ROIs','var') & exist('positive_ROIs','var'))
