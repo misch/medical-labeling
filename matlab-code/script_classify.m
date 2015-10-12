@@ -5,7 +5,7 @@ dataset = 2;
 dataset_folder = ['../data/Dataset',num2str(dataset),'/'];
 
 load([dataset_folder, 'processed_ROIs']);
-normalized_data = normalizeData(processed_ROIs);
+[normalized_data, mu, sigma] = normalizeData(processed_ROIs);
 
 processed_positives = normalized_data(labels == 1,:);
 
