@@ -19,7 +19,7 @@ end
 %% Get Eye-Tracking information
 if (new_eye_tracking_positions)
     framePositions = simulateEyeTracking(video_filename);
-%     save([dataset_folder,'framePositions.mat'],'framePositions');
+    save([dataset_folder,'framePositions.mat'],'framePositions');
 else
     filename = [dataset_folder, 'framePositions.mat'];
     load(filename); % framePositions.mat contains a variable 'framePositions'
