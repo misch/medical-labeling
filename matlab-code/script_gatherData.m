@@ -94,8 +94,7 @@ if (preprocessing_ROIs)
     num_pos_ROIs = size(positive_ROIs,4);
     h = waitbar(0,'Processing positive ROIs...');
     for i = 1:num_pos_ROIs
-        ROI = imresize(rgb2gray(positive_ROIs(:,:,:,i)), [32 32]); % bicubic interpolation instead of bilinear that was used in the paper    
-        ROI = ROI - mean(ROI(:));
+        ROI = process_ROI(positive_ROIs(:,:,:,i));
         processed_ROIs(i,:) = ROI(:);
         waitbar(i/num_pos_ROIs);
     end
@@ -104,8 +103,7 @@ if (preprocessing_ROIs)
     h = waitbar(0,'Processing negative ROIs...');
     num_neg_ROIs = size(negative_ROIs,4);
     for i = 1:num_neg_ROIs
-        ROI = imresize(rgb2gray(negative_ROIs(:,:,:,i)), [32 32]); % bicubic interpolation instead of bilinear that was used in the paper    
-        ROI = ROI - mean(ROI(:));
+        ROI = process_ROI(negative_ROIs(:,:,:,i)); % bicubic interpolation instead of bilinear that was used in the paper    
         processed_ROIs(i+num_pos_ROIs,:) = ROI(:);
         waitbar(i/num_neg_ROIs);
     end
