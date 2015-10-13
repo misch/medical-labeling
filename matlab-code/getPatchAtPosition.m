@@ -1,5 +1,10 @@
 function [ROI] = getPatchAtPosition(image, position)
-% This function returns a 128x128x3 image patch around the given position.
+% This function returns a 128x128xQ patch around the given position, where
+% N is the number of images.
+%
+% Parameter:
+%   image - an MxNxQ matrix containing Q MxN images
+%   position - a two-dimensional vector containing x and y positions
 
 y_pos = round(position(1));
 x_pos = round(position(2));
