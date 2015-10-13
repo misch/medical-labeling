@@ -1,13 +1,13 @@
 %% Define data paths and actions
-dataset = 1;
+dataset = 2;
 dataset_folder = ['../data/Dataset',num2str(dataset),'/'];
 video_filename = [dataset_folder,'video_uncompressed.avi'];
 frames_dir = [dataset_folder,'input-frames/'];
 
 store_video_frames          =   false;
 new_eye_tracking_positions  =   false;
-show_eye_tracking_data      =   true;
-extract_new_ROIs            =   true;
+show_eye_tracking_data      =   false;
+extract_new_ROIs            =   false;
 show_ROIs                   =   false;
 preprocessing_ROIs          =   false;
 
@@ -32,7 +32,7 @@ end
 
 %% Get Regions of Interest (ROI's)
 if (extract_new_ROIs)
-    file_names = dir([frames_dir, '\*.png']);
+    file_names = dir([frames_dir, '*.png']);
     num_frames = length(file_names);
 
     positive_ROIs = zeros(128,128,3,num_frames);
@@ -43,7 +43,7 @@ if (extract_new_ROIs)
         image_file = [frames_dir, file_names(i).name];
         image = im2double(imread(image_file));
 
-        positive_ROIs(:,:,:,i) = getPositiveROI(image, framePositions(i,:));
+        positive_ROIs(:,:,:,i) = getPatchAtPosition(image, framePositions(i,:));
         negative_ROIs(:,:,:,2*i:2*i+1) = getNegativeROIs(image,framePositions(i,:));
         waitbar(i/num_frames);
         
