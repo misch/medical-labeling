@@ -7,6 +7,8 @@ function [ROI] = process_ROI(unprocessed_ROI)
 %
 % uncompressed_ROI: a 128x128x3 or 128x128 ROI 
 
+% todo: make this function work for processing many ROI's at one!!!
+
     if size(unprocessed_ROI,3) == 3
         unprocessed_ROI = rgb2gray(unprocessed_ROI); % bicubic interpolation instead of bilinear that was used in the paper    
     end

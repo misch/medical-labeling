@@ -12,15 +12,16 @@ load([dataset_folder, 'processed_ROIs']);
 
 %% Randomly select train and test data
 % testPercent = 20;
-
+% 
 % test_indices = rand(1,size(normalized_data,1)) <= testPercent/100;
 % train_indices = ~test_indices;
-
+% 
 % train_data = processed_positives;
 % train_labels = labels(labels == 1);
 
 % test_data = normalized_data(test_indices,:);
 % test_labels = labels(test_indices);
+
 train_data = normalized_data;
 train_labels = labels;
 
@@ -34,12 +35,18 @@ frame_percentage = 20; % rough amount of test-frames
 
 file_names = dir([frames_dir, '*.png']);
 num_frames = length(file_names);
-frame_indices = find(rand(1,num_frames) <= testPercent/100);
+frame_indices = find(rand(1,num_frames) <= frame_percentage/100);
 
-test_frames = zeros([size(imread([frames_dir,file_names(1).name])), num_frames]);
+ref_frame = imread([frames_dir,file_names(1).name]);
+
+test_frames = zeros([size(ref_frame,1), size(ref_frame,2), length(frame_indices)]);
+i = 1;
 for idx = frame_indices 
     image_file = [frames_dir, file_names(idx).name];
+    test_frames(:,:,i) = rgb2gray(im2double(imread(image_file)));
+    i = i + 1;
 end
+
 
 % [predicted_label, accuracy, decision_values] = svmpredict(test_labels, test_data, model);
 
