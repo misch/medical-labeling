@@ -4,6 +4,7 @@ addpath('../libsvm')
 dataset = 2;
 dataset_folder = ['../data/Dataset',num2str(dataset),'/'];
 frames_dir = [dataset_folder,'input-frames/'];
+ground_truth_dir = [dataset_folder,'ground_truth-frames/'];
 
 load([dataset_folder, 'processed_ROIs']);
 [normalized_data, mu, sigma] = normalizeData(processed_ROIs);
@@ -34,21 +35,36 @@ model = svmtrain(train_labels, train_data);
 frame_percentage = 20; % rough amount of test-frames
 
 file_names = dir([frames_dir, '*.png']);
+ground_truth_names = dir([ground_truth_dir, '*.png']);
+
 num_frames = length(file_names);
 frame_indices = find(rand(1,num_frames) <= frame_percentage/100);
 
 ref_frame = imread([frames_dir,file_names(1).name]);
 
 test_frames = zeros([size(ref_frame,1), size(ref_frame,2), length(frame_indices)]);
+ground_truth_frames = zeros([size(ref_frame,1), size(ref_frame,2), length(frame_indices)]);
 i = 1;
 for idx = frame_indices 
     image_file = [frames_dir, file_names(idx).name];
     test_frames(:,:,i) = rgb2gray(im2double(imread(image_file)));
+    
+    ground_truth_file = [ground_truth_dir, ground_truth_names(idx).name];
+    ground_truth_frames(:,:,i) = rgb2gray(im2double(imread(ground_truth_file)));
     i = i + 1;
 end
 
+% ground truth is +1 where the ground-truth video has a value higher than
+% threshold
+threshold = 0.1;
+ground_truth_frames(ground_truth_frames > 0.1) = 1;
+ground_truth_frames(ground_truth_frames < 0.1) = -1;
 
-% [predicted_label, accuracy, decision_values] = svmpredict(test_labels, test_data, model);
+[test_data, test_labels] = getTestDataAndLabels(test_frames(:,:,1),ground_truth_frames(:,:,1));
+
+test_data = reshape(test_data,size(test_data,3),[]);
+%%
+[predicted_label, accuracy, decision_values] = svmpredict(test_labels, test_data, model);
 
 %% Evaluation 
 

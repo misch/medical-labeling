@@ -4,9 +4,11 @@ function [ROI] = getPatchAtPosition(image, position)
 % Parameters:
 %   image - an MxNxQ matrix containing Q MxN images
 %   position - a two-dimensional vector containing x and y positions
+%           position(1): x-coordinate: vertical, starting from top left
+%           position(2): y-coordinate: horizontal, starting from top left
 %%
-y_pos = round(position(1));
-x_pos = round(position(2));
+x_pos = round(position(1));
+y_pos = round(position(2));
 
 patch_is_inside_image = (x_pos > 64 & size(image,1) >= x_pos+63 & y_pos > 64 & size(image,2) >= y_pos+63);
 
