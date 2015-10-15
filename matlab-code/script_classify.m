@@ -104,3 +104,19 @@ axis( [0 1 0 1] );
 title('ROC curve');
 xlabel('False Positive Rate');
 ylabel('True Positive Rate');
+
+
+% visualize decision_values
+file_names = dir([frames_dir, '*.png']);
+ref_frame = imread([frames_dir,file_names(1).name]);
+
+height = size(ref_frame,1) - 127;
+width = size(ref_frame,2) - 127;
+
+imtool(reshape(decision_values, height, []))
+
+
+
+
+
+
