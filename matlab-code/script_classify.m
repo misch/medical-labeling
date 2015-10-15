@@ -27,7 +27,7 @@ train_data = normalized_data;
 train_labels = labels;
 
 %% Train SVM
-model = svmtrain(train_labels, train_data);
+model = svmtrain(train_labels, train_data,'-t 2 -g 0.005');
 
 %% Test SVM
 % todo: test-data should be:
@@ -51,6 +51,8 @@ else
     
     test_data = reshape(test_data,size(test_labels,1),[]);
 end
+
+test_data = normalizeData(test_data);
  
 %% Show some positives
 positives = (test_labels == 1);
@@ -84,7 +86,7 @@ precision = cumsum(positives)./(1:Ntest)'; % is less than 1 if the number of (ac
 recall = cumsum(positives)/sum(positives); % is less than 1 if not yet all points are considered (hopefully, precision is 1 then)
 
 figure;
-subplot(1,2,1);
+% subplot(1,2,1);
 plot(recall,precision);
 axis( [0 1 0 1] );
 title('precision-recall curve');
@@ -95,8 +97,8 @@ ylabel('Precision');
 % FPR = FP / (FP + TN) = FP/#{negatives}
 false_positive_rate = cumsum(~positives) ./ sum(~positives)';
 
-% figure;
-subplot(1,2,2);
+figure;
+% subplot(1,2,2);
 plot(false_positive_rate,recall);
 axis( [0 1 0 1] );
 title('ROC curve');
