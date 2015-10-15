@@ -113,7 +113,7 @@ ref_frame = imread([frames_dir,file_names(1).name]);
 height = size(ref_frame,1) - 127;
 width = size(ref_frame,2) - 127;
 
-imtool(reshape(decision_values, height, []))
+imtool(reshape(decision_values, height, []), [min(decision_values), max(decision_values)])
 
 
 
