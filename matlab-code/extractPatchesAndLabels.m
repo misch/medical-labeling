@@ -1,4 +1,4 @@
-function [patches, ground_truth] = getAllPatches(image,ground_truth_image)
+function [patches, ground_truth] = extractPatchesAndLabels(image,ground_truth_image)
 % This functions returns all 128-128 patches of the image.
 %
 % Parameter:

@@ -32,39 +32,39 @@ model = svmtrain(train_labels, train_data);
 %% Test SVM
 % todo: test-data should be:
 %   from 20% of the frames, all the positions!
-frame_percentage = 20; % rough amount of test-frames
+frame_percentage = 0.1; % rough amount of test-frames
 
-file_names = dir([frames_dir, '*.png']);
-ground_truth_names = dir([ground_truth_dir, '*.png']);
 
-num_frames = length(file_names);
-frame_indices = find(rand(1,num_frames) <= frame_percentage/100);
+create_new_test_set = false;
 
-ref_frame = imread([frames_dir,file_names(1).name]);
-
-test_frames = zeros([size(ref_frame,1), size(ref_frame,2), length(frame_indices)]);
-ground_truth_frames = zeros([size(ref_frame,1), size(ref_frame,2), length(frame_indices)]);
-i = 1;
-for idx = frame_indices 
-    image_file = [frames_dir, file_names(idx).name];
-    test_frames(:,:,i) = rgb2gray(im2double(imread(image_file)));
+if create_new_test_set
+    [test_data, test_labels] = createTestData(frames_dir,frame_percentage,ground_truth_dir,'test_data','test_labels');
+else
+    frame_no = '00642';
+    data_id = fopen(['test_data_frame_',frame_no,'.dat']);
+    test_data = fread(data_id,'double');
+    fclose(data_id);
     
-    ground_truth_file = [ground_truth_dir, ground_truth_names(idx).name];
-    ground_truth_frames(:,:,i) = rgb2gray(im2double(imread(ground_truth_file)));
-    i = i + 1;
+    labels_id = fopen(['test_labels_frame_',frame_no,'.dat']);
+    test_labels = fread(labels_id,'double');
+    fclose(labels_id);
+    
+    test_data = reshape(test_data,size(test_labels,1),[]);
+end
+ 
+%% Show some positives
+positives = (test_labels == 1);
+positives = test_data(positives,:);
+
+figure();
+for i = 1:25
+    subplot(5,5,i);
+    imshow(reshape(positives(i+10000,:),32,[])+0.5);
 end
 
-% ground truth is +1 where the ground-truth video has a value higher than
-% threshold
-threshold = 0.1;
-ground_truth_frames(ground_truth_frames > 0.1) = 1;
-ground_truth_frames(ground_truth_frames < 0.1) = -1;
-
-[test_data, test_labels] = getTestDataAndLabels(test_frames(:,:,1),ground_truth_frames(:,:,1));
-
-test_data = reshape(test_data,size(test_data,3),[]);
 %%
 [predicted_label, accuracy, decision_values] = svmpredict(test_labels, test_data, model);
+
 
 %% Evaluation 
 
@@ -84,6 +84,7 @@ precision = cumsum(positives)./(1:Ntest)'; % is less than 1 if the number of (ac
 recall = cumsum(positives)/sum(positives); % is less than 1 if not yet all points are considered (hopefully, precision is 1 then)
 
 figure;
+subplot(1,2,1);
 plot(recall,precision);
 axis( [0 1 0 1] );
 title('precision-recall curve');
@@ -94,7 +95,8 @@ ylabel('Precision');
 % FPR = FP / (FP + TN) = FP/#{negatives}
 false_positive_rate = cumsum(~positives) ./ sum(~positives)';
 
-figure;
+% figure;
+subplot(1,2,2);
 plot(false_positive_rate,recall);
 axis( [0 1 0 1] );
 title('ROC curve');
