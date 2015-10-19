@@ -26,14 +26,9 @@ load([dataset_folder, 'processed_ROIs']);
 train_data = normalized_data;
 train_labels = labels;
 
-%% Train SVM
-model = svmtrain(train_labels, train_data,'-t 2 -g 0.005');
 
-%% Test SVM
-% todo: test-data should be:
-%   from 20% of the frames, all the positions!
+%% get or create test set
 frame_percentage = 0.1; % rough amount of test-frames
-
 
 create_new_test_set = false;
 
@@ -53,23 +48,42 @@ else
 end
 
 test_data = normalizeData(test_data);
- 
-%% Show some positives
-positives = (test_labels == 1);
-positives = test_data(positives,:);
 
-figure();
-for i = 1:25
-    subplot(5,5,i);
-    imshow(reshape(positives(i+10000,:),32,[])+0.5);
+%% Train SVM
+disp('Train SVM classifier...');
+% model = svmtrain(train_labels, train_data,'-t 2 -g 0.0625 -c 0.05');
+
+bestcv = 0;
+for log2c = -3:3,
+  for log2g = -4:4,
+    cmd = ['-v 10 -c ', num2str(2^log2c), ' -g ', num2str(2^log2g)];
+    cv = svmtrain(train_labels, train_data, cmd);
+    if (cv >= bestcv),
+      bestcv = cv; bestc = 2^log2c; bestg = 2^log2g;
+    end
+    fprintf('%g %g %g (best c=%g, g=%g, rate=%g)\n', log2c, log2g, cv, bestc, bestg, bestcv);
+  end
 end
 
+
+
+%% Show some positives
+% positives = (test_labels == 1);
+% positives = test_data(positives,:);
+% 
+% figure();
+% for i = 1:25
+%     subplot(5,5,i);
+%     imshow(reshape(positives(i+10000,:),32,[])+0.5);
+% end
+
 %%
+disp('Test SVM classifier...');
 [predicted_label, accuracy, decision_values] = svmpredict(test_labels, test_data, model);
 
 
 %% Evaluation 
-
+disp('Show performance measures...');
 Ntest = size(test_data,1);
 [sorted_scores,idx] = sort(decision_values,'descend');
 sorted_test_labels = test_labels(idx);
@@ -85,8 +99,7 @@ precision = cumsum(positives)./(1:Ntest)'; % is less than 1 if the number of (ac
 % How many of the positive test labels are actually found?
 recall = cumsum(positives)/sum(positives); % is less than 1 if not yet all points are considered (hopefully, precision is 1 then)
 
-figure;
-% subplot(1,2,1);
+figure(4);
 plot(recall,precision);
 axis( [0 1 0 1] );
 title('precision-recall curve');
@@ -97,14 +110,12 @@ ylabel('Precision');
 % FPR = FP / (FP + TN) = FP/#{negatives}
 false_positive_rate = cumsum(~positives) ./ sum(~positives)';
 
-figure;
-% subplot(1,2,2);
+figure(5);
 plot(false_positive_rate,recall);
 axis( [0 1 0 1] );
 title('ROC curve');
 xlabel('False Positive Rate');
 ylabel('True Positive Rate');
-
 
 % visualize decision_values
 file_names = dir([frames_dir, '*.png']);
@@ -113,10 +124,7 @@ ref_frame = imread([frames_dir,file_names(1).name]);
 height = size(ref_frame,1) - 127;
 width = size(ref_frame,2) - 127;
 
-imtool(reshape(decision_values, height, []), [min(decision_values), max(decision_values)])
-
-
-
-
-
+figure(6);
+imshow(reshape(decision_values, height, []), [min(decision_values), max(decision_values)]);
+title(['max: ',num2str(max(decision_values)),' / min: ', num2str(min(decision_values))]);
 
