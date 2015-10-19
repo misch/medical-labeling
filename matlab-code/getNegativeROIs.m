@@ -1,16 +1,17 @@
 function [ROI] = getNegativeROIs(image, position)
-% This function returns a 128x128x3 image patch representing a negative Region of Interest.
+% This function returns 128x128x3 image patches representing a negative Regions of Interest.
+% Parameters:
+%   - image: an rgb image
+%   - position: the position of the positive ROI in the frame (to avoid
+%   overlaps with negative ones)
+x_positions = (65:64:size(image,1));
+y_positions = (65:64:size(image,2));
 
-x_positions = [130, size(image,2)-85];
-y_positions = [130, size(image,1)-85];
+possible_centers = combvec(x_positions, y_positions);
+possible_centers = possible_centers(:,or(abs(possible_centers(1,:) - position(1)) >= 128,abs(possible_centers(2,:) - position(2)) >= 128));
 
+ROI = zeros(128,128,3,length(possible_centers));
 
-ROI = zeros(128,128,3,length(x_positions));
-
-for i = 1:length(x_positions)
-    x_pos = x_positions(i) + round(rand()*30) - 15;
-    y_pos = y_positions(i) + round(rand()*30) - 15;
-    
-    ROI(:,:,:,i) = getPatchAtPosition(image,[x_pos,y_pos]);   
+for i = 1:length(possible_centers)
+    ROI(:,:,:,i) = getPatchAtPosition(image,possible_centers(:,i));   
 end
-

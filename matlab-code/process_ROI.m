@@ -14,10 +14,10 @@ function [ROI] = process_ROI(unprocessed_ROI)
 
 
     if size(unprocessed_ROI,3) == 3
-        unprocessed_ROI = rgb2gray(unprocessed_ROI); % bicubic interpolation instead of bilinear that was used in the paper    
+        unprocessed_ROI = rgb2gray(unprocessed_ROI);
     end
     
-    ROI = imresize(unprocessed_ROI, [32 32]);
+    ROI = imresize(unprocessed_ROI, [32 32]); % bicubic interpolation instead of bilinear that was used in the paper    
     
     mean_per_image = mean(mean(ROI,1),2); % Qx1-vector containing the means of every image.
     

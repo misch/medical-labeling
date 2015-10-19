@@ -4,12 +4,17 @@ dataset_folder = ['../data/Dataset',num2str(dataset),'/'];
 video_filename = [dataset_folder,'video_uncompressed.avi'];
 frames_dir = [dataset_folder,'input-frames/'];
 
+file_names = dir([frames_dir, '*.png']);
+ref_frame = imread([frames_dir,file_names(1).name]);
+height = size(ref_frame,1);
+width = size(ref_frame,2);
+
 store_video_frames          =   false;
 new_eye_tracking_positions  =   false;
 show_eye_tracking_data      =   false;
 extract_new_ROIs            =   false;
 show_ROIs                   =   false;
-preprocessing_ROIs          =   false;
+preprocessing_ROIs          =   true;
 
 %% Store video frames to .png images
 if (store_video_frames)
@@ -36,32 +41,56 @@ if (extract_new_ROIs)
     num_frames = length(file_names);
 
     positive_ROIs = zeros(128,128,3,num_frames);
-    negative_ROIs = zeros(128,128,3,num_frames*2); % for each frame, define 2 negative ROIs
+    num_negatives = num_frames*round(width/64)*round(height/64); % just a rough upper bound for number of negatives
+    matObj = matfile('tmpNeg.mat','Writable',true);
+    
+    matObj.negative_ROIs(128,128,3,num_negatives) = 0; % for each frame, define 2 negative ROIs
 
     h = waitbar(0,'Extracting ROIs...');
+    neg_idx = 1;
     for i = 1:num_frames
         image_file = [frames_dir, file_names(i).name];
         image = im2double(imread(image_file));
 
-        positive_ROIs(:,:,:,i) = getPatchAtPosition(image, framePositions(i,:));
-        negative_ROIs(:,:,:,2*i:2*i+1) = getNegativeROIs(image,framePositions(i,:));
-        waitbar(i/num_frames);
+        positive_ROIs(:,:,:,i) = getPatchAtPosition(image, flip(framePositions(i,:)));
         
+        patches = getNegativeROIs(image,flip(framePositions(i,:)));
+        patches = patches(:,:,:,any(any(any(patches))));
+        nPatches = size(patches,4);
+        
+        matObj.negative_ROIs(:,:,:,neg_idx:neg_idx+nPatches-1) = patches;
+        neg_idx = neg_idx + nPatches;
+        
+        waitbar(i/num_frames);
     end
     
-    % discard zero-ROIs
-    positive_ROIs = positive_ROIs(:,:,:,any(any(any(positive_ROIs))));
-    negative_ROIs = negative_ROIs(:,:,:,any(any(any(negative_ROIs))));
-        
-    % save ROIs to variable
-    save([dataset_folder,'raw_ROIs.mat'],'positive_ROIs', 'negative_ROIs');
     close(h);
+    
+    % discard zero-ROIs and save ROIs to variable
+    positive_ROIs = positive_ROIs(:,:,:,any(any(any(positive_ROIs))));
+    save([dataset_folder,'raw_positiveROIs.mat'],'positive_ROIs');
+    
+    % store only the necessary part of the variable
+    negMatObj = matfile([dataset_folder,'raw_negativeROIs.mat'],'Writable',true);
+    negMatObj.negative_ROIs(128,128,3,neg_idx-1) = 0;
+    
+    i = 0;
+    max_idx = 0;
+    while (max_idx < neg_idx-1)
+        min_idx = i*10000+1;
+        max_idx = min((i+1)*10000,neg_idx-1);
+        negMatObj.negative_ROIs(:,:,:,min_idx:max_idx) = matObj.negative_ROIs(:,:,:,min_idx:max_idx);
+        i = i + 1;
+    end
+    
+    delete('tmpNeg.mat');
+
 else
-    if not(exist('negative_ROIs','var') & exist('positive_ROIs','var'))
-        filename = [dataset_folder, 'raw_ROIs.mat'];
-        if (exist([dataset_folder,'raw_ROIs.mat'],'file') > 0)
-            load(filename); % raw_ROIs.mat contains a variables 'positive_ROIs' and 'negative_ROIs'
-        end
+    if (and(exist([dataset_folder,'raw_positiveROIs.mat'],'file') > 0,exist([dataset_folder,'raw_negativeROIs.mat'],'file') > 0))
+            load([dataset_folder,'raw_positiveROIs.mat']);
+            negMatObj = matfile([dataset_folder,'raw_negativeROIs.mat']);
+    else
+        disp('No ROI-files found...');
     end
 end
 
@@ -76,7 +105,7 @@ if (show_ROIs)
     figure(2);
     for i = 201:300
         subplot(10,10,i-200);
-        imshow(negative_ROIs(:,:,:,i));
+        imshow(negMatObj.negative_ROIs(:,:,:,i));
     end
 end
 
@@ -88,10 +117,13 @@ end
 
 % each row represents a data point / ROI (1024 pixels)
 if (preprocessing_ROIs)
-    processed_ROIs = zeros(size(positive_ROIs,4)+size(negative_ROIs,4),32*32);
-    labels = [ones(size(positive_ROIs,4),1); -ones(size(negative_ROIs,4),1)];
-    
     num_pos_ROIs = size(positive_ROIs,4);
+    num_neg_ROIs = size(negMatObj,'negative_ROIs',4);
+    
+    processed_ROIs = zeros(num_pos_ROIs+num_neg_ROIs,32*32);
+    labels = [ones(num_pos_ROIs,1); -ones(num_neg_ROIs,1)];
+    
+    
     h = waitbar(0,'Processing positive ROIs...');
     for i = 1:num_pos_ROIs
         ROI = process_ROI(positive_ROIs(:,:,:,i));
@@ -101,14 +133,22 @@ if (preprocessing_ROIs)
     close(h)
 
     h = waitbar(0,'Processing negative ROIs...');
-    num_neg_ROIs = size(negative_ROIs,4);
-    for i = 1:num_neg_ROIs
-        ROI = process_ROI(negative_ROIs(:,:,:,i)); % bicubic interpolation instead of bilinear that was used in the paper    
-        processed_ROIs(i+num_pos_ROIs,:) = ROI(:);
-        waitbar(i/num_neg_ROIs);
+    
+    bunch = 0;
+    max_idx = 0;
+    while (max_idx < num_neg_ROIs)
+        min_idx = bunch*10000+1;
+        max_idx = min((bunch+1)*10000,num_neg_ROIs);
+        ROI_bunch = negMatObj.negative_ROIs(:,:,:,min_idx:max_idx);
+        for i = 1:size(ROI_bunch,4)
+           ROI = process_ROI(ROI_bunch(i));
+           processed_ROIs(num_pos_ROIs+min_idx+i-1,:) = ROI(:);
+        end
+        bunch = bunch + 1;
+        waitbar(max_idx/num_neg_ROIs);
     end
     close(h);
-
+    
     save([dataset_folder,'processed_ROIs.mat'],'processed_ROIs', 'labels');
     
     % accessing all the positive ROIs:
