@@ -125,6 +125,9 @@ height = size(ref_frame,1) - 127;
 width = size(ref_frame,2) - 127;
 
 figure(6);
-imshow(reshape(decision_values, height, []), [min(decision_values), max(decision_values)]);
-title(['max: ',num2str(max(decision_values)),' / min: ', num2str(min(decision_values))]);
+% imshow(reshape(decision_values, height, []), [min(decision_values), max(decision_values)]);
+% title(['max: ',num2str(max(decision_values)),' / min: ', num2str(min(decision_values))]);
 
+ colormap('hot');   % set colormap
+ imagesc(reshape(decision_values, height, []));        % draw image and scale colormap to values range
+ colorbar;          % show color scale
