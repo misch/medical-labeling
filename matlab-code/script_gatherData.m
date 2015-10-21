@@ -141,8 +141,9 @@ if (preprocessing_ROIs)
         max_idx = min((bunch+1)*10000,num_neg_ROIs);
         ROI_bunch = negMatObj.negative_ROIs(:,:,:,min_idx:max_idx);
         for i = 1:size(ROI_bunch,4)
-           ROI = process_ROI(ROI_bunch(i));
-           processed_ROIs(num_pos_ROIs+min_idx+i-1,:) = ROI(:);
+           ROI = process_ROI(ROI_bunch(:,:,:,i));
+           neg_idx = num_pos_ROIs+min_idx+i-1;
+           processed_ROIs(neg_idx,:) = ROI(:);
         end
         bunch = bunch + 1;
         waitbar(max_idx/num_neg_ROIs);
