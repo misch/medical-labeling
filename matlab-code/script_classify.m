@@ -1,5 +1,4 @@
 %% Define data paths and actions
-addpath('../libsvm')
 addpath('../libsvm-3.20/libsvm-3.20/matlab/')
 
 dataset = 2;
@@ -52,7 +51,7 @@ test_data = normalizeData(test_data);
 
 %% Train SVM
 disp('Train SVM classifier...');
-% model = svmtrain(train_labels, train_data,'-t 2 -g 0.0625 -c 0.05');
+% model = libsvmtrain(train_labels, train_data,'-t 2 -g 0.0625 -c 0.05');
 
 bestcv = 0;
 for log2c = -3:3,
@@ -80,7 +79,7 @@ end
 
 %%
 disp('Test SVM classifier...');
-[predicted_label, accuracy, decision_values] = svmpredict(test_labels, test_data, model);
+[predicted_label, accuracy, decision_values] = libsvmpredict(test_labels, test_data, model);
 
 
 %% Evaluation 
