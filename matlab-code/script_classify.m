@@ -1,5 +1,6 @@
 %% Define data paths and actions
 addpath('../libsvm')
+addpath('../libsvm-3.20/libsvm-3.20/matlab/')
 
 dataset = 2;
 dataset_folder = ['../data/Dataset',num2str(dataset),'/'];
