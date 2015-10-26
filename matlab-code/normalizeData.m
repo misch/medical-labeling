@@ -1,4 +1,4 @@
-function [NormData] = normalizeData(Data)
+function [NormData, mu, sigma] = normalizeData(Data)
 % Normalize the input data to lie in a box with radius 1
 % centered at the origin of the coordinate system.
 %
