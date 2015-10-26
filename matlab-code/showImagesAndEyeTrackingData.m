@@ -3,7 +3,7 @@ function showImagesAndEyeTrackingData(video_filename, framePositions)
 %   video_filename: a string with the filename of the video
 %   framePositions: a #frames x 2 matrix containing [X,Y] positions for
 %   each frame.
-
+matlab_version = version('-release');
 if str2num(matlab_version(1:4)) <= 2010
     % install VideoUtils Toolbox
     run 'C:\Program Files\MATLAB\R2010a\VideoUtils_v1_2_4\install.m';

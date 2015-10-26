@@ -11,10 +11,10 @@ width = size(ref_frame,2);
 
 store_video_frames          =   false;
 new_eye_tracking_positions  =   false;
-show_eye_tracking_data      =   false;
+show_eye_tracking_data      =   true;
 extract_new_ROIs            =   false;
 show_ROIs                   =   false;
-preprocessing_ROIs          =   true;
+preprocessing_ROIs          =   false;
 
 %% Store video frames to .png images
 if (store_video_frames)
@@ -26,8 +26,10 @@ if (new_eye_tracking_positions)
     framePositions = simulateEyeTracking(video_filename);
     save([dataset_folder,'framePositions.mat'],'framePositions');
 else
-    filename = [dataset_folder, 'framePositions.mat'];
-    load(filename); % framePositions.mat contains a variable 'framePositions'
+%     filename = [dataset_folder, 'framePositions.mat'];
+%     load(filename); % framePositions.mat contains a variable 'framePositions'
+    filename = [dataset_folder, 'framePositions_new.csv'];
+    framePositions = [0 0 ;readCSVFile(filename)];
 end
 
 %% Show images with recorded mouse positions
