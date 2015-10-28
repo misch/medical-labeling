@@ -30,6 +30,8 @@ else
 %     load(filename); % framePositions.mat contains a variable 'framePositions'
     filename = [dataset_folder, 'framePositions_new.csv'];
     framePositions = [0 0 ;readCSVFile(filename)];
+    framePositions(:,1) = framePositions(:,1) * size(ref_frame,1);
+    framePositions(:,2) = framePositions(:,2) * size(ref_frame,2);
 end
 
 %% Show images with recorded mouse positions
