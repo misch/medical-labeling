@@ -29,8 +29,10 @@ else
     mousePositions = zeros(num_frames,2);
     video = VideoReader(video_filename);
     for i = 1:num_frames
+        i
         frame = readFrame(video);
         imshow(frame);
+        hold on;
         plot(framePositions(i,1),framePositions(i,2),'Marker','.','Color',[1 0 0], 'MarkerSize',20);
         drawnow;
     end 

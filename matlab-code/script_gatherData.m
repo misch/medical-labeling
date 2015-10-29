@@ -1,5 +1,5 @@
 %% Define data paths and actions
-dataset = 2;
+dataset = 6;
 dataset_folder = ['../data/Dataset',num2str(dataset),'/'];
 video_filename = [dataset_folder,'video_uncompressed.avi'];
 frames_dir = [dataset_folder,'input-frames/'];
@@ -28,10 +28,10 @@ if (new_eye_tracking_positions)
 else
 %     filename = [dataset_folder, 'framePositions.mat'];
 %     load(filename); % framePositions.mat contains a variable 'framePositions'
-    filename = [dataset_folder, 'framePositions_new.csv'];
-    framePositions = [0 0 ;readCSVFile(filename)];
-    framePositions(:,1) = framePositions(:,1) * size(ref_frame,1);
-    framePositions(:,2) = framePositions(:,2) * size(ref_frame,2);
+    filename = [dataset_folder, 'framePositions.csv'];
+    framePositions = readCSVFile(filename);
+    framePositions(:,1) = framePositions(:,1) * size(ref_frame,2);
+    framePositions(:,2) = framePositions(:,2) * size(ref_frame,1);
 end
 
 %% Show images with recorded mouse positions
@@ -141,8 +141,8 @@ if (preprocessing_ROIs)
     bunch = 0;
     max_idx = 0;
     while (max_idx < num_neg_ROIs)
-        min_idx = bunch*10000+1;
-        max_idx = min((bunch+1)*10000,num_neg_ROIs);
+        min_idx = bunch*1000+1;
+        max_idx = min((bunch+1)*1000,num_neg_ROIs);
         ROI_bunch = negMatObj.negative_ROIs(:,:,:,min_idx:max_idx);
         for i = 1:size(ROI_bunch,4)
            ROI = process_ROI(ROI_bunch(:,:,:,i));
