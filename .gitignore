@@ -1,6 +1,6 @@
 # data
 data/*
-
+results/*
 
 # matlab
 *.asv
@@ -10,3 +10,6 @@ libsvm*
 
 # vl-feat
 vlfeat/*
+
+# gaze tracking
+EyeTribeDrivers/*
