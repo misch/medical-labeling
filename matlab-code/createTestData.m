@@ -1,4 +1,4 @@
-function [test_data, test_labels] = createTestData(frames_dir,frame_percentage,ground_truth_dir,output_data_file,output_labels_file)
+function [test_data, test_labels] = createTestData(frames_dir,frame_percentage,ground_truth_dir)
 
     ground_truth_exists = (ground_truth_dir ~= 0);
     
@@ -43,14 +43,14 @@ function [test_data, test_labels] = createTestData(frames_dir,frame_percentage,g
         % to get the 32x32-images back:
         % reshape(test_data',32,32,[])
         
-        out_data = [output_data_file,'_',file_names(frame_indices(frame)).name]
+        out_data = ['test_data_',file_names(frame_indices(frame)).name]
         data_file = [out_data(1:end-4),'.dat'];
         
         data_id = fopen(data_file,'w');
         fwrite(data_id,test_data,'double');
         fclose(data_id);
 
-        out_labels = [output_labels_file,'_',file_names(frame_indices(frame)).name]
+        out_labels = ['test_labels_',file_names(frame_indices(frame)).name]
         labels_file = [out_labels(1:end-4),'.dat'];
         labels_id = fopen(labels_file,'w');
         fwrite(labels_id,test_labels,'double');

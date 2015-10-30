@@ -1,13 +1,8 @@
 %% Define data paths and actions
 dataset = 6;
-dataset_folder = ['../data/Dataset',num2str(dataset),'/'];
-video_filename = [dataset_folder,'video_uncompressed.avi'];
-frames_dir = [dataset_folder,'input-frames/'];
 
-file_names = dir([frames_dir, '*.png']);
-ref_frame = imread([frames_dir,file_names(1).name]);
-height = size(ref_frame,1);
-width = size(ref_frame,2);
+[dataset_folder, frames_dir, file_names, frame_height, frame_width, num_frames] = getDatasetDetails(dataset);
+video_filename = [dataset_folder,'video_uncompressed.avi'];
 
 store_video_frames          =   false;
 new_eye_tracking_positions  =   false;
@@ -30,8 +25,8 @@ else
 %     load(filename); % framePositions.mat contains a variable 'framePositions'
     filename = [dataset_folder, 'framePositions.csv'];
     framePositions = readCSVFile(filename);
-    framePositions(:,1) = framePositions(:,1) * size(ref_frame,2);
-    framePositions(:,2) = framePositions(:,2) * size(ref_frame,1);
+    framePositions(:,1) = framePositions(:,1) * frame_width;
+    framePositions(:,2) = framePositions(:,2) * frame_height;
 end
 
 %% Show images with recorded mouse positions
@@ -41,15 +36,12 @@ end
 
 %% Get Regions of Interest (ROI's)
 if (extract_new_ROIs)
-    file_names = dir([frames_dir, '*.png']);
-    num_frames = length(file_names);
-
     positive_ROIs = zeros(128,128,3,num_frames);
-    num_negatives = num_frames*round(width/64)*round(height/64); % just a rough upper bound for number of negatives
+    num_negatives = num_frames*round(frame_width/64)*round(frame_height/64); % just a rough upper bound for number of negatives
     matObj = matfile('tmpNeg.mat','Writable',true);
     
     matObj.negative_ROIs(128,128,3,num_negatives) = 0; % for each frame, define 2 negative ROIs
-
+  
     h = waitbar(0,'Extracting ROIs...');
     neg_idx = 1;
     for i = 1:num_frames

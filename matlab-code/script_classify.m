@@ -2,8 +2,7 @@
 addpath('../libsvm-3.20/libsvm-3.20/matlab/')
 
 dataset = 2;
-dataset_folder = ['../data/Dataset',num2str(dataset),'/'];
-frames_dir = [dataset_folder,'input-frames/'];
+[dataset_folder, frames_dir, ~ , frame_height, frame_width, num_frames] = getDatasetDetails(dataset);
 
 if (exist([dataset_folder,'ground_truth-frames'],'dir') > 0)
     ground_truth_dir = [dataset_folder,'ground_truth-frames/'];
@@ -20,7 +19,7 @@ frame_percentage = 0.1; % rough amount of test-frames
 create_new_test_set = false;
 
 if create_new_test_set
-    [test_data, test_labels] = createTestData(frames_dir,frame_percentage,ground_truth_dir,'test_data','test_labels');
+    [test_data, test_labels] = createTestData(frames_dir,frame_percentage,ground_truth_dir);
 else
 %     frame_no = '00428'; % for dataset 5
     frame_no = '00642';
@@ -144,8 +143,8 @@ positives = sorted_test_labels == 1;
 file_names = dir([frames_dir, '*.png']);
 ref_frame = imread([frames_dir,file_names(1).name]);
 
-height = size(ref_frame,1) - 127;
-width = size(ref_frame,2) - 127;
+height = frame_height - 127;
+width = frame_width - 127;
 
     % Heat map
     figure;
