@@ -41,40 +41,54 @@ normalized_data = normalizeData(to_normalize);
 
 
 %% Train SVM
-
-train_data = normalized_data(1:size(processed_ROIs,1),:); % only positives to train one-class svm
+train_data = normalized_data(1:size(processed_ROIs,1),:);
 train_labels = labels;
-% To shorten computation time...
-% train_percentage = 20;
+
+% lol THIS is saving everything?!
+% % % positive_train_data = train_data(train_labels==1,:);
+% % % negative_train_data = train_data(train_labels==-1,:);
+% % % 
+% % % shuffle_idx = randperm(size(negative_train_data,1));
+% % % rand_neg = negative_train_data(shuffle_idx,:);
+% % % negative_train_data = rand_neg(1:size(positive_train_data,1),:);
+% % % 
+% % % train_data = cat(1,positive_train_data,negative_train_data);
+% % % train_labels = [ones(size(positive_train_data,1),1) ; -1 *ones(size(negative_train_data,1),1)];
+% % % 
+% % % shuffle_idx = randperm(size(train_data,1));
+% % % train_data = train_data(shuffle_idx,:);
+% % % train_labels = train_labels(shuffle_idx);
+
+
+% train_percentage = 60;
 % train_indices = find(rand(1,size(train_data,1)) <= train_percentage/100);
+
 % train_data = train_data(train_indices,:);
 % train_labels = train_labels(train_indices);
 
-train_data = train_data(find(train_labels==1),:);
-train_labels = train_labels(train_labels==1);
+
+% train_data = train_data(find(train_labels==1),:);
+% train_labels = train_labels(train_labels==1);
 
 disp('Train SVM classifier...');
-% model = libsvmtrain(train_labels,train_data,'-t 2 -g 0.5 -c 5 -h 0');
-model = libsvmtrain(train_labels,train_data,'-s 2 -n 0.4 -c 2');
+model = libsvmtrain(train_labels,train_data,'-t 2 -g 0.0625 -c 8');
+% model = libsvmtrain(train_labels,train_data,'-s 2 -n 0.001 -c 0.2');
+% model = libsvmtrain(train_labels,train_data,'-s 2');
 
 % bestacc = 0;
 % for log2c = -3:3,
-%   for log2n = -8:0,
-% %     cmd = ['-v 4 -c ', num2str(2^log2c), ' -g ', num2str(2^log2g)];
-%     cmd = ['-s 2 -n ', num2str(2^log2n),' -c ',num2str(2^log2c)];
-%     model = libsvmtrain(train_labels, train_data, cmd);
-%     [predicted_labels, accuracy, decision_values] = libsvmpredict(test_labels, test_data, model);
-%     if (accuracy >= bestacc),
-%       bestacc = accuracy; bestc = 2^log2c; bestn = 2^log2n;
+%   for log2g = -4:2,
+%     cmd = ['-v 5 -c ', num2str(2^log2c), ' -g ', num2str(2^log2g)];
+% %     cmd = ['-s 2 -n ', num2str(2^log2n),' -c ',num2str(2^log2c)];
+%     cv = libsvmtrain(train_labels, train_data, cmd);
+% %     [predicted_labels, accuracy, decision_values] = libsvmpredict(test_labels, test_data, model);
+%     if (cv >= bestacc),
+%       bestacc = cv; bestc = 2^log2c; bestg = 2^log2g;
 %     end
-% %     fprintf('%g %g %g (best c=%g, g=%g, rate=%g)\n', log2c, log2g, cv, bestc, bestg, bestcv);
-%     fprintf('c=%g n=%g acc=%g (best c=%g, n=%g, rate=%g)\n', 2^log2c, 2^log2n, accuracy, bestc, bestn, bestacc);
+%     fprintf('%g %g %g (best c=%g, g=%g, rate=%g)\n', log2c, log2g, cv, bestc, bestg, bestacc);
+% %     fprintf('c=%g n=%g acc=%g (best c=%g, n=%g, rate=%g)\n', 2^log2c, 2^log2n, accuracy, bestc, bestn, bestacc);
 %   end
 % end
-
-
-
-
 
 %%
 disp('Test SVM classifier...');
