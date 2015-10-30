@@ -19,6 +19,10 @@ function [ROI] = process_ROI(unprocessed_ROI)
     
     ROI = imresize(unprocessed_ROI, [32 32]); % bicubic interpolation instead of bilinear that was used in the paper    
     
+%     for i = 1:size(ROI,3)
+%        ROI(:,:,i) = medfilt2(ROI(:,:,i)); 
+%     end
+    
     mean_per_image = mean(mean(ROI,1),2); % Qx1-vector containing the means of every image.
     
     ROI = ROI - repmat(mean_per_image,size(ROI,1),size(ROI,2));
