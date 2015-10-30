@@ -1,7 +1,12 @@
 function [test_data, test_labels] = createTestData(frames_dir,frame_percentage,ground_truth_dir,output_data_file,output_labels_file)
 
+    ground_truth_exists = (ground_truth_dir ~= 0);
+    
     file_names = dir([frames_dir, '*.png']);
-    ground_truth_names = dir([ground_truth_dir, '*.png']);
+    
+    if (ground_truth_exists)
+        ground_truth_names = dir([ground_truth_dir, '*.png']);
+    end
 
     num_frames = length(file_names);
     frame_indices = find(rand(1,num_frames) <= frame_percentage/100);
@@ -14,9 +19,12 @@ function [test_data, test_labels] = createTestData(frames_dir,frame_percentage,g
     for idx = frame_indices 
         image_file = [frames_dir, file_names(idx).name];
         test_frames(:,:,i) = rgb2gray(im2double(imread(image_file)));
-    
-        ground_truth_file = [ground_truth_dir, ground_truth_names(idx).name];
-        ground_truth_frames(:,:,i) = rgb2gray(im2double(imread(ground_truth_file)));
+        if (ground_truth_exists)
+            ground_truth_file = [ground_truth_dir, ground_truth_names(idx).name];
+           ground_truth_frames(:,:,i) = rgb2gray(im2double(imread(ground_truth_file)));
+        else
+            ground_truth_frames(:,:,i) = ones(size(ref_frame,1),size(ref_frame,2));
+        end
         i = i + 1;
     end
 

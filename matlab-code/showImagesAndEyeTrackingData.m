@@ -29,7 +29,6 @@ else
     mousePositions = zeros(num_frames,2);
     video = VideoReader(video_filename);
     for i = 1:num_frames
-        i
         frame = readFrame(video);
         imshow(frame);
         hold on;

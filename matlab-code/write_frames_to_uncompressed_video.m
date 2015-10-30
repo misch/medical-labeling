@@ -1,4 +1,4 @@
-dataset = 4;
+dataset = 6;
 dataset_folder = ['../data/Dataset',num2str(dataset),'/'];
 frames_dir = [dataset_folder,'input-frames/'];
 
