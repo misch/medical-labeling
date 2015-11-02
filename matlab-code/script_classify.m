@@ -1,28 +1,28 @@
 %% Define data paths and actions
 addpath('../libsvm-3.20/libsvm-3.20/matlab/')
 
-dataset = 2;
+dataset = 5;
 [dataset_folder, frames_dir, ~ , frame_height, frame_width, num_frames] = getDatasetDetails(dataset);
 
 if (exist([dataset_folder,'ground_truth-frames'],'dir') > 0)
     ground_truth_dir = [dataset_folder,'ground_truth-frames/'];
 else
-   ground_truth_dir = 0; 
+    ground_truth_dir = 0; 
 end
 
 load([dataset_folder, 'processed_ROIs']);
 
 
 %% get or create test set
-frame_percentage = 0.1; % rough amount of test-frames
+frame_percentage = 0.1; % rough percentage of #test-frames
 
 create_new_test_set = false;
 
 if create_new_test_set
     [test_data, test_labels] = createTestData(frames_dir,frame_percentage,ground_truth_dir);
 else
-%     frame_no = '00428'; % for dataset 5
-    frame_no = '00642';
+    frame_no = '00428'; % for dataset 5
+%     frame_no = '00642';
     data_id = fopen([dataset_folder,'test_data_frame_',frame_no,'.dat']);
     test_data = fread(data_id,'double');
     fclose(data_id);
@@ -43,61 +43,33 @@ normalized_data = normalizeData(to_normalize);
 train_data = normalized_data(1:size(processed_ROIs,1),:);
 train_labels = labels;
 
-% lol THIS is saving everything?!
-% % % positive_train_data = train_data(train_labels==1,:);
-% % % negative_train_data = train_data(train_labels==-1,:);
-% % % 
-% % % shuffle_idx = randperm(size(negative_train_data,1));
-% % % rand_neg = negative_train_data(shuffle_idx,:);
-% % % negative_train_data = rand_neg(1:size(positive_train_data,1),:);
-% % % 
-% % % train_data = cat(1,positive_train_data,negative_train_data);
-% % % train_labels = [ones(size(positive_train_data,1),1) ; -1 *ones(size(negative_train_data,1),1)];
-% % % 
-% % % shuffle_idx = randperm(size(train_data,1));
-% % % train_data = train_data(shuffle_idx,:);
-% % % train_labels = train_labels(shuffle_idx);
+cross_validation = true;
+
+if (cross_validation) % Perform cross-validation
+    disp('Start cross-validation...');
+    [train_data, train_labels] = getFiftyFiftySamples(train_data,train_labels);
+
+    bestacc = 0;
+    for log2c = -3:3,
+      for log2g = -4:2,
+        cmd = ['-v 5 -c ', num2str(2^log2c), ' -g ', num2str(2^log2g)];
+        cv = libsvmtrain(train_labels, train_data, cmd);
+        if (cv >= bestacc),
+          bestacc = cv; bestc = 2^log2c; bestg = 2^log2g;
+        end
+        fprintf('%g %g %g (best c=%g, g=%g, rate=%g)\n', log2c, log2g, cv, bestc, bestg, bestacc);
+      end
+    end
+else % Perform real training
+    disp('Train SVM classifier...');
+    model = libsvmtrain(train_labels,train_data,'-t 2 -g 0.0625 -c 8');
+    % model = libsvmtrain(train_labels,train_data,'-s 2 -n 0.001 -c 0.2');
+    % model = libsvmtrain(train_labels,train_data,'-s 2');
+end
 
 
-% train_percentage = 60;
-% train_indices = find(rand(1,size(train_data,1)) <= train_percentage/100);
-
-% train_data = train_data(train_indices,:);
-% train_labels = train_labels(train_indices);
-
-
-% train_data = train_data(find(train_labels==1),:);
-% train_labels = train_labels(train_labels==1);
-
-disp('Train SVM classifier...');
-model = libsvmtrain(train_labels,train_data,'-t 2 -g 0.0625 -c 8');
-% model = libsvmtrain(train_labels,train_data,'-s 2 -n 0.001 -c 0.2');
-% model = libsvmtrain(train_labels,train_data,'-s 2');
-
-% bestacc = 0;
-% for log2c = -3:3,
-%   for log2g = -4:2,
-%     cmd = ['-v 5 -c ', num2str(2^log2c), ' -g ', num2str(2^log2g)];
-% %     cmd = ['-s 2 -n ', num2str(2^log2n),' -c ',num2str(2^log2c)];
-%     cv = libsvmtrain(train_labels, train_data, cmd);
-% %     [predicted_labels, accuracy, decision_values] = libsvmpredict(test_labels, test_data, model);
-%     if (cv >= bestacc),
-%       bestacc = cv; bestc = 2^log2c; bestg = 2^log2g;
-%     end
-%     fprintf('%g %g %g (best c=%g, g=%g, rate=%g)\n', log2c, log2g, cv, bestc, bestg, bestacc);
-% %     fprintf('c=%g n=%g acc=%g (best c=%g, n=%g, rate=%g)\n', 2^log2c, 2^log2n, accuracy, bestc, bestn, bestacc);
-%   end
-% end
-
-%%
+%% Test SVM
 disp('Test SVM classifier...');
-
-% To reduce computation time
-% test_percentage = 1;
-% test_indices = find(rand(1,size(test_data,1)) <= test_percentage/100);
-% 
-% test_data = test_data(test_indices,:);
-% test_labels = test_labels(test_indices);
 
 test_data = normalized_data(size(processed_ROIs,1)+1:size(processed_ROIs,1)+size(test_data,1),:);
 
