@@ -1,13 +1,13 @@
 %% Define data paths and actions
-dataset = 6;
+dataset = 2;
 
 [dataset_folder, frames_dir, file_names, frame_height, frame_width, num_frames] = getDatasetDetails(dataset);
 video_filename = [dataset_folder,'video_uncompressed.avi'];
 
 store_video_frames          =   false;
 new_eye_tracking_positions  =   false;
-show_eye_tracking_data      =   true;
-extract_new_ROIs            =   false;
+show_eye_tracking_data      =   false;
+extract_new_ROIs            =   true;
 show_ROIs                   =   false;
 preprocessing_ROIs          =   false;
 
@@ -36,34 +36,37 @@ end
 
 %% Get Regions of Interest (ROI's)
 if (extract_new_ROIs)
-    positive_ROIs = zeros(128,128,3,num_frames);
-    num_negatives = num_frames*round(frame_width/64)*round(frame_height/64); % just a rough upper bound for number of negatives
-    matObj = matfile('tmpNeg.mat','Writable',true);
-    
-    matObj.negative_ROIs(128,128,3,num_negatives) = 0; % for each frame, define 2 negative ROIs
-  
-    h = waitbar(0,'Extracting ROIs...');
-    neg_idx = 1;
-    for i = 1:num_frames
-        image_file = [frames_dir, file_names(i).name];
-        image = im2double(imread(image_file));
+    positives = extractPositiveROIs(frames_dir, file_names, framePositions, ROI_type);
 
-        positive_ROIs(:,:,:,i) = getPatchAtPosition(image, flip(framePositions(i,:)));
-        
-        patches = getNegativeROIs(image,flip(framePositions(i,:)));
-        patches = patches(:,:,:,any(any(any(patches))));
-        nPatches = size(patches,4);
-        
-        matObj.negative_ROIs(:,:,:,neg_idx:neg_idx+nPatches-1) = patches;
-        neg_idx = neg_idx + nPatches;
-        
-        waitbar(i/num_frames);
-    end
+    negatives = getNegativeROIs(frames_dir, file_names, framePositions, frame_height, frame_width, 'patch');
+    %     positive_ROIs = zeros(128,128,3,num_frames);
+%     num_negatives = num_frames*round(frame_width/64)*round(frame_height/64); % just a rough upper bound for number of negatives
+%     matObj = matfile('tmpNeg.mat','Writable',true);
+    
+%     matObj.negative_ROIs(128,128,3,num_negatives) = 0; % for each frame, define 2 negative ROIs
+  
+%     h = waitbar(0,'Extracting ROIs...');
+%     neg_idx = 1;
+%     for i = 1:num_frames
+%         image_file = [frames_dir, file_names(i).name];
+%         image = im2double(imread(image_file));
+
+%         positive_ROIs(:,:,:,i) = getPatchAtPosition(image, flip(framePositions(i,:)));
+%         
+%         patches = getNegativeROIs(image,flip(framePositions(i,:)));
+%         patches = patches(:,:,:,any(any(any(patches))));
+%         nPatches = size(patches,4);
+%         
+%         matObj.negative_ROIs(:,:,:,neg_idx:neg_idx+nPatches-1) = patches;
+%         neg_idx = neg_idx + nPatches;
+%         
+%         waitbar(i/num_frames);
+%     end
     
     close(h);
     
     % discard zero-ROIs and save ROIs to variable
-    positive_ROIs = positive_ROIs(:,:,:,any(any(any(positive_ROIs))));
+%     positive_ROIs = positive_ROIs(:,:,:,any(any(any(positive_ROIs))));
     save([dataset_folder,'raw_positiveROIs.mat'],'positive_ROIs');
     
     % store only the necessary part of the variable
