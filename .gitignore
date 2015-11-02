@@ -13,3 +13,6 @@ vlfeat/*
 
 # gaze tracking
 EyeTribeDrivers/*
+
+#NIfTI
+NIfTI_20140122/*

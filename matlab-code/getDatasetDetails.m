@@ -11,6 +11,11 @@ file_names = dir([frames_dir, '*.png']);
 
 num_frames = size(file_names,1);
 
-ref_frame = imread([frames_dir,file_names(1).name]);
-frame_height = size(ref_frame,1);
-frame_width = size(ref_frame,2);
+frame_height = 0;
+frame_width = 0;
+
+if length(file_names) > 1
+    ref_frame = imread([frames_dir,file_names(1).name]);
+    frame_height = size(ref_frame,1);
+    frame_width = size(ref_frame,2);
+end

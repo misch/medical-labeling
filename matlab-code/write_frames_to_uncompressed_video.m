@@ -1,6 +1,6 @@
 % Write a sequence of input frames to a single uncompressed video
-dataset = 6;
-[dataset_folder, frames_dir, file_names] = getDatasetDetails(dataset)
+dataset = 7;
+[dataset_folder, frames_dir, file_names] = getDatasetDetails(dataset);
 
 v = VideoWriter([dataset_folder,'video_uncompressed.avi']);
 
