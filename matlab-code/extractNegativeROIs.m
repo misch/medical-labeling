@@ -1,4 +1,4 @@
-function [negatives] = getNegativeROIs(frames_dir, file_names, framePositions, frame_height, frame_width, ROI_type)
+function [negatives] = extractNegativeROIs(frames_dir, file_names, framePositions, frame_height, frame_width, ROI_type)
 % This function returns 128x128x3 image patches representing a negative Regions of Interest.
 % Parameters:
 %   - framePositions: the position of the positive ROI in the frame (to avoid
@@ -22,7 +22,9 @@ if (strcmp(ROI_type,'patch'))
        [negative_patches_from_frame, nPatches] = getNonOverlappingPatches(image, flip(framePositions(i,1:2)));
        
        negatives(:,:,:,neg_idx:neg_idx+nPatches-1) = negative_patches_from_frame;
+       neg_idx = neg_idx + nPatches;
     end
+    negatives = negatives(:,:,:,any(any(any(negatives))));
 else
     disp('patch is the only implemented ROI_type');
     negatives = 0;

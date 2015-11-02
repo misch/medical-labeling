@@ -18,7 +18,7 @@ if (strcmp(ROI_type,'patch'))
     end
 
     % discard zeros-ROIs
-    positives = positives(:,:,:,any(any(any(positive_ROIs))));
+    positives = positives(:,:,:,any(any(any(positives))));
 else
     disp('patch is the only implemented ROI_type');
     positives = 0;

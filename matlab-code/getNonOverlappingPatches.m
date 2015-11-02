@@ -1,4 +1,4 @@
-function [patches, nPatches] = getNonOverlappingPatches(image, position);
+function [patches, nPatches] = getNonOverlappingPatches(image, position)
     x_positions = (65:64:size(image,1));
     y_positions = (65:64:size(image,2));
 
@@ -11,5 +11,5 @@ function [patches, nPatches] = getNonOverlappingPatches(image, position);
         ROI(:,:,:,i) = getPatchAtPosition(image,possible_centers(:,i));   
     end
     
-    patches = ROI(:,:,:,any(any(any(ROI))));
+    patches = ROI;
     nPatches = size(patches,4);
