@@ -14,7 +14,7 @@ if str2num(matlab_version(1:4)) <= 2010
     while (true)
        plot(vp)
        hold on;
-       plot(framePositions(i,1),framePositions(i,2),'Marker','.','Color',[1 0 0], 'MarkerSize',20);
+       plot(framePositions(i,1),framePositions(i,2),'Marker','.','Color', [1, framePositions(i,3)*1, 0], 'MarkerSize',20);
        drawnow; 
        i = i + 1;
 
@@ -32,7 +32,7 @@ else
         frame = readFrame(video);
         imshow(frame);
         hold on;
-        plot(framePositions(i,1),framePositions(i,2),'Marker','.','Color',[1 0 0], 'MarkerSize',20);
+        plot(framePositions(i,1),framePositions(i,2),'Marker','.','Color',[1, framePositions(i,3)*1, 0], 'MarkerSize',20);
         drawnow;
     end 
 end
