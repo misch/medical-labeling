@@ -11,7 +11,7 @@ if (strcmp(ROI_type,'patch'))
     positives = zeros(128, 128, 3, length(interesting_frames));
 
     for i = 1:length(interesting_frames)
-       image_file = [frames_dir, file_names(i).name] ;
+       image_file = [frames_dir, interesting_frames(i).name] 
        image = im2double(imread(image_file));
 
        positives(:,:,:,i) = getPatchAtPosition(image, flip(framePositions(i,1:2)));

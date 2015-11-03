@@ -16,7 +16,7 @@ if (strcmp(ROI_type,'patch'))
 
     neg_idx = 1;
     for i = 1:length(interesting_frames)
-       image_file = [frames_dir, file_names(i).name] ;
+       image_file = [frames_dir, interesting_frames(i).name] ;
        image = im2double(imread(image_file));
        
        [negative_patches_from_frame, nPatches] = getNonOverlappingPatches(image, flip(framePositions(i,1:2)));
