@@ -16,12 +16,15 @@ function [test_data, test_labels] = createTestData(frames_dir,frame_percentage,g
     test_frames = zeros([size(ref_frame,1), size(ref_frame,2), length(frame_indices)]);
     ground_truth_frames = zeros([size(ref_frame,1), size(ref_frame,2), length(frame_indices)]);
     i = 1;
+    frame_indices = [189];
     for idx = frame_indices 
         image_file = [frames_dir, file_names(idx).name];
-        test_frames(:,:,i) = rgb2gray(im2double(imread(image_file)));
+        image = getGrayScaleImage(image_file);
+        
+        test_frames(:,:,i) = image;
         if (ground_truth_dir_exists)
             ground_truth_file = [ground_truth_dir, ground_truth_names(idx).name];
-            ground_truth_frames(:,:,i) = rgb2gray(im2double(imread(ground_truth_file)));
+            ground_truth_frames(:,:,i) = getGrayScaleImage(ground_truth_file);
             % ground truth is +1 where the ground-truth video has a value higher than threshold
             threshold = 0.1;
             ground_truth_frames(ground_truth_frames > threshold) = 1;
@@ -37,7 +40,7 @@ function [test_data, test_labels] = createTestData(frames_dir,frame_percentage,g
             if FileName == 0
                 gt = 0;
             else
-                gt = rgb2gray(im2double(imread([PathName,FileName])));
+                gt = getGrayScaleImage([PathName,FileName]);
             end
             [test_data, test_labels] = extractPatchesAndLabels(test_frames(:,:,frame),gt);
         else

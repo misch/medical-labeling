@@ -1,7 +1,7 @@
 %% Define data paths and actions
 addpath('../libsvm-3.20/libsvm-3.20/matlab/')
 
-dataset = 5;
+dataset = 8;
 [dataset_folder, frames_dir, ~ , frame_height, frame_width, num_frames] = getDatasetDetails(dataset);
 
 if (exist([dataset_folder,'ground_truth-frames'],'dir') > 0)
@@ -16,7 +16,7 @@ load([dataset_folder, 'processed_ROIs']);
 %% get or create test set
 frame_percentage = 0.1; % rough percentage of #test-frames
 
-create_new_test_set = false;
+create_new_test_set = true;
 
 if create_new_test_set
     [test_data, test_labels] = createTestData(frames_dir,frame_percentage,ground_truth_dir);
