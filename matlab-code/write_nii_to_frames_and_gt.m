@@ -1,27 +1,27 @@
 % Write .nii file to frames
 addpath('../NIfTI_20140122/');
 
-dataset = 8;
+dataset = 7;
 [dataset_folder, frames_dir] = getDatasetDetails(dataset);
 
-% patient_file = [dataset_folder,'Sub04R/Patient_T2.nii'];
-patient_file = [dataset_folder, 'Labyrinth.nii'];
+patient_file = [dataset_folder,'Sub04R/Patient_T2.nii'];
+% patient_file = [dataset_folder, 'Labyrinth.nii'];
 data = load_untouch_nii(patient_file);
 
 img = double(data.img);
 img = img - min(img(:));
 img = img./max(img(:));
 
-% ground_truth_file = [dataset_folder,'Sub04R/GTVT2.nii'];
-ground_truth_file = [dataset_folder, 'Labyrinth-mask.nii'];
+ground_truth_file = [dataset_folder,'Sub04R/GTVT2.nii'];
+% ground_truth_file = [dataset_folder, 'Labyrinth-mask.nii'];
 gt_data = load_untouch_nii(ground_truth_file);
 mask = double(gt_data.img);
 
 
 mkdir(frames_dir);
 
-start_frame = 1;
-resize_scale = 2;
+start_frame = 12;
+resize_scale = 4;
 
 for i = start_frame:size(img,3)
     frameNr = sprintf('%05d', i-start_frame+1);
