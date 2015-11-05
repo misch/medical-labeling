@@ -1,5 +1,5 @@
 %% Define data paths and actions
-dataset = 5;
+dataset = 8;
 [dataset_folder, frames_dir, ~ , frame_height, frame_width, num_frames] = getDatasetDetails(dataset);
 
 if (exist([dataset_folder,'ground_truth-frames'],'dir') > 0)
@@ -19,8 +19,9 @@ create_new_test_set = false;
 if create_new_test_set
     [test_data, test_labels] = createTestData(frames_dir,frame_percentage,ground_truth_dir);
 else
-    frame_no = '00428'; % for dataset 5
-%     frame_no = '00642';
+%     frame_no = '00428'; % for dataset 5
+%     frame_no = '00642'; % for dataset 2
+    frame_no = '00189'; % for dataset 8
     data_id = fopen([dataset_folder,'test_data_frame_',frame_no,'.dat']);
     test_data = fread(data_id,'double');
     fclose(data_id);
@@ -34,6 +35,7 @@ end
 
 %% normalize data (test and training set together!)
 to_normalize = cat(1,processed_ROIs,test_data);
+clear test_data;
 normalized_data = normalizeData(to_normalize);
 clear to_normalize;
 
@@ -86,12 +88,15 @@ end
 %% Test SVM
 disp('Test Cassifier...');
 
-test_data = normalized_data(size(processed_ROIs,1)+1:size(processed_ROIs,1)+size(test_data,1),:);
+test_data = normalized_data(size(processed_ROIs,1)+1:size(processed_ROIs,1)+size(test_labels,1),:);
 
 if strcmp(classifier,'svm')
     [predicted_label, accuracy, scores] = libsvmpredict(test_labels, test_data, model);
 elseif strcmp(classifier,'grad_boost')
     scores = SQBMatrixPredict(model, single(test_data)); 
+    binary_decisions = ((scores >= 0) - 0.5) * 2;
+    good = (binary_decisions == test_labels);
+    accuracy = 100*sum(good)/length(good);
 end
 
 
