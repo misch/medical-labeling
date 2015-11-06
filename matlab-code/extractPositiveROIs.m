@@ -4,6 +4,7 @@ function [positives, nROIs] = extractPositiveROIs(frames_dir, file_names,framePo
 
 key_pressed = (framePositions(:,3) > 0);
 interesting_frames = file_names(key_pressed);
+interesting_frames_indices = find(key_pressed);
 
 frame_dimensions = size(im2double(imread([frames_dir, file_names(1).name])),3);
 
@@ -13,9 +14,10 @@ if (strcmp(ROI_type,'patch'))
     positives = zeros(128, 128, frame_dimensions, length(interesting_frames));
 
     for i = 1:length(interesting_frames)
+       idx = interesting_frames_indices(i);
        image_file = [frames_dir, interesting_frames(i).name]; 
        image = im2double(imread(image_file));
-       positives(:,:,:,i) = getPatchAtPosition(image, flip(framePositions(i,1:2)));
+       positives(:,:,:,i) = getPatchAtPosition(image, flip(framePositions(idx,1:2))); 
     end
    
     if size(positives,3) == 1 % if gray-scale patches

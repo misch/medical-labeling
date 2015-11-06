@@ -6,6 +6,7 @@ function [negatives, nROIs] = extractNegativeROIs(frames_dir, file_names, frameP
 
 key_pressed = (framePositions(:,3) > 0);
 interesting_frames = file_names(key_pressed);
+interesting_frames_indices = find(key_pressed);
 
 frame_dimensions = size(im2double(imread([frames_dir, file_names(1).name])),3);
 
@@ -19,8 +20,8 @@ if (strcmp(ROI_type,'patch'))
     for i = 1:length(interesting_frames)
        image_file = [frames_dir, interesting_frames(i).name] ;
        image = im2double(imread(image_file));
-       
-       [negative_patches_from_frame, nPatches] = getNonOverlappingPatches(image, flip(framePositions(i,1:2)), frame_dimensions);
+       idx = interesting_frames_indices(i);
+       [negative_patches_from_frame, nPatches] = getNonOverlappingPatches(image, flip(framePositions(idx,1:2)), frame_dimensions);
        
        negatives(:,:,:,neg_idx:neg_idx+nPatches-1) = negative_patches_from_frame;
        neg_idx = neg_idx + nPatches;
