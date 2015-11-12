@@ -7,9 +7,10 @@ video_filename = [dataset_folder,'video_uncompressed.avi'];
 store_video_frames          =   false;
 new_eye_tracking_positions  =   false;
 show_eye_tracking_data      =   false;
+create_video_with_dots      =   true;
 extract_new_ROIs            =   false;
 show_ROIs                   =   false;
-preprocessing_ROIs          =   true;
+preprocessing_ROIs          =   false;
 
 %% Store video frames to .png images
 if (store_video_frames)
@@ -34,6 +35,10 @@ if (show_eye_tracking_data)
     showImagesAndEyeTrackingData(video_filename, framePositions);
 end
 
+%% Create video with recorded mouse positions
+if (create_video_with_dots)
+    makeVideoWithDots(frames_dir, framePositions, [dataset_folder, 'video_with_dots.avi']);
+end
 %% Get Regions of Interest (ROI's)
 if (extract_new_ROIs)
 
