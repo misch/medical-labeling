@@ -9,7 +9,7 @@ new_eye_tracking_positions  =   false;
 show_eye_tracking_data      =   false;
 create_video_with_dots      =   true;
 extract_new_ROIs            =   false;
-show_ROIs                   =   false;
+show_ROIs                   =   true;
 preprocessing_ROIs          =   false;
 
 %% Store video frames to .png images

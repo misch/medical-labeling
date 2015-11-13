@@ -21,12 +21,14 @@ if create_new_test_set
 else
 %     frame_no = '00428'; % for dataset 5
 %     frame_no = '00642'; % for dataset 2
+%     data_id = fopen([dataset_folder,'test_data_frame_',frame_no,'.dat']);
     frame_no = '00189'; % for dataset 8
-    data_id = fopen([dataset_folder,'test_data_frame_',frame_no,'.dat']);
+    data_id = fopen([dataset_folder,'test-data/','test_data_frame_',frame_no,'.dat']);
     test_data = fread(data_id,'double');
     fclose(data_id);
     
-    labels_id = fopen([dataset_folder,'test_labels_frame_',frame_no,'.dat']);
+%     labels_id = fopen([dataset_folder,'test_labels_frame_',frame_no,'.dat']);
+    labels_id = fopen([dataset_folder,'test-data/','test_labels_frame_',frame_no,'.dat']);
     test_labels = fread(labels_id,'double');
     fclose(labels_id);
     
@@ -44,7 +46,7 @@ clear to_normalize;
 train_data = normalized_data(1:size(processed_ROIs,1),:);
 train_labels = labels;
 
-classifier = 'grad_boost' % 'svm' or 'grad_boost'
+classifier = 'svm' % 'svm' or 'grad_boost'
 
 if strcmp(classifier,'svm')
     addpath('../libsvm-3.20/libsvm-3.20/matlab/')
