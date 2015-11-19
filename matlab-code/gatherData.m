@@ -1,18 +1,30 @@
-%% Define data paths and actions
-dataset = 8;
+function gatherData(dataset, store_video_frames,new_eye_tracking_positions,show_eye_tracking_data,create_video_with_dots,extract_new_ROIs,show_ROIs,preprocessing_ROIs)
+% This function can be applied when the video and the eye-tracking data is
+% available (see ReadMe for the exact assumed file structure)
+%
+% Parameters:
+%   - dataset: a number that indicates the data set
+%   - store_video_frames: true --> each frame of the input-video is stored to
+%   a frame.
+%   - new_eye-tracking_positions: from an earlier stage, where eye-tracking
+%   positions were simulated with the mouse - currently, this is
+%   recommended to be set to false
+%   - show_eye_tracking_data: boolean; whether or not to show the recorded
+%   gaze positions on an image. Just for visualization, no need to do it.
+%   - create_video_with_dots: booldean; whether or not to create a video to
+%   show the recorded gaze positions. Just for visualization, no need to do
+%   it.
+%   - show_ROIs: whether or not to show an excerpt of the positive and
+%   negative Regions of interest. Just for visualization, no need to do it.
+%   - preprocessing_ROIs: whether or not to preprocess the gathered data;
+%   that is, filtering, converting to gray scale, and shifting to zero mean
 
+% Define data paths and actions
 [dataset_folder, frames_dir, file_names, frame_height, frame_width, num_frames] = getDatasetDetails(dataset);
-video_filename = [dataset_folder,'video_uncompressed.avi'];
+video_filename = [dataset_folder,'video.avi'];
 
-store_video_frames          =   false;
-new_eye_tracking_positions  =   false;
-show_eye_tracking_data      =   false;
-create_video_with_dots      =   true;
-extract_new_ROIs            =   false;
-show_ROIs                   =   true;
-preprocessing_ROIs          =   false;
 
-%% Store video frames to .png images
+% Store video frames to .png images
 if (store_video_frames)
     videoToFrames(video_filename, frames_dir);
 end
