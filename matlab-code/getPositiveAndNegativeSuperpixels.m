@@ -6,8 +6,8 @@ interesting_frames_indices = find(key_pressed);
 
 regularizer = 0.05;
 
-    positives = zeros(42,length(interesting_frames));
-    negatives = zeros(42,0);
+    positives = zeros(length(interesting_frames),42);
+    negatives = zeros(0,42);
     
     for i = 1:length(interesting_frames)
         idx = interesting_frames_indices(i);
@@ -27,7 +27,7 @@ regularizer = 0.05;
         
         positiveSuperPixel = super_img(round(framePositions(idx,2)),round(framePositions(idx,1)));
         
-        positives(:,i) = featureMat(:,positiveSuperPixel);
-        featureMat(:,positiveSuperPixel) = [];
-        negatives = cat(2,negatives,featureMat);
+        positives(i,:) = featureMat(positiveSuperPixel,:);
+        featureMat(positiveSuperPixel,:) = [];
+        negatives = cat(1,negatives,featureMat);
     end
