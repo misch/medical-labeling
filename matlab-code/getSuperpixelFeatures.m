@@ -1,19 +1,19 @@
-function [featureVec] = getSuperpixelFeatures(image, mask)
-% At the moment, fixed amount of 40 bins for the intensity historgram.
-
-% imtool(image)
-% [X,Y] = ind2sub(size(mask),find(mask));
+function [featureMat] = getSuperpixelFeatures(image, super)
+% This function returns a 42xN-matrix, N being the number of superpixels
+% in the image.
+% 
+% At the moment, an amount of 40 bins for the intensity historgram is
+% fixed.
+histogram_bins = 40;
+n_superpixels = max(super(:));
 
 if (size(image,3) == 3)
     image = rgb2gray(image);
 end
 
-values = image(find(mask));
+featureMat = zeros(42, n_superpixels);
 
-intensity_hist = histcounts(values,40);
-intensity_mean = mean(values);
-intensity_var = var(values);
-
-featureVec = [intensity_hist, intensity_mean, intensity_var];
-
-
+for i = 1:n_superpixels
+    values = image(super==i);
+    featureMat(:,i) = [histcounts(values,histogram_bins), mean(values), var(values)]; 
+end
