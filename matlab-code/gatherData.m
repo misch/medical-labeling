@@ -53,10 +53,10 @@ if (create_video_with_dots)
 end
 %% Get Regions of Interest (ROI's)
 if (extract_new_ROIs)
-
-    [positive_ROIs, nPos] = extractPositiveROIs(frames_dir, file_names, framePositions, 'patch');
-    [negative_ROIs, nNeg] = extractNegativeROIs(frames_dir, file_names, framePositions, frame_height, frame_width, 'patch');
-
+    
+    [positive_ROIs, nPos] = extractPositivePatches(frames_dir, file_names, framePositions);
+    [negative_ROIs, nNeg] = extractNegativePatches(frames_dir, file_names, framePositions, frame_height, frame_width, ROI_type);
+ 
     save([dataset_folder,'raw_positiveROIs.mat'],'positive_ROIs','nPos');
     save([dataset_folder,'raw_negativeROIs.mat'], 'negative_ROIs','nNeg','-v7.3');
 else
