@@ -13,12 +13,12 @@ load([dataset_folder, 'superpixelFeatures']);
 
 
 %% get or create test set
-frame_percentage = 0.1; % rough percentage of #test-frames
+frame_percentage = 101; % rough percentage of #test-frames
 
 create_new_test_set = true;
 
 if create_new_test_set
-    [test_data, super_img] = createTestData_superpixels(frames_dir,frame_percentage);
+    [test_data, super_img] = createTestData_superpixels(dataset_folder,frames_dir,frame_percentage);
     test_labels = zeros(size(test_data,1),1);
 else
 %     frame_no = '00428'; % for dataset 5
@@ -159,7 +159,7 @@ positives = sorted_test_labels == 1;
     % Heat map
     figure;
     colormap('hot');   % set colormap
-    imagesc(projected_img);        % draw image and scale colormap to values range
+    imagesc(projected_img); % draw image and scale colormap to values range
     colorbar;          % show color scale
 
     % Binary decisions

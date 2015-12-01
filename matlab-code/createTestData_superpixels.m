@@ -1,4 +1,4 @@
-function [featureMat, super_img] = createTestData_superpixels(frames_dir,frame_percentage)
+function [featureMat, super_img] = createTestData_superpixels(dataset_folder,frames_dir,frame_percentage)
 % test_data contains superpixel-features
 % super_img is needed to back-project predicted labels to the pixels later!
     
@@ -6,8 +6,7 @@ function [featureMat, super_img] = createTestData_superpixels(frames_dir,frame_p
     
     num_frames = length(file_names);
 
-%     frame_indices = find(rand(1,num_frames) <= frame_percentage/100);
-    frame_indices = [189];
+    frame_indices = find(rand(1,num_frames) <= frame_percentage/100);
 
     for idx = frame_indices 
         image_file = [frames_dir, file_names(idx).name];
@@ -23,4 +22,9 @@ function [featureMat, super_img] = createTestData_superpixels(frames_dir,frame_p
         super_img = getSuperPixels(single(lab_image), superpixel_size, 0.05);
         
         featureMat = getSuperpixelFeatures(image, super_img);
+        
+        frameDescriptor = struct('features',featureMat,'superpixels',super_img);
+        
+        frameNr = sprintf('%05d', idx);
+        save([dataset_folder,'superpixel-descriptors/frame_',frameNr,'.mat'], 'frameDescriptor','-v7.3');
     end
