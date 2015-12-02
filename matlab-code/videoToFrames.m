@@ -11,11 +11,11 @@ run 'C:\Program Files\MATLAB\R2010a\VideoUtils_v1_2_4\install.m';
 
 %% load video
 vp = VideoPlayer(video_filename);
-% Todo: for a MATLAB newer than R2010a, use VideoReader!
+% todo: for a MATLAB newer than R2010a, use VideoReader!
 % vidObj = VideoReader(video_filename);
 
 %% Store frames as images
-
+% todo: check if frames_dir exists already; otherwise, create it
 num_frames = vp.NumFrames;
 start_frame = 1;
 h = waitbar(0,'Initializing waitbar...');
