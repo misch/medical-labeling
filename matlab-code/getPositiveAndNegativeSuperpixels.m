@@ -16,7 +16,7 @@ interesting_frames_indices = find(key_pressed);
         
         load(descriptor_file);
         
-        positiveSuperPixel = superpixels(round(framePositions(idx,2)),round(framePositions(idx,1)));
+        positiveSuperPixel = frameDescriptor.superpixels(round(framePositions(idx,2)),round(framePositions(idx,1)));
         
         featureMat = frameDescriptor.features;
         
