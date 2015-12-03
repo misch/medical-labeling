@@ -19,7 +19,9 @@ framePositions(:,2) = framePositions(:,2) * frame_height;
 
 
 %% Get Regions of Interest (ROI's)
-[positive_ROIs, negative_ROIs] = getPositiveAndNegativeSuperpixels(frames_dir,file_names,framePositions);
+disp('In which folder are the descriptors stored?');
+descriptor_dir = uigetdir(dataset_folder);
+[positive_ROIs, negative_ROIs] = getPositiveAndNegativeSuperpixels(descriptor_dir,framePositions);
 
 
 nPos = size(positive_ROIs,1);

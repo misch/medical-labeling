@@ -53,8 +53,7 @@ superpixels = 1;
 
 representations = [0 1];
 
-if any(representations==superpixels)
-    % store superpixels:
+if any(representations==superpixels) % superpixel features
     disp('Choose folder with input frames');
     frames_dir = [uigetdir('../data/'),'/'];
 
