@@ -4,6 +4,10 @@ function writeNiiToFrames(input_filename,frames_dir,scale)
 
     addpath(nifti_path);
 
+    if (exist(frames_dir,'dir') == 0)
+       mkdir(frames_dir) ;
+    end
+    
     data = load_untouch_nii(input_filename);
 
     img = double(data.img);
