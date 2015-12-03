@@ -72,5 +72,11 @@ if (exist(filename,'file') == 0)
        disp('Please add a file framePositions.csv containing the gaze observations!' );
 end
 
+% todo: should I also assemble the training data here?
+%   + pro: all in one - if training data is once created, should be re-used
+%   with different classifiers etc.
+%
+%   - con: will be a major part of the project to acquire sensible training
+%   data and might therefore change rather often.
 
 % 4. Rewrite training and classification script to work on these data.
