@@ -1,5 +1,6 @@
 % Prepare the data
 
+
 % todo: GUI
 video = 0;
 nifti = 1;
@@ -47,13 +48,6 @@ if (input_type == nifti)
 end
 
 
-% todo: If the eye-tracking file is not yet there, tell the user to create it.
-
-% 3. Save the image descriptors to folders
-%   - preprocessed patches, maybe
-%   - superpixel features
-% 0 - patches
-% 1 - superpixels
 patches = 0;
 superpixels = 1;
 
@@ -67,9 +61,16 @@ if any(representations==superpixels)
     disp('Choose folder to store superpixel descriptors');
     superpixel_dir = [uigetdir('../data/'),'/'];
 
-    createTestData_superpixels(frames_dir,superpixel_dir,101)
+    createTestData_superpixels(frames_dir,superpixel_dir,5)
 end
 
+
+% Check whether eye-tracking file is there.
+filename = [path, 'framePositions.csv'];
+
+if (exist(filename,'file') == 0)
+       disp('Please add a file framePositions.csv containing the gaze observations!' );
+end
 
 
 % 4. Rewrite training and classification script to work on these data.
