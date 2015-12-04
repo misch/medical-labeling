@@ -1,81 +1,92 @@
 % Prepare the data
+choice = questdlg(  'Do you wanna store the data to input-frames?',... % question
+                    'generate input-frames (.png)',... % title
+                    'Yes, generate the .png files', 'No, they already exist',... % answers
+                    'Yes, generate the .png files'); % default answer
 
-
-% todo: GUI
-video = 0;
-nifti = 1;
-
-input_type = 1; % 0 = video, 1 = .nii
-
-% video input: write video frames
-if (input_type == video)
-    disp('Choose input video (.avi)');
-    [filename, path] = uigetfile('../data/*.avi');
-    if(filename ~= 0)
-        videoToFrames([path,filename], [path,'input-frames/']);
-    else
-        disp('No input file chosen. Aborting script...')
-        return
-    end
+if (choice(1) == 'Y')
     
-    disp('Choose ground-truth file (.avi)');
-    [filename, path] = uigetfile('../data/*.avi');
-    if(filename ~= 0)
-        videoToFrames([path,filename], [path,'ground_truth-frames/']);
+    choice = questdlg(  'What kinda data?',... % question
+                    'data',... % title
+                    'Video (.avi)', 'NIfTI (.nii)','Cancel',... % answers
+                    'NIfTI (.nii)'); % default answer
+    
+    if strcmp(choice(1:5), 'Video')
+        disp('Choose input video (.avi)');
+        [filename, data_path] = uigetfile('../data/*.avi');
+        if(filename ~= 0)
+            videoToFrames([data_path,filename], [data_path,'input-frames/']);
+        else
+            disp('No input file chosen. Aborting script...')
+            return
+        end
+
+        disp('Choose ground-truth file (.avi)');
+        [filename, data_path] = uigetfile('../data/*.avi');
+        if(filename ~= 0)
+            videoToFrames([data_path,filename], [data_path,'ground_truth-frames/']);
+        end
+
+    % nifti input: write 3D slices to frames and create video
+    elseif strcmp(choice(1:5), 'NIfTI')
+        disp('Choose input file (.nii)');
+        [filename, data_path] = uigetfile('../data/*.nii');
+
+        if(filename ~= 0)
+            writeNiiToFrames([data_path,filename],[data_path,'input-frames/'],4);
+        else
+            disp('No input file chosen. Aborting script...')
+            return
+        end 
+
+        video_filename = [data_path,'video.avi'];
+        writeFramesToVideo([data_path,'input-frames/'], video_filename, 10);
+
+        disp('Choose ground truth file (.nii)');
+        [filename, data_path] = uigetfile('../data/*.nii');
+        if(filename ~= 0)
+            writeNiiToFrames([data_path,filename],[data_path,'ground_truth-frames/'],4);
+        end
+    else
+        disp('Aborting script...');
+        return
     end
 end
 
-% nifti input: write 3D slices to frames and create video
-if (input_type == nifti)
-    disp('Choose input file (.nii)');
-    [filename, path] = uigetfile('../data/*.nii');
-    
-    if(filename ~= 0)
-        writeNiiToFrames([path,filename],[path,'input-frames/'],4);
-    else
-        disp('No input file chosen. Aborting script...')
-        return
-    end 
-   
-    video_filename = [path,'video.avi'];
-    writeFramesToVideo([path,'input-frames/'], video_filename, 10);
-    
-    disp('Choose ground truth file (.nii)');
-    [filename, path] = uigetfile('../data/*.nii');
-    if(filename ~= 0)
-        writeNiiToFrames([path,filename],[path,'ground_truth-frames/'],4);
-    end 
-end
-
-
-patches = 0;
-superpixels = 1;
-
-representations = [0 1];
-
-if any(representations==superpixels) % superpixel features
+choice = questdlg(  'What kind of descriptor do you wanna generate?',... % question
+                    'Generate descriptor',... % title
+                    'superpixels', 'cancel',... % answers
+                    'superpixels'); % default answer
+                    
+if strcmp(choice,'superpixels') % superpixel features
     disp('Choose folder with input frames');
-    frames_dir = [uigetdir('../data/'),'/'];
+    frames_dir = [uigetdir('../data/')];
+    if (frames_dir == 0)
+        disp('No directory chosen. Aborting script...');
+        return
+    else
+        frames_dir = [frames_dir,'/'];
+    end
 
     disp('Choose folder to store superpixel descriptors');
     superpixel_dir = [uigetdir('../data/'),'/'];
+    
+    if (superpixel_dir == 0)
+        disp('No directory chosen. Aborting script...');
+        return
+    else
+        superpixel_dir = [superpixel_dir, '/'];
+    end
 
-    createTestData_superpixels(frames_dir,superpixel_dir,5)
+    createTestData_superpixels(frames_dir,superpixel_dir,101,300);
+else
+    return
 end
 
 
 % Check whether eye-tracking file is there.
-filename = [path, 'framePositions.csv'];
+filename = [data_path, 'framePositions.csv'];
 
 if (exist(filename,'file') == 0)
        disp('Please add a file framePositions.csv containing the gaze observations!' );
 end
-
-% todo: should I also assemble the training data here?
-%   + pro: all in one - if training data is once created, should be re-used
-%   with different classifiers etc.
-%
-%   - con: will be a major part of the project to acquire sensible training
-%   data and might therefore change rather often.
-
-% 4. Rewrite training and classification script to work on these data.

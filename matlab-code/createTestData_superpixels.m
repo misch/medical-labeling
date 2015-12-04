@@ -1,4 +1,4 @@
-function [featureMat, super_img] = createTestData_superpixels(frames_dir,superpixel_dir,frame_percentage)
+function [featureMat, super_img] = createTestData_superpixels(frames_dir,superpixel_dir,frame_percentage, regularizer)
 % test_data contains superpixel-features
 % super_img is needed to back-project predicted labels to the pixels later!
     
@@ -18,7 +18,7 @@ function [featureMat, super_img] = createTestData_superpixels(frames_dir,superpi
         end
         
         superpixel_size = round(min([size(image,1), size(image,2)]) / 11.5);
-        super_img = getSuperPixels(single(lab_image), superpixel_size, 0.05);
+        super_img = getSuperPixels(single(lab_image), superpixel_size, regularizer);
         
         featureMat = getSuperpixelFeatures(image, super_img);
         

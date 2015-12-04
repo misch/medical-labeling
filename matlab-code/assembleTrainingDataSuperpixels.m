@@ -8,7 +8,7 @@ function assembleTrainingDataSuperpixels(dataset)
 
 
 % Define data paths and actions
-[dataset_folder, frames_dir, file_names, frame_height, frame_width] = getDatasetDetails(dataset);
+[dataset_folder, ~, ~, frame_height, frame_width] = getDatasetDetails(dataset);
 
 
 % Get Eye-Tracking information
