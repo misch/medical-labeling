@@ -55,7 +55,7 @@ end
 
 choice = questdlg(  'What kind of descriptor do you wanna generate?',... % question
                     'Generate descriptor',... % title
-                    'superpixels', 'cancel',... % answers
+                    'superpixels','patches','cancel',... % answers
                     'superpixels'); % default answer
                     
 if strcmp(choice,'superpixels') % superpixel features
@@ -79,6 +79,39 @@ if strcmp(choice,'superpixels') % superpixel features
     end
 
     createTestData_superpixels(frames_dir,superpixel_dir,101,300);
+elseif strcmp(choice,'patches')
+    disp('Choose folder with input frames');
+    frames_dir = [uigetdir('../data/')];
+    if (frames_dir == 0)
+        disp('No directory chosen. Aborting script...');
+        return
+    else
+        frames_dir = [frames_dir,'/'];
+    end
+
+    
+    disp('Choose folder with ground truth frames');
+    gt_dir = [uigetdir('../data/')];
+    if (gt_dir  == 0)
+        disp('No directory chosen. Aborting script...');
+        return
+    else
+        gt_dir = [gt_dir ,'/'];
+    end
+
+    
+    
+    disp('Choose folder to store patch descriptors');
+    descriptor_dir = [uigetdir('../data/'),'/'];
+    
+    if (descriptor_dir == 0)
+        disp('No directory chosen. Aborting script...');
+        return
+    else
+        descriptor_dir = [descriptor_dir, '/'];
+    end
+
+    createTestData(frames_dir,descriptor_dir,101,gt_dir);
 else
     return
 end

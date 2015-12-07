@@ -1,4 +1,4 @@
-function [test_data, test_labels] = createTestData(frames_dir,frame_percentage,ground_truth_dir)
+function [test_data, test_labels] = createTestData(frames_dir,descriptor_dir,frame_percentage,ground_truth_dir)
 
     ground_truth_dir_exists = (ground_truth_dir ~= 0);
     
@@ -10,13 +10,15 @@ function [test_data, test_labels] = createTestData(frames_dir,frame_percentage,g
 
     num_frames = length(file_names);
     frame_indices = find(rand(1,num_frames) <= frame_percentage/100);
+    frame_indices = [655];
 
     ref_frame = imread([frames_dir,file_names(1).name]);
 
-    test_frames = zeros([size(ref_frame,1), size(ref_frame,2), length(frame_indices)]);
+    test_frames = zeros([size(ref_frame,1), size(ref_frame,2), length(frame_indices)]);    
     ground_truth_frames = zeros([size(ref_frame,1), size(ref_frame,2), length(frame_indices)]);
+    
     i = 1;
-    frame_indices = [189];
+
     for idx = frame_indices 
         image_file = [frames_dir, file_names(idx).name];
         image = getGrayScaleImage(image_file);
@@ -46,24 +48,30 @@ function [test_data, test_labels] = createTestData(frames_dir,frame_percentage,g
         else
             [test_data, test_labels] = extractPatchesAndLabels(test_frames(:,:,frame),ground_truth_frames(:,:,frame));
         end
-                
+        
+        disp('reshaping...');
         test_data = reshape(test_data,size(test_data,1)*size(test_data,2),[])';
+        disp('reshaped.');
     
         % to get the 32x32-images back:
         % reshape(test_data',32,32,[])
         
-        out_data = ['test_data_',file_names(frame_indices(frame)).name]
-        data_file = [out_data(1:end-4),'.dat'];
+%         out_data = ['test_data_',file_names(frame_indices(frame)).name]
+%         data_file = [out_data(1:end-4),'.dat'];
+%         
+%         data_id = fopen(data_file,'w');
+%         fwrite(data_id,test_data,'double');
+%         fclose(data_id);
         
-        data_id = fopen(data_file,'w');
-        fwrite(data_id,test_data,'double');
-        fclose(data_id);
-
-        out_labels = ['test_labels_',file_names(frame_indices(frame)).name]
-        labels_file = [out_labels(1:end-4),'.dat'];
-        labels_id = fopen(labels_file,'w');
-        fwrite(labels_id,test_labels,'double');
-        fclose(labels_id);
+        disp('Creating frame descriptor...');
+        frameDescriptor = struct('features',test_data,'groundTruthLabels', test_labels);
+        disp('created frameDescriptor');
+        save([descriptor_dir,'frame_',sprintf('%05d', frame_indices(frame)),'.mat'], 'frameDescriptor','-v7.3')
+%         out_labels = ['test_labels_',file_names(frame_indices(frame)).name]
+%         labels_file = [out_labels(1:end-4),'.dat'];
+%         labels_id = fopen(labels_file,'w');
+%         fwrite(labels_id,test_labels,'double');
+%         fclose(labels_id);
         
         waitbar(frame/size(test_frames,3));
     end

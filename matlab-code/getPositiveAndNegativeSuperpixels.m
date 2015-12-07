@@ -1,7 +1,7 @@
 function [positives, negatives] = getPositiveAndNegativeSuperpixels(descriptors_dir, framePositions)
 % From descriptors and gaze positions, extract positive and negative descriptors.
 
-file_names = dir(descriptors_dir);
+file_names = dir([descriptors_dir,'*.mat']);
 key_pressed = (framePositions(:,3) > 0);
 interesting_frames = file_names(key_pressed);
 interesting_frames_indices = find(key_pressed);
