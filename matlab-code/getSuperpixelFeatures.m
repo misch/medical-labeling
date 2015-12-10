@@ -11,9 +11,11 @@ if (size(image,3) == 3)
     image = rgb2gray(image);
 end
 
-featureMat = zeros(n_superpixels,42);
+featureMat = zeros(n_superpixels,106);
+
+glcm = graycomatrix(image);
 
 for i = 1:n_superpixels
     values = image(super==i);
-    featureMat(i,:) = [histcounts(values,histogram_bins), mean(values), var(values)]; 
+    featureMat(i,:) = [histcounts(values,histogram_bins), mean(values), var(values), glcm(:)']; 
 end
