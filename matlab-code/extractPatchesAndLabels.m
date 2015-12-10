@@ -20,14 +20,17 @@ patches = zeros(32, 32, num_patches);
 ground_truth = zeros(num_patches,1);
 
 i = 1;
+h2 = waitbar(0,'Extract patches...');
 for y = boundary_top_left:width-boundary_bot_right
     for x = boundary_top_left:height-boundary_bot_right
         test_data = getPatchAtPosition(image, [x,y]);
         patches(:,:,i) = process_ROI(test_data);
         ground_truth(i) = ground_truth_image(x,y);
         i = i + 1;
+        waitbar(i/(length(boundary_top_left:width-boundary_bot_right) * length(boundary_top_left:height-boundary_bot_right)));
     end
 end
+close(h2);
 
 
 
