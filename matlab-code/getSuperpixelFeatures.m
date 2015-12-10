@@ -11,11 +11,13 @@ if (size(image,3) == 3)
     image = rgb2gray(image);
 end
 
-featureMat = zeros(n_superpixels,106);
+featureMat = zeros(n_superpixels,105);
 
-glcm = graycomatrix(image);
+
 
 for i = 1:n_superpixels
-    values = image(super==i);
-    featureMat(i,:) = [histcounts(values,histogram_bins), mean(values), var(values), glcm(:)']; 
+    mask = super == i;
+    glcm = reshape(graycomatrix(image.*mask),1,[]);
+    values = image(mask);
+    featureMat(i,:) = [histcounts(values,histogram_bins), mean(values), var(values), glcm(2:end)]; 
 end
