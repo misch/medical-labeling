@@ -1,5 +1,8 @@
-function [test_data, test_labels] = createTestData(frames_dir,descriptor_dir,frame_percentage,ground_truth_dir)
-
+function [test_data, test_labels] = createTestData_patches(frames_dir,descriptor_dir,frame_percentage,ground_truth_dir)
+% This function doesn't use the precomputed patch descriptors because for
+% most datasets, not all of them are computed and therefore the positive
+% and negative patches for the interesting frames are extracted here
+% directly from the images.
     ground_truth_dir_exists = (ground_truth_dir ~= 0);
     
     file_names = dir([frames_dir, '*.png']);
@@ -55,22 +58,10 @@ function [test_data, test_labels] = createTestData(frames_dir,descriptor_dir,fra
         % to get the 32x32-images back:
         % reshape(test_data',32,32,[])
         
-%         out_data = ['test_data_',file_names(frame_indices(frame)).name]
-%         data_file = [out_data(1:end-4),'.dat'];
-%         
-%         data_id = fopen(data_file,'w');
-%         fwrite(data_id,test_data,'double');
-%         fclose(data_id);
-        
         disp('Creating frame descriptor...');
         frameDescriptor = struct('features',test_data,'groundTruthLabels', test_labels);
         disp('created frameDescriptor');
         save([descriptor_dir,'frame_',sprintf('%05d', frame_indices(frame)),'.mat'], 'frameDescriptor','-v7.3')
-%         out_labels = ['test_labels_',file_names(frame_indices(frame)).name]
-%         labels_file = [out_labels(1:end-4),'.dat'];
-%         labels_id = fopen(labels_file,'w');
-%         fwrite(labels_id,test_labels,'double');
-%         fclose(labels_id);
         
         disp(sprintf('%02d/%02d',frame,size(test_frames,3)));
     end
