@@ -10,7 +10,7 @@ function [test_data, test_labels] = createTestData(frames_dir,descriptor_dir,fra
 
     num_frames = length(file_names);
     frame_indices = find(rand(1,num_frames) <= frame_percentage/100);
-    frame_indices = [655];
+    frame_indices = [105:50:655];
 
     ref_frame = imread([frames_dir,file_names(1).name]);
 
@@ -35,7 +35,6 @@ function [test_data, test_labels] = createTestData(frames_dir,descriptor_dir,fra
         i = i + 1;
     end
 
-    h = waitbar(0,'Create huge test sets');
     for frame = 1:size(test_frames,3)
         if (~ground_truth_dir_exists)
             [FileName,PathName] = uigetfile('../data/*.png',['Select a ground truth file for ',file_names(frame_indices(frame))]);
@@ -73,6 +72,5 @@ function [test_data, test_labels] = createTestData(frames_dir,descriptor_dir,fra
 %         fwrite(labels_id,test_labels,'double');
 %         fclose(labels_id);
         
-        waitbar(frame/size(test_frames,3));
+        disp(sprintf('%02d/%02d',frame,size(test_frames,3)));
     end
-    close(h);
