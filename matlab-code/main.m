@@ -1,13 +1,14 @@
 %% new main structure:
 
-run prepareData
+% run prepareData
 
 dataset = 2;
 	
-assembleTrainingDataSuperpixels(dataset);
+% assembleTrainingDataSuperpixels(dataset);
+% assembleTrainingDataPatches(dataset);
 
-classifier = 'svm'
+classifier = 'svm';
 model = trainClassifier(dataset, classifier);
 
-testSuperpixelClassifier(model, dataset, [105:50:655], classifier);
-% - run testing / evaluation
+% testSuperpixelClassifier(model, dataset, [105:50:655], classifier);
+testPatchClassifier(model,dataset,[105:50:655], classifier);

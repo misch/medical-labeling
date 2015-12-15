@@ -12,6 +12,7 @@ disp('Test Classifier...');
 
 height = frame_height - 127;
 
+all_scores = [];
 test_labels = [];
 for frame = test_frames
     frame_no = sprintf('%05d', frame); 
@@ -25,8 +26,9 @@ for frame = test_frames
         scores = SQBMatrixPredict(model, single(test_data)); 
     end
 
+    all_scores = cat(1,all_scores,scores);
     gt = frameDescriptor.groundTruthLabels;
-
+    test_labels = cat(1,test_labels,gt);
 
     final_image_scores = reshape(scores, height, []);
     
@@ -51,8 +53,8 @@ end
 
 % At the very end, only once per bunch of frames                            
 disp('Show performance measures...');
-    Ntest = size(scores,1);
-    [~,idx] = sort(scores,'descend');
+    Ntest = size(all_scores,1);
+    [~,idx] = sort(all_scores,'descend');
     sorted_test_labels = test_labels(idx);
     positives = sorted_test_labels == 1;
 
@@ -71,6 +73,7 @@ disp('Show performance measures...');
     title('precision-recall curve');
     xlabel('Recall');
     ylabel('Precision');
+    save('PR.mat','precision','recall','-v7.3');
 
 % Receiver Operating Characteristic curve (ROC)
 % FPR = FP / (FP + TN) = FP/#{negatives}
@@ -82,3 +85,4 @@ disp('Show performance measures...');
     title('ROC curve');
     xlabel('False Positive Rate');
     ylabel('True Positive Rate');
+    save('ROC.mat','false_positive_rate','recall','-v7.3');

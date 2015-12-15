@@ -21,7 +21,7 @@ extract_new_ROIs = true; % can be changed if, for some reason, only the preproce
 if (extract_new_ROIs)
     
     [positive_ROIs, nPos] = extractPositivePatches(frames_dir, file_names, framePositions);
-    [negative_ROIs, nNeg] = extractNegativePatches(frames_dir, file_names, framePositions, frame_height, frame_width, ROI_type);
+    [negative_ROIs, nNeg] = extractNegativePatches(frames_dir, file_names, framePositions, frame_height, frame_width);
  
     save([dataset_folder,'raw_positiveROIs.mat'],'positive_ROIs','nPos');
     save([dataset_folder,'raw_negativeROIs.mat'], 'negative_ROIs','nNeg','-v7.3');
