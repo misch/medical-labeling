@@ -21,6 +21,7 @@ for frame = test_frames
 
     if strcmp(classifier,'svm')
         [~,~, scores] = libsvmpredict(ones(size(test_data,1),1), test_data, model);
+%         [~,scores] = predict(model,test_data);
     elseif strcmp(classifier,'grad_boost')
         scores = SQBMatrixPredict(model, single(test_data)); 
     end
