@@ -16,7 +16,7 @@ test_labels = [];
 for frame = test_frames
     frame_no = sprintf('%05d', frame); 
     
-    load([dataset_folder,'superpixel-descriptors/','frame_',frame_no]);
+    load([dataset_folder,'superpixel-coocc-descriptors/','frame_',frame_no]);
     test_data = frameDescriptor.features;
 
     if strcmp(classifier,'svm')

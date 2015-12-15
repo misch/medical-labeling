@@ -4,7 +4,7 @@ function [model] = trainClassifier(dataset, classifier)
 
 [dataset_folder] = getDatasetDetails(dataset);
 
-load([dataset_folder, 'trainingSuperpixels']);
+load([dataset_folder, 'trainingSuperpixelsCoocc']);
 
 train_data = processed_ROIs; clear processed_ROIs;
 train_labels = labels; clear labels;
@@ -32,8 +32,8 @@ if strcmp(classifier,'svm')
         end
     else % Perform real training
         disp('Train SVM classifier...');
-        [train_data, train_labels] = getFiftyFiftySamples(train_data,train_labels);
-        model = libsvmtrain(train_labels,train_data,'-t 2 -g 0.0625 -c 20');
+%         [train_data, train_labels] = getFiftyFiftySamples(train_data,train_labels);
+        model = libsvmtrain(train_labels,train_data,'-t 2 -g 0.0625 -c 0.9');
     end
 elseif strcmp(classifier,'grad_boost')
    addpath('../sqb-0.1/build/');

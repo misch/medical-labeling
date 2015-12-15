@@ -7,8 +7,10 @@ interesting_frames = file_names(key_pressed);
 interesting_frames_indices = find(key_pressed);
 
     
-    positives = zeros(length(interesting_frames),42);
-    negatives = zeros(0,42);
+%     positives = zeros(length(interesting_frames),42); % without co-occurence
+    positives = zeros(length(interesting_frames),105); % with co-occurence
+%     negatives = zeros(0,42); % without co-occurence
+negatives = zeros(0,105); % with co-occurence
     
     for i = 1:length(interesting_frames)
         idx = interesting_frames_indices(i);
