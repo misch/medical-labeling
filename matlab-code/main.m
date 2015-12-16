@@ -10,5 +10,5 @@ dataset = 2;
 classifier = 'svm';
 model = trainClassifier(dataset, classifier);
 
-% testSuperpixelClassifier(model, dataset, [105:50:655], classifier);
-testPatchClassifier(model,dataset,[105:50:655], classifier);
+testSuperpixelClassifier(model, dataset, [105:50:655], classifier);
+% testPatchClassifier(model,dataset,[105:50:655], classifier);

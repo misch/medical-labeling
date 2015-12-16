@@ -32,8 +32,9 @@ if strcmp(classifier,'svm')
         end
     else % Perform real training
         disp('Train SVM classifier...');
-%         [train_data, train_labels] = getFiftyFiftySamples(train_data,train_labels);
-        model = libsvmtrain(train_labels,train_data,'-t 2 -g 0.0625 -c 0.9');
+        [train_data, train_labels] = getFiftyFiftySamples(train_data,train_labels);
+        model = libsvmtrain(train_labels,train_data,'-t 2 -g 0.0625 -c 8');
+%         model = fitcsvm(train_data, train_labels,'KernelFunction','RBF','KernelScale','auto');
     end
 elseif strcmp(classifier,'grad_boost')
    addpath('../sqb-0.1/build/');
