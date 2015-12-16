@@ -18,11 +18,12 @@ negatives = zeros(0,105); % with co-occurence
         
         load(descriptor_file);
         
-        positiveSuperPixel = frameDescriptor.superpixels(round(framePositions(idx,2)),round(framePositions(idx,1)));
+        % idx of found superpixel + 1 (superpixel-idx starts at 0)
+        positiveSuperPixel_idx = 1+frameDescriptor.superpixels(round(framePositions(idx,2)),round(framePositions(idx,1)));
         
         featureMat = frameDescriptor.features;
         
-        positives(i,:) = featureMat(positiveSuperPixel,:);
-        featureMat(positiveSuperPixel,:) = [];
+        positives(i,:) = featureMat(positiveSuperPixel_idx,:);
+        featureMat(positiveSuperPixel_idx,:) = [];
         negatives = cat(1,negatives,featureMat);
     end

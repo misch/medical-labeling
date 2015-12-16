@@ -29,8 +29,8 @@ for frame = test_frames
     super_img = frameDescriptor.superpixels;
 
     projected_img = zeros(size(super_img));
-    for i = 1:(max(super_img(:)))
-        projected_img(super_img == i) = scores(i);
+    for i = 0:(max(super_img(:)))
+        projected_img(super_img == i) = scores(i+1);
     end
 
     projected_scores = cat(1,projected_scores,projected_img(:)); % add new scores to already existing thing
