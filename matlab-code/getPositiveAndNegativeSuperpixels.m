@@ -6,11 +6,11 @@ key_pressed = (framePositions(:,3) > 0);
 interesting_frames = file_names(key_pressed);
 interesting_frames_indices = find(key_pressed);
 
+    feature_dim = 42 % without co-occurrence
+%     feature_dim = 106 % with co-occurrence
     
-%     positives = zeros(length(interesting_frames),42); % without co-occurence
-    positives = zeros(length(interesting_frames),105); % with co-occurence
-%     negatives = zeros(0,42); % without co-occurence
-negatives = zeros(0,105); % with co-occurence
+    positives = zeros(length(interesting_frames),feature_dim);
+    negatives = zeros(0,feature_dim);
     
     for i = 1:length(interesting_frames)
         idx = interesting_frames_indices(i);
@@ -27,3 +27,6 @@ negatives = zeros(0,105); % with co-occurence
         featureMat(positiveSuperPixel_idx,:) = [];
         negatives = cat(1,negatives,featureMat);
     end
+    
+    negatives = negatives(find(~sum(isnan(negatives),2)),:);
+    positives = negatives(find(~sum(isnan(positives),2)),:);
