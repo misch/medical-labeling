@@ -30,5 +30,6 @@ nNeg = size(negative_ROIs,1);
 processed_ROIs = cat(1,positive_ROIs, negative_ROIs);
 labels = [ones(nPos,1); -ones(nNeg,1)];
 
-save([dataset_folder,'trainingSuperpixels.mat'],'processed_ROIs', 'labels');
-disp(['Saved training data to: ', dataset_folder, 'trainingSuperpixels.mat']);
+filename = 'trainingSuperpixels.mat';
+save([dataset_folder,filename],'processed_ROIs', 'labels');
+disp(['Saved training data to: ', dataset_folder, filename]);

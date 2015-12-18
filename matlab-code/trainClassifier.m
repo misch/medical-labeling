@@ -1,10 +1,10 @@
-function [model] = trainClassifier(dataset, classifier)
+function [model] = trainClassifier(dataset, classifier, training_file)
 % dataset: a number that indicates what dataset should be considered
 % classifier: 'svm' or 'grad_boost'
 
 [dataset_folder] = getDatasetDetails(dataset);
 
-load([dataset_folder, 'trainingSuperpixelsCoocc']);
+load([dataset_folder, training_file]);
 
 train_data = processed_ROIs; clear processed_ROIs;
 train_labels = labels; clear labels;

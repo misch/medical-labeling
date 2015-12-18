@@ -7,8 +7,8 @@ dataset = 2;
 % assembleTrainingDataSuperpixels(dataset);
 % assembleTrainingDataPatches(dataset);
 
-classifier = 'svm';
-model = trainClassifier(dataset, classifier);
+classifier = 'grad_boost';
+model = trainClassifier(dataset, classifier, 'trainingSuperpixels');
 
 testSuperpixelClassifier(model, dataset, [105:50:655], classifier);
 % testPatchClassifier(model,dataset,[105:50:655], classifier);
