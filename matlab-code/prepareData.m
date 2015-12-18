@@ -112,11 +112,3 @@ elseif strcmp(choice,'patches')
 else
     return
 end
-
-
-% Check whether eye-tracking file is there.
-filename = [data_path, 'framePositions.csv'];
-
-if (exist(filename,'file') == 0)
-       disp('Please add a file framePositions.csv containing the gaze observations!' );
-end

@@ -4,15 +4,14 @@ function [featureMat] = getSuperpixelFeatures(image, super)
 % 
 % At the moment, an amount of 40 bins for the intensity historgram is
 % fixed.
-histogram_bins = 40;
+histogram_bins = 10;
 n_superpixels = max(super(:))+1; % indexing starts at 0
 
 if (size(image,3) == 3)
     image = rgb2gray(image);
 end
 
-% featureMat = zeros(n_superpiclcxels,106);
-featureMat = zeros(n_superpixels,42);
+featureMat = zeros(n_superpixels,76);
 
 
 
@@ -22,7 +21,6 @@ for i = 0:n_superpixels-1
     values = image(mask);
     
     if (~isempty(values))
-%         featureMat(i+1,:) = [histcounts(values,histogram_bins), mean(values), var(values), glcm(:)]; 
-      featureMat(i+1,:) = [histcounts(values,histogram_bins), mean(values), var(values)]; 
+        featureMat(i+1,:) = [histcounts(values,histogram_bins), mean(values), var(values), glcm(:)']; 
     end
 end
