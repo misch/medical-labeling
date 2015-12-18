@@ -1,4 +1,4 @@
-function assembleTrainingDataPatches(dataset)
+function assembleTrainingDataPatches(dataset, output_filename)
 % This function can be applied when the input- and ground-truth-frames and
 % the eye-tracking data are available (use script "prepareData" to make
 % everything ready).
@@ -69,5 +69,5 @@ end
 close(h)
 
 labels = [ones(nPos,1); -ones(nNeg,1)];
-save([dataset_folder,'trainingPatches.mat'],'processed_ROIs', 'labels');
-disp(['Saved training data to: ', dataset_folder, 'trainingPatches.mat']);
+save([dataset_folder,output_filename],'processed_ROIs', 'labels');
+disp(['Saved training data to: ', dataset_folder, output_filename]);

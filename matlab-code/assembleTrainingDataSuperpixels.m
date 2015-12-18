@@ -1,4 +1,4 @@
-function assembleTrainingDataSuperpixels(dataset)
+function assembleTrainingDataSuperpixels(dataset,output_filename)
 % This function can be applied when the video and the eye-tracking data is
 % available (see ReadMe for the exact assumed file structure)
 %
@@ -30,6 +30,6 @@ nNeg = size(negative_ROIs,1);
 processed_ROIs = cat(1,positive_ROIs, negative_ROIs);
 labels = [ones(nPos,1); -ones(nNeg,1)];
 
-filename = 'trainingSuperpixels.mat';
-save([dataset_folder,filename],'processed_ROIs', 'labels');
-disp(['Saved training data to: ', dataset_folder, filename]);
+
+save([dataset_folder,output_filename],'processed_ROIs', 'labels');
+disp(['Saved training data to: ', dataset_folder, output_filename]);

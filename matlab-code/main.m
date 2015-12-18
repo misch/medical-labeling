@@ -4,8 +4,8 @@
 
 dataset = 2;
 	
-% assembleTrainingDataSuperpixels(dataset);
-% assembleTrainingDataPatches(dataset);
+assembleTrainingDataSuperpixels(dataset,'trainingSuperpixelsCoocc.mat');
+assembleTrainingDataPatches(dataset,'trainingPatches.mat');
 
 classifier = 'grad_boost';
 model = trainClassifier(dataset, classifier, 'trainingSuperpixels');
