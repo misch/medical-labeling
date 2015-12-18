@@ -29,4 +29,4 @@ interesting_frames_indices = find(key_pressed);
     end
     
     negatives = negatives(find(~sum(isnan(negatives),2)),:);
-    positives = negatives(find(~sum(isnan(positives),2)),:);
+    positives = positives(find(~sum(isnan(positives),2)),:);
