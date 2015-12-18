@@ -30,3 +30,9 @@ interesting_frames_indices = find(key_pressed);
     
     negatives = negatives(find(~sum(isnan(negatives),2)),:);
     positives = positives(find(~sum(isnan(positives),2)),:);
+    
+    % new method doesn't anymore fill NaN-value but leaves all the values
+    % at zero. need to check both because some generated descriptors still
+    % include NaNs
+    negatives = negatives(any(negatives,2),:);
+    positives = positives(any(positives,2),:);
