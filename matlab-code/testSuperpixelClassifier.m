@@ -53,7 +53,7 @@ for frame = test_frames
 
     % Binary decisions
     f(2) = figure;
-    imshow(projected_img>=0);
+    imshow(projected_img>0);
 
     % Ground truth
     f(3) = figure;
@@ -65,7 +65,7 @@ end
                             
 
 % At the very end, only once per bunch of frames                            
-disp('Show performance measures...');
+% disp('Show performance measures...');
     Ntest = size(projected_scores,1);
     [~,idx] = sort(projected_scores,'descend');
     sorted_test_labels = test_labels(idx);
@@ -86,6 +86,7 @@ disp('Show performance measures...');
     title('precision-recall curve');
     xlabel('Recall');
     ylabel('Precision');
+    save('PR.mat','precision','recall','-v7.3');
 
 % Receiver Operating Characteristic curve (ROC)
 % FPR = FP / (FP + TN) = FP/#{negatives}
@@ -97,3 +98,4 @@ disp('Show performance measures...');
     title('ROC curve');
     xlabel('False Positive Rate');
     ylabel('True Positive Rate');
+    save('ROC.mat','false_positive_rate','recall','-v7.3');
