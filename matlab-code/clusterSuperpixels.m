@@ -1,4 +1,7 @@
 % This script will collect positive superpixels and cluster them.
+%
+% Todo: make it nicer for other datasets, somehow visualize WHICH
+% superpixels have not been seen
 
 %% get some positive superpixels:
 
@@ -7,7 +10,7 @@ file_names = dir([ground_truth_dir, '*.png']);
 
 num_frames = length(file_names);
 
-frame_percentage = 20;
+frame_percentage = 50;
 frame_indices = find(rand(1,num_frames) <= frame_percentage/100);
 
 frames_dir = '../data/Dataset2/input-frames/';
@@ -43,4 +46,42 @@ for idx = frame_indices
 end
 
 %% Cluster them
-[pc,score] = p[pc,score] = princomp(positive_descriptors);rincomp(positive_descriptors);
+[pc,score] = pca(positive_descriptors,'NumComponents',3);
+
+[idx, centers] = kmeans(positive_descriptors,3);
+cols = [(idx ==1), (idx==2), (idx==3)];
+figure; scatter3(score(:,1),score(:,2),score(:,3),[],cols);
+title('3 clusters, visualized using 3 principal components');
+
+figure; scatter(score(:,1), score(:,2), [], cols);
+title('3 clusters, visualized using 2 principal components'); 
+
+%% Get the gaze-superpixels
+% Define data paths and actions
+[dataset_folder, ~, ~, frame_height, frame_width] = getDatasetDetails(2);
+
+
+% Get Eye-Tracking information
+filename = [dataset_folder, 'framePositions.csv'];
+framePositions = readCSVFile(filename);
+framePositions(:,1) = framePositions(:,1) * frame_width;
+framePositions(:,2) = framePositions(:,2) * frame_height;
+
+[positives,~] = getPositiveAndNegativeSuperpixels(superpixel_dir, framePositions);
+
+dist1 = sqrt(sum( (positives-repmat(centers(1,:),size(positives,1),1)).^2 ,2));
+dist2 = sqrt(sum( (positives-repmat(centers(2,:),size(positives,1),1)).^2 ,2));
+dist3 = sqrt(sum( (positives-repmat(centers(3,:),size(positives,1),1)).^2 ,2));
+
+% for each gaze point:
+% M = distance to closest cluster center
+% I = cluster id
+[M,I] = min([dist1,dist2,dist3],[],2);
+
+hist_values_gaze = histc(I,1:3);
+
+hist_values_gt = histc(idx,1:3);
+
+figure; bar([hist_values_gaze/sum(hist_values_gaze), hist_values_gt/sum(hist_values_gt)]);
+legend('gaze-positions superpixels belonging to cluster','positive ground truth superpixels belonging to cluster', 'Location','northoutside');
+% hold on; bar(hist_values_gt,'r');
