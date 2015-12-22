@@ -6,8 +6,14 @@ if (size(image,3) == 3)
 end
 
 superpixel_size = round(min([size(image,1), size(image,2)]) / 11.5);
-super_img = getSuperPixels(single(lab_image), superpixel_size, 300);
+super_img = getSuperPixels(single(lab_image), superpixel_size, 40);
 
 grad = imgradient(super_img);
 
-imtool(image - repmat(grad,1,1,3));
+imshow(image + repmat(grad,1,1,size(image,3)));
+
+% used regularizer values:
+% Dataset2: 300
+% Dataset5: 40
+% Dataset7: 0.05
+% Dataset8: 0.03
