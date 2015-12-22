@@ -1,20 +1,20 @@
 % This script will collect positive superpixels and cluster them.
 %
-% Todo: make it nicer for other datasets, somehow visualize WHICH
-% superpixels have not been seen
-
+% Todo: somehow visualize WHICH superpixels have not been seen
+dataset = 8;
+[dataset_folder, ~, ~, frame_height, frame_width, ~] = getDatasetDetails(dataset);
 %% get some positive superpixels:
 
-ground_truth_dir = '../data/Dataset2/ground_truth-frames/';
+ground_truth_dir = [dataset_folder,'ground_truth-frames/'];
 file_names = dir([ground_truth_dir, '*.png']);
 
 num_frames = length(file_names);
 
-frame_percentage = 50;
+frame_percentage = 101;
 frame_indices = find(rand(1,num_frames) <= frame_percentage/100);
 
-frames_dir = '../data/Dataset2/input-frames/';
-superpixel_dir = '../data/Dataset2/superpixel-coocc-descriptors/';
+% frames_dir = '../data/Dataset2/input-frames/';
+superpixel_dir = [dataset_folder,'superpixel-coocc-descriptors/'];
 
 
 positive_descriptors = [];
@@ -57,9 +57,6 @@ figure; scatter(score(:,1), score(:,2), [], cols);
 title('3 clusters, visualized using 2 principal components'); 
 
 %% Get the gaze-superpixels
-% Define data paths and actions
-[dataset_folder, ~, ~, frame_height, frame_width] = getDatasetDetails(2);
-
 
 % Get Eye-Tracking information
 filename = [dataset_folder, 'framePositions.csv'];
