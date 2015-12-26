@@ -1,7 +1,7 @@
 % This script will collect positive superpixels and cluster them.
 %
 % Todo: somehow visualize WHICH superpixels have not been seen
-dataset = 8;
+dataset = 2;
 [dataset_folder, ~, ~, frame_height, frame_width, ~] = getDatasetDetails(dataset);
 %% get some positive superpixels:
 
@@ -82,3 +82,19 @@ hist_values_gt = histc(idx,1:3);
 figure; bar([hist_values_gaze/sum(hist_values_gaze), hist_values_gt/sum(hist_values_gt)]);
 legend('gaze-positions superpixels belonging to cluster','positive ground truth superpixels belonging to cluster', 'Location','northoutside');
 % hold on; bar(hist_values_gt,'r');
+
+%% get the fraction of gaze positions that actually were positive superpixels...
+figure;
+[pos_fract] = getFractionOfPositiveAndNegativeSuperpixels(superpixel_dir, ground_truth_dir, framePositions);
+plot(pos_fract,'*'); 
+% axis([-0.1 1.1 -0.1 1.1]);
+posline = refline(0,0.5); posline.Color = 'r'; posline.LineStyle = '--';
+xlabel('(interesting) frame [key pressed]');
+ylabel('fraction of positive pixels in the stared-at superpixels');
+legend('fraction of positive pixels','fraction > 0.5 means: staring at a true positive superpixel');
+
+figure;
+labelvec = {'pos (>50%)','neg (<=50%)'};
+bar([sum(pos_fract > 0.5) sum(pos_fract <= 0.5)]);
+title('Observed superpixels')
+set(gca, 'XTick', 1:2, 'XTickLabel',labelvec);
