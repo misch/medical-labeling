@@ -1,6 +1,5 @@
 % This script will collect positive superpixels and cluster them.
-%
-% Todo: somehow visualize WHICH superpixels have not been seen
+close all;
 dataset = 2;
 [dataset_folder, ~, ~, frame_height, frame_width, ~] = getDatasetDetails(dataset);
 %% get some positive superpixels:
@@ -14,7 +13,7 @@ frame_percentage = 101;
 frame_indices = find(rand(1,num_frames) <= frame_percentage/100);
 
 % frames_dir = '../data/Dataset2/input-frames/';
-superpixel_dir = [dataset_folder,'superpixel-coocc-descriptors/'];
+superpixel_dir = [dataset_folder,'small-superpixel-coocc-descriptors/'];
 
 
 positive_descriptors = [];
@@ -46,14 +45,15 @@ for idx = frame_indices
 end
 
 %% Cluster them
-[pc,score] = pca(positive_descriptors,'NumComponents',3);
-
 [idx, centers] = kmeans(positive_descriptors,3);
 cols = [(idx ==1), (idx==2), (idx==3)];
-figure; scatter3(score(:,1),score(:,2),score(:,3),[],cols);
-title('3 clusters, visualized using 3 principal components');
 
-figure; scatter(score(:,1), score(:,2), [], cols);
+[pc,score] = pca(positive_descriptors,'NumComponents',2);
+% figure; scatter3(score(:,1),score(:,2),score(:,3),[],cols);
+% title('3 clusters, visualized using 3 principal components');
+
+f(1) = figure; 
+scatter(score(:,1), score(:,2), [], cols);
 title('3 clusters, visualized using 2 principal components'); 
 
 %% Get the gaze-superpixels
@@ -79,22 +79,28 @@ hist_values_gaze = histc(I,1:3);
 
 hist_values_gt = histc(idx,1:3);
 
-figure; bar([hist_values_gaze/sum(hist_values_gaze), hist_values_gt/sum(hist_values_gt)]);
-legend('gaze-positions superpixels belonging to cluster','positive ground truth superpixels belonging to cluster', 'Location','northoutside');
-% hold on; bar(hist_values_gt,'r');
+f(2) = figure; 
+bar([hist_values_gaze/sum(hist_values_gaze), hist_values_gt/sum(hist_values_gt)]);
+legend('gaze-positions closest cluster','positive ground truth superpixels belonging to cluster', 'Location','northoutside');
+title(sprintf('Positive samples found by gaze positions (Dataset %d)',dataset));
 
 %% get the fraction of gaze positions that actually were positive superpixels...
-figure;
+f(3) = figure;
 [pos_fract] = getFractionOfPositiveAndNegativeSuperpixels(superpixel_dir, ground_truth_dir, framePositions);
 plot(pos_fract,'*'); 
 % axis([-0.1 1.1 -0.1 1.1]);
+ylim([-0.1, 1.1]);
 posline = refline(0,0.5); posline.Color = 'r'; posline.LineStyle = '--';
-xlabel('(interesting) frame [key pressed]');
-ylabel('fraction of positive pixels in the stared-at superpixels');
-legend('fraction of positive pixels','fraction > 0.5 means: staring at a true positive superpixel');
+xlabel('observed frame [key pressed by user]');
+ylabel('positive pixels (%) in stared-at superpixels');
+legend('fraction of positive pixels','fraction > 0.5 means: staring at a true positive superpixel', 'Location','northoutside');
+title('Fraction of positive pixels in the observed superpixels');
 
-figure;
-labelvec = {'pos (>50%)','neg (<=50%)'};
+f(4) = figure;
+labelvec = {'pos (>50% positive pixels)','neg (<=50% positive pixels)'};
 bar([sum(pos_fract > 0.5) sum(pos_fract <= 0.5)]);
 title('Observed superpixels')
 set(gca, 'XTick', 1:2, 'XTickLabel',labelvec);
+
+%% save it all 
+savefig(f,sprintf('dataset%d-smallsuperpixels.fig',dataset));
