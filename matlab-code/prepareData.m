@@ -75,7 +75,7 @@ if strcmp(choice,'superpixels') % superpixel features
         superpixel_dir = [superpixel_dir, '/'];
     end
 
-    createTestData_superpixels(frames_dir,superpixel_dir,101,0.05);
+    createTestData_superpixels(frames_dir,superpixel_dir,101,300,16.5);
 elseif strcmp(choice,'patches')
     disp('Choose folder with input frames');
     frames_dir = [uigetdir('../data/')];
