@@ -13,7 +13,7 @@ function [test_data, test_labels] = createTestData_patches(frames_dir,descriptor
 
     num_frames = length(file_names);
     frame_indices = find(rand(1,num_frames) <= frame_percentage/100);
-    frame_indices = [105:50:655];
+    frame_indices = [20:5:55];
 
     ref_frame = imread([frames_dir,file_names(1).name]);
 
@@ -40,12 +40,7 @@ function [test_data, test_labels] = createTestData_patches(frames_dir,descriptor
 
     for frame = 1:size(test_frames,3)
         if (~ground_truth_dir_exists)
-            [FileName,PathName] = uigetfile('../data/*.png',['Select a ground truth file for ',file_names(frame_indices(frame))]);
-            if FileName == 0
-                gt = 0;
-            else
-                gt = getGrayScaleImage([PathName,FileName]);
-            end
+            gt = 0;
             [test_data, test_labels] = extractPatchesAndLabels(test_frames(:,:,frame),gt);
         else
             [test_data, test_labels] = extractPatchesAndLabels(test_frames(:,:,frame),ground_truth_frames(:,:,frame));

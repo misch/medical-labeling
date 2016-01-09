@@ -25,7 +25,9 @@ for y = boundary_top_left:width-boundary_bot_right
     for x = boundary_top_left:height-boundary_bot_right
         test_data = getPatchAtPosition(image, [x,y]);
         patches(:,:,i) = process_ROI(test_data);
-        ground_truth(i) = ground_truth_image(x,y);
+        if (ground_truth_image ~= 0)
+            ground_truth(i) = ground_truth_image(x,y);
+        end
         i = i + 1;
         waitbar(i/(length(boundary_top_left:width-boundary_bot_right) * length(boundary_top_left:height-boundary_bot_right)));
     end
