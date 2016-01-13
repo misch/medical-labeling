@@ -1,5 +1,6 @@
 [dataset_folder, ~, ~, frame_height, frame_width] = getDatasetDetails(2);
-
+ground_truth_dir = [dataset_folder,'ground_truth-frames/'];
+gt_files = dir([ground_truth_dir, '*.png']);
 
 % Get Eye-Tracking information
 filename = [dataset_folder, 'framePositions.csv'];
@@ -7,12 +8,33 @@ framePositions = readCSVFile(filename);
 framePositions(:,1) = framePositions(:,1) * frame_width;
 framePositions(:,2) = framePositions(:,2) * frame_height;
 
-cols = [framePositions(:,3), zeros(size(framePositions(:,3),1),1), zeros(size(framePositions(:,3),1),1)];
+if (length(gt_files)~=length(framePositions))
+    disp('#gaze observations ~= #gt-frames');
+end
 
+
+%% Make colors depending on whether gaze position is on object (green) or not (red)
+gt_vals = zeros(length(gt_files),1);
+for i = 1:length(gt_files)
+    gt_file = [ground_truth_dir, gt_files(i).name];
+    
+    current_gt = getGrayScaleImage(gt_file);
+    threshold = 0.1;
+    try
+        gt_vals(i) = current_gt(round(framePositions(i,2)), round(framePositions(i,1))) > threshold; % ?? todo: check order!  
+    catch
+        disp(sprintf('At frame %d, the position (%d,%d) was not in the image.',i,round(framePositions(i,2)),round(framePositions(i,1))));
+    end
+end
+
+cols = [zeros(size(framePositions(:,3),1),1), gt_vals*0.6, zeros(size(framePositions(:,3),1),1)];
+
+%%
 figure;
 subplot(2,2,1);
 frameax = [1:length(framePositions(:,1))]';
 scatter(frameax, framePositions(:,1),[],cols);
+axis([0 length(frameax) 0 frame_width]);
 title('horizontal movements (y axis)');
 
 subplot(2,2,3);
@@ -22,6 +44,7 @@ title('horizontal gradient (y axis)');
 subplot(2,2,2);
 frameax = [1:length(framePositions(:,2))]';
 scatter(frameax, framePositions(:,2),[],cols);
+axis([0 length(frameax) 0 frame_height]);
 title('vertical movements (x axis)');
 
 subplot(2,2,4);
@@ -29,6 +52,15 @@ plot(gradient(framePositions(:,2)));
 title('vertical gradient (x axis)');
 
 
-%%
-figure;
-scatter(framePositions(:,1), framePositions(:,2), [], cols); axis([0 frame_width 0 frame_height]);
+%% 
+key_pressed = framePositions(:,3) > 0;
+figure; hold on;
+scatter(framePositions(key_pressed,1), framePositions(key_pressed,2), [],cols(key_pressed,:,:), 'o'); hold on;
+scatter(framePositions(~key_pressed,1), framePositions(~key_pressed,2),[],cols(~key_pressed,:,:),'+'); axis([0 frame_width 0 frame_height]);
+
+% create plot legend
+legendies(1) = plot(NaN,NaN,'ok'); % 'o' --> key pressed
+legendies(2) = plot(NaN,NaN,'+k'); % '+' --> key not pressed
+legendies(3) = plot(NaN,NaN,'s','MarkerFaceColor',[0,0.6,0]); % green --> on object
+legendies(4) = plot(NaN,NaN,'sk','MarkerFaceColor','k'); % black --> not on object
+legend(legendies,'key pressed','key not pressed','gaze on object','gaze not on object');

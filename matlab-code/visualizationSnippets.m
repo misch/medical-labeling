@@ -5,7 +5,7 @@
 
 %% Create video with recorded mouse positions
 
-    makeVideoWithDots(frames_dir, framePositions, [dataset_folder, 'video_with_dots.avi']);
+    makeVideoWithDots(ground_truth_dir, framePositions, [dataset_folder, 'gt_with_dots.avi']);
 
 %% Show ROIs - in case of quadratic patches...
 if (show_ROIs)
