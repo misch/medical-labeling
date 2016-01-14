@@ -1,7 +1,7 @@
-function makeVideoWithDots(frames_dir,framePositions, output_filename)
+function makeVideoWithDots(frames_dir,framePositions, output_filename,frame_rate)
 
     v = VideoWriter(output_filename);
-
+    v.FrameRate = frame_rate;
     files = dir([frames_dir,'*.png']);
         
     figure('Visible','off');
