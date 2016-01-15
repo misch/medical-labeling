@@ -1,7 +1,7 @@
 % This script will collect positive superpixels and cluster them.
 close all;
-dataset = 2;
-[dataset_folder, ~, ~, frame_height, frame_width, ~] = getDatasetDetails(dataset);
+dataset = 7;
+[dataset_folder,frames_dir, ~, frame_height, frame_width, ~] = getDatasetDetails(dataset);
 %% get some positive superpixels:
 
 ground_truth_dir = [dataset_folder,'ground_truth-frames/'];
@@ -15,6 +15,7 @@ frame_indices = find(rand(1,num_frames) <= frame_percentage/100);
 % frames_dir = '../data/Dataset2/input-frames/';
 superpixel_dir = [dataset_folder,'small-superpixel-coocc-descriptors/'];
 
+kept_record = struct();
 
 positive_descriptors = [];
 for idx = frame_indices
@@ -34,18 +35,38 @@ for idx = frame_indices
         sup_img = frameDescriptor.superpixels;
         n_positives = sum(gt(sup_img == superpixel_list(i)) > 0.1);
         n_total = length(gt(sup_img == superpixel_list(i)));
-        keepsup(j) = and(n_positives >  n_total/2, n_total > 0);
+        keepsup(j) = and(n_positives >  n_total/3, n_total > 0);
                         
         j=j+1;
     end
     
     superpixel_list = superpixel_list(keepsup);
     
+    if ~isempty(superpixel_list)
+        if and(length(kept_record) == 1, isempty(fieldnames(kept_record)))
+            kept_record(1).frame = idx;
+            kept_record(1).kept_superpixels = superpixel_list;
+        else
+            kept_record(end+1).frame = idx;
+            kept_record(end).kept_superpixels = superpixel_list;
+        end
+    end
     positive_descriptors = cat(1,positive_descriptors,frameDescriptor.features(superpixel_list+1,:));
 end
 
 %% Cluster them
 [idx, centers] = kmeans(positive_descriptors,3);
+
+% Project back the clusters to the superpixels
+offset = 1;
+for i = 1:length(kept_record)
+    n_superpixels_in_frame = length(kept_record(i).kept_superpixels);
+    
+    kept_record(i).superpixel_clusters = idx(offset:offset+n_superpixels_in_frame-1);
+    offset = offset + n_superpixels_in_frame;
+end
+
+% Set color depending on clusters
 cols = [(idx ==1), (idx==2), (idx==3)];
 
 [pc,score] = pca(positive_descriptors,'NumComponents',2);
@@ -104,3 +125,29 @@ set(gca, 'XTick', 1:2, 'XTickLabel',labelvec);
 
 %% save it all 
 savefig(f,sprintf('dataset%d-smallsuperpixels.fig',dataset));
+
+%% Show clusters in image space
+figure;
+for i = 1:length(kept_record)
+    subplot(3,6,i);
+    frame_no = kept_record(i).frame;
+    descriptor_file = [superpixel_dir,sprintf('frame_%05d.mat',frame_no)];
+    img_file = [frames_dir,sprintf('frame_%05d.png',frame_no)];
+    load(descriptor_file);
+    img = im2double(imread(img_file));
+    mask = zeros([size(img,1), size(img,2), 3]);   
+    for j = 1:length(kept_record(i).kept_superpixels)
+        tmp_mask = (frameDescriptor.superpixels == kept_record(i).kept_superpixels(j));
+        
+        mask(:,:,1) = mask(:,:,1) + tmp_mask .* (kept_record(i).superpixel_clusters(j)==1);
+        mask(:,:,2) = mask(:,:,2) + tmp_mask .* (kept_record(i).superpixel_clusters(j)==2);
+        mask(:,:,3) = mask(:,:,3) + tmp_mask .* (kept_record(i).superpixel_clusters(j)==3);
+    end
+%     m(i) = figure;
+    imshow(img); hold on;
+    him = imshow(mask);
+    set(him,'AlphaData',max(mask,[],3)-0.5);
+    title(him.Parent, sprintf('frame %d',frame_no));
+end
+%%
+savefig(m,sprintf('dataset%d-clusters.fig',dataset));
