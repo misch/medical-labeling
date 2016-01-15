@@ -1,3 +1,5 @@
+function [] = clusterSuperpixels()
+
 % This script will collect positive superpixels and cluster them.
 close all;
 dataset = 7;
@@ -12,30 +14,29 @@ num_frames = length(file_names);
 frame_percentage = 101;
 frame_indices = find(rand(1,num_frames) <= frame_percentage/100);
 
-% frames_dir = '../data/Dataset2/input-frames/';
 superpixel_dir = [dataset_folder,'small-superpixel-coocc-descriptors/'];
 
 kept_record = struct();
 
 positive_descriptors = [];
+
 for idx = frame_indices
     
-   % get some random positive points
+   % get positive points
     gt = getGrayScaleImage([ground_truth_dir,sprintf('frame_%05d.png',idx)]);
 
-    % get the superpixels of those gronud-truth locations
-    
+    % get the superpixels of those ground-truth locations
     descriptor_file = [superpixel_dir,sprintf('frame_%05d.mat',idx)];
     load(descriptor_file);
     superpixel_list = unique(frameDescriptor.superpixels(find(gt>0.1)));
    
     keepsup = logical(zeros(size(superpixel_list)));
+    sup_img = frameDescriptor.superpixels;
     j = 1;
     for i = 1:length(superpixel_list)
-        sup_img = frameDescriptor.superpixels;
         n_positives = sum(gt(sup_img == superpixel_list(i)) > 0.1);
         n_total = length(gt(sup_img == superpixel_list(i)));
-        keepsup(j) = and(n_positives >  n_total/3, n_total > 0);
+        keepsup(j) = and(n_positives >  n_total/2, n_total > 0);
                         
         j=j+1;
     end
@@ -43,13 +44,7 @@ for idx = frame_indices
     superpixel_list = superpixel_list(keepsup);
     
     if ~isempty(superpixel_list)
-        if and(length(kept_record) == 1, isempty(fieldnames(kept_record)))
-            kept_record(1).frame = idx;
-            kept_record(1).kept_superpixels = superpixel_list;
-        else
-            kept_record(end+1).frame = idx;
-            kept_record(end).kept_superpixels = superpixel_list;
-        end
+        kept_record = appendToStruct(kept_record,idx,superpixel_list);
     end
     positive_descriptors = cat(1,positive_descriptors,frameDescriptor.features(superpixel_list+1,:));
 end
@@ -70,12 +65,10 @@ end
 cols = [(idx ==1), (idx==2), (idx==3)];
 
 [pc,score] = pca(positive_descriptors,'NumComponents',2);
-% figure; scatter3(score(:,1),score(:,2),score(:,3),[],cols);
-% title('3 clusters, visualized using 3 principal components');
 
 f(1) = figure; 
 scatter(score(:,1), score(:,2), [], cols);
-title('3 clusters, visualized using 2 principal components'); 
+title('clusters in feature space (76-dim), visualized using PCA'); 
 
 %% Get the gaze-superpixels
 
@@ -104,12 +97,14 @@ f(2) = figure;
 bar([hist_values_gaze/sum(hist_values_gaze), hist_values_gt/sum(hist_values_gt)]);
 legend('gaze-positions closest cluster','positive ground truth superpixels belonging to cluster', 'Location','northoutside');
 title(sprintf('Positive samples found by gaze positions (Dataset %d)',dataset));
+Labels = {'red', 'green', 'blue'};
+set(gca, 'XTick', 1:3, 'XTickLabel', Labels);
 
 %% get the fraction of gaze positions that actually were positive superpixels...
 f(3) = figure;
 [pos_fract] = getFractionOfPositiveAndNegativeSuperpixels(superpixel_dir, ground_truth_dir, framePositions);
 plot(pos_fract,'*'); 
-% axis([-0.1 1.1 -0.1 1.1]);
+
 ylim([-0.1, 1.1]);
 posline = refline(0,0.5); posline.Color = 'r'; posline.LineStyle = '--';
 xlabel('observed frame [key pressed by user]');
@@ -143,11 +138,20 @@ for i = 1:length(kept_record)
         mask(:,:,2) = mask(:,:,2) + tmp_mask .* (kept_record(i).superpixel_clusters(j)==2);
         mask(:,:,3) = mask(:,:,3) + tmp_mask .* (kept_record(i).superpixel_clusters(j)==3);
     end
-%     m(i) = figure;
     imshow(img); hold on;
     him = imshow(mask);
     set(him,'AlphaData',max(mask,[],3)-0.5);
     title(him.Parent, sprintf('frame %d',frame_no));
 end
-%%
-savefig(m,sprintf('dataset%d-clusters.fig',dataset));
+
+end 
+
+function [kept_record] = appendToStruct(kept_record,idx,superpixel_list)
+    if and(length(kept_record) == 1, isempty(fieldnames(kept_record)))
+            kept_record(1).frame = idx;
+            kept_record(1).kept_superpixels = superpixel_list;
+        else
+            kept_record(end+1).frame = idx;
+            kept_record(end).kept_superpixels = superpixel_list;
+    end
+end
