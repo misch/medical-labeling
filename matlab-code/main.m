@@ -2,20 +2,20 @@
 
 % run prepareData
 
-dataset = 2;
+dataset = 7;
 	
-% assembleTrainingDataSuperpixels(dataset,'trainingSmallSuperpixelsCoocc.mat');
+assembleTrainingDataSuperpixels(dataset,'trainingSuperpixelsCoocc.mat');
 % assembleTrainingDataPatches(dataset,'trainingPatches.mat');
 
 classifier = 'grad_boost';
-model = trainClassifier(dataset, classifier, 'trainingSmallSuperpixelsCoocc');
+model = trainClassifier(dataset, classifier, 'trainingSuperpixelsCoocc');
 
 %%
-testSuperpixelClassifier(model, dataset, [105:50:655], classifier);
+testSuperpixelClassifier(model, dataset, [30:3:60], classifier);
 % testPatchClassifier(model,dataset,[139:10:229], classifier);
 
 % frames to test:
 % Dataset2: [105:50:655]
 % Dataset5: ???
-% Dataset7: [20:5:55]
+% Dataset7: [30:3:60]
 % Dataset8: [139:10:229]
