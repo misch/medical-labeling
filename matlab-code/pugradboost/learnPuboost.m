@@ -1,0 +1,142 @@
+function [classifier,sInfo ] = learnPuboost(data,L,prob,nbRounds)
+
+shrinkage      = 0.1;
+
+nbSamples      = size(data,1);
+
+labels         = L;
+Uindex         = find(labels==0);
+Lindex         = find(labels~=0);
+labels(Uindex) = 2*(prob(Uindex) > 0.5)-1; % set labels for U set.
+prob(Uindex)   = (prob(Uindex) < 0.5).*(1-prob(Uindex)) + (prob(Uindex) > 0.5).*prob(Uindex);
+
+classifier{nbRounds} = [];
+L_Vec = zeros(nbRounds,1);
+R_vec = zeros(nbSamples,1);
+F_vec = zeros(nbSamples,1);
+
+gamma          =  numel(Uindex) / nbSamples;
+
+figure(2);
+for m = 1:nbRounds
+
+    R_vec(Lindex) = (-labels(Lindex).*exp(-labels(Lindex).*F_vec(Lindex)));
+    R_vec(Uindex) = -gamma*(labels(Uindex).*prob(Uindex).*exp(-labels(Uindex).*F_vec(Uindex))...
+                          - labels(Uindex).*(1-prob(Uindex)).*exp(labels(Uindex).*F_vec(Uindex)));
+    
+    dispData(R_vec,data);
+    
+    classifier{m}.wl     = getBestWeakLearner(data,R_vec);
+    classifier{m}.alpha  = 1;%compAlpha(Pdata,Udata,PWeights,UWeights,UProb,ULab,gamma,bRound.wl);
+   
+    F_vec   = evalClassifier(labels,data,classifier, shrinkage,m);
+    
+    L_Vec(m) = sum(exp(-labels(Lindex).*F_vec(Lindex)))+...
+               gamma*sum(prob(Uindex).*exp(-labels(Uindex).*F_vec(Uindex)) +...
+                      (1-prob(Uindex)).*exp(labels(Uindex).*F_vec(Uindex)));
+end
+
+sInfo.LOSS  = L_Vec;
+
+end
+
+%% 
+function dispData(W,D)
+figure(1); subplot(1,3,3);
+hold on;
+for dd=1:size(D,1)
+    if W(dd) >0.5
+        plot(D(dd,1),D(dd,2),'go','MarkerSize',round(12*W(dd)));
+    else
+        plot(D(dd,1),D(dd,2),'ro','MarkerSize',round(12*(1-W(dd))));
+    end
+end
+axis([0,6,0,4.5]);
+grid on;
+hold off;
+
+end
+
+%%
+function [scores] = evalClassifier(labels,data,cl,shr,mMax)
+scores = zeros(size(labels,1),1);
+for m=1:mMax
+    scores  = scores + shr*cl{m}.alpha.*evalWL(cl{m}.wl,data);
+end
+end
+
+%%
+function  weakStruc = getBestWeakLearner(data,R_vec)
+
+tttest = 0;
+nbFeat = size(data,2);
+
+for pp = [-1,1]
+    for cc = 1:nbFeat
+        for tt = 0:0.01:6
+           
+            if pp > 0
+                P_1 = data(:,cc) >  tt;
+                N_1 = data(:,cc) <  tt;
+                H   = P_1 - N_1;
+            else
+                P_1 = data(:,cc) <  tt;
+                N_1 = data(:,cc) >  tt;
+                H   = P_1 - N_1;
+            end
+            
+            score        = R_vec'*H;
+            
+            if (tttest== 1)
+                fprintf('%d %d %f %f %f \n',pp,cc,tt,score,pE_err);
+            end
+            
+            if exist('weakStruc','var') ==0
+                weakStruc.score = score;
+                %    weakStruc.alpha = alpha;
+                weakStruc.theta = tt;
+                weakStruc.coord = cc;
+                weakStruc.pol   = pp;
+            elseif weakStruc.score >= score
+                weakStruc.score = score;
+                %   weakStruc.alpha = alpha;
+                weakStruc.theta = tt;
+                weakStruc.coord = cc;
+                weakStruc.pol   = pp;
+            end
+        end
+    end
+end
+end
+
+%%
+
+function alpha = compAlpha(Pdata,Udata,PWeights,UWeights,UProb,ULab,fact,wl)
+
+    UW_neg = UWeights'.*(1-UProb);
+    UW_pos = UWeights'.*(UProb);
+
+    tt     = wl.theta;
+    pp     = wl.pol;
+    cc     = wl.coord;
+
+    if pp > 0
+        pE_err       = PWeights'*(((2.*( Pdata(:,cc) >  tt ) - 1))<0);
+        pE_cor       = PWeights'*(((2.*( Pdata(:,cc) >  tt ) - 1))>0);
+        UMissed      = ( ( ULab.*(2.*( Udata(:,cc) >  tt ) - 1) )<0) ;
+        UCorr        = ( ( ULab.*(2.*( Udata(:,cc) >  tt ) - 1) )>0) ;
+    else
+        pE_err       = PWeights'*(((2.*( Pdata(:,cc) <  tt ) - 1))<0);
+        pE_cor       = PWeights'*(((2.*( Pdata(:,cc) <  tt ) - 1))>0);
+        UMissed      = ( ( ULab.*(2.*( Udata(:,cc) <  tt ) - 1) )<0) ;
+        UCorr        = ( ( ULab.*(2.*( Udata(:,cc) <  tt ) - 1) )>0) ;
+    end
+
+    U_cor_pos     = UW_pos*UCorr;
+    U_cor_neg     = UW_neg*UCorr;
+    U_inc_pos     = UW_pos*UMissed;
+    U_inc_neg     = UW_neg*UMissed;
+
+    alpha        = 0.5*log((pE_cor+U_cor_pos+U_inc_neg)/(pE_err+U_inc_pos+U_cor_neg)) ;
+
+end
