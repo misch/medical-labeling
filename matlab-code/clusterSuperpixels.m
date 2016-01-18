@@ -123,8 +123,10 @@ savefig(f,sprintf('dataset%d-smallsuperpixels.fig',dataset));
 
 %% Show clusters in image space
 figure;
-for i = 1:length(kept_record)
-    subplot(3,6,i);
+plot_idx = 1;
+for i = 1:3:length(kept_record)
+%     subplot(3,6,i); % dataset 7
+    subplot(5,13,plot_idx); % dataset 8
     frame_no = kept_record(i).frame;
     descriptor_file = [superpixel_dir,sprintf('frame_%05d.mat',frame_no)];
     img_file = [frames_dir,sprintf('frame_%05d.png',frame_no)];
@@ -142,6 +144,7 @@ for i = 1:length(kept_record)
     him = imshow(mask);
     set(him,'AlphaData',max(mask,[],3)-0.5);
     title(him.Parent, sprintf('frame %d',frame_no));
+    plot_idx = plot_idx + 1;
 end
 
 end 
