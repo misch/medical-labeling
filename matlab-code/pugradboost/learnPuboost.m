@@ -1,25 +1,40 @@
 function [classifier,sInfo ] = learnPuboost(data,L,prob,nbRounds)
+% data: MxN matrix containing training examples (M N-dimensional examples)
+% L: labels (Mx1 vector). 
+%     label(i) =    1 --> i-th training sample is surely positive
+%     label(i) =    -1 --> i-th training sample is surely negative
+%     label(i) =    0 --> i-th training sample is not labeled; 
+%                   whether it's considered positive or negative 
+%                   depends on the probability weights.
+% prob: the heart of this method - a probability weight for each training
+% sample (Mx1 vector).
+%     prob(i) close to 1 --> most likely positive
+%     prob(i) close to 0 --> most likely negative
+%     boundary between +/- is at prob(i) = 0.5
+% nbRounds: number of weak classifiers that are learned
 
 shrinkage      = 0.1;
 
 nbSamples      = size(data,1);
 
 labels         = L;
-Uindex         = find(labels==0);
-Lindex         = find(labels~=0);
+Uindex         = find(labels==0); % unlabeled data
+Lindex         = find(labels~=0); % labeled data
 labels(Uindex) = 2*(prob(Uindex) > 0.5)-1; % set labels for U set.
 prob(Uindex)   = (prob(Uindex) < 0.5).*(1-prob(Uindex)) + (prob(Uindex) > 0.5).*prob(Uindex);
 
 classifier{nbRounds} = [];
-L_Vec = zeros(nbRounds,1);
-R_vec = zeros(nbSamples,1);
-F_vec = zeros(nbSamples,1);
+L_Vec = zeros(nbRounds,1); % loss vector
+R_vec = zeros(nbSamples,1); % "negative gradient" vector
+F_vec = zeros(nbSamples,1); % current scores vector
 
 gamma          =  numel(Uindex) / nbSamples;
 
 figure(2);
 for m = 1:nbRounds
-
+ 
+    % for labeled and unlabeled, the negative gradient of the loss function
+    % is computed separately...
     R_vec(Lindex) = (-labels(Lindex).*exp(-labels(Lindex).*F_vec(Lindex)));
     R_vec(Uindex) = -gamma*(labels(Uindex).*prob(Uindex).*exp(-labels(Uindex).*F_vec(Uindex))...
                           - labels(Uindex).*(1-prob(Uindex)).*exp(labels(Uindex).*F_vec(Uindex)));
