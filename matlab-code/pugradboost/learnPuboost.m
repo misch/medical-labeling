@@ -30,7 +30,8 @@ F_vec = zeros(nbSamples,1); % current scores vector
 
 gamma          =  numel(Uindex) / nbSamples;
 
-figure(2);
+% figure(2);
+h = waitbar(0,'PU-boost training...');
 for m = 1:nbRounds
  
     % for labeled and unlabeled, the negative gradient of the loss function
@@ -39,7 +40,7 @@ for m = 1:nbRounds
     R_vec(Uindex) = -gamma*(labels(Uindex).*prob(Uindex).*exp(-labels(Uindex).*F_vec(Uindex))...
                           - labels(Uindex).*(1-prob(Uindex)).*exp(labels(Uindex).*F_vec(Uindex)));
     
-    dispData(R_vec,data);
+%     dispData(R_vec,data);
     
     classifier{m}.wl     = getBestWeakLearner(data,R_vec);
     classifier{m}.alpha  = 1;%compAlpha(Pdata,Udata,PWeights,UWeights,UProb,ULab,gamma,bRound.wl);
@@ -49,7 +50,9 @@ for m = 1:nbRounds
     L_Vec(m) = sum(exp(-labels(Lindex).*F_vec(Lindex)))+...
                gamma*sum(prob(Uindex).*exp(-labels(Uindex).*F_vec(Uindex)) +...
                       (1-prob(Uindex)).*exp(labels(Uindex).*F_vec(Uindex)));
+    waitbar(m/nbRounds);
 end
+close(h);
 
 sInfo.LOSS  = L_Vec;
 
@@ -88,7 +91,7 @@ nbFeat = size(data,2);
 
 for pp = [-1,1]
     for cc = 1:nbFeat
-        for tt = 0:0.01:6
+        for tt = 0:0.01:1
            
             if pp > 0
                 P_1 = data(:,cc) >  tt;

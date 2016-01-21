@@ -7,8 +7,8 @@ dataset = 7;
 assembleTrainingDataSuperpixels(dataset,'trainingSuperpixelsCoocc.mat');
 % assembleTrainingDataPatches(dataset,'trainingPatches.mat');
 
-classifier = 'grad_boost';
-model = trainClassifier(dataset, classifier, 'trainingSuperpixelsCoocc');
+classifier = 'pu_grad_boost';
+model = trainClassifier(dataset, classifier, 'trainingSmallSuperpixelsCoocc');
 
 %%
 testSuperpixelClassifier(model, dataset, [30:3:60], classifier);
