@@ -22,7 +22,9 @@ function [featureMat, super_img] = createTestData_superpixels(frames_dir,superpi
         
         featureMat = getSuperpixelFeatures(image, super_img);
         
-        frameDescriptor = struct('features',featureMat,'superpixels',super_img);
+        frameDescriptor = struct(   'features',featureMat,...
+                                    'superpixels',super_img,...
+                                    'frame_no',idx);
         
         save([superpixel_dir,'frame_',sprintf('%05d', idx),'.mat'], 'frameDescriptor','-v7.3')
     end

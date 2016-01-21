@@ -30,6 +30,12 @@ nNeg = size(negative_ROIs,1);
 processed_ROIs = cat(1,positive_ROIs, negative_ROIs);
 labels = [ones(nPos,1); -ones(nNeg,1)];
 
+% todo
+training_set = struct(  'data',processed_ROIs,...
+                        'labels', labels,...
+                        'frame_no',???,...
+                        'gaze',???);
+
 
 save([dataset_folder,output_filename],'processed_ROIs', 'labels');
 disp(['Saved training data to: ', dataset_folder, output_filename]);

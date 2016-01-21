@@ -6,7 +6,7 @@ key_pressed = (framePositions(:,3) > 0);
 interesting_frames = file_names(key_pressed);
 interesting_frames_indices = find(key_pressed);
 
-    feature_dim = 76
+    feature_dim = 76;
     
     positives = zeros(length(interesting_frames),feature_dim);
     negatives = zeros(0,feature_dim);
