@@ -2,8 +2,14 @@ function [] = clusterSuperpixels()
 
 % This script will collect positive superpixels and cluster them.
 close all;
+
 dataset = 7;
 [dataset_folder,frames_dir, ~, frame_height, frame_width, ~] = getDatasetDetails(dataset);
+
+training_file_to_take_positives_from = 'testtraining.mat';
+superpixel_dir = [dataset_folder,'small-superpixel-coocc-descriptors/'];
+frame_percentage = 101;
+
 %% get some positive superpixels:
 
 ground_truth_dir = [dataset_folder,'ground_truth-frames/'];
@@ -11,10 +17,7 @@ file_names = dir([ground_truth_dir, '*.png']);
 
 num_frames = length(file_names);
 
-frame_percentage = 101;
 frame_indices = find(rand(1,num_frames) <= frame_percentage/100);
-
-superpixel_dir = [dataset_folder,'small-superpixel-coocc-descriptors/'];
 
 kept_record = struct();
 
@@ -78,7 +81,9 @@ framePositions = readCSVFile(filename);
 framePositions(:,1) = framePositions(:,1) * frame_width;
 framePositions(:,2) = framePositions(:,2) * frame_height;
 
-[positives,~] = getPositiveAndNegativeSuperpixels(superpixel_dir, framePositions);
+load([dataset_folder,training_file_to_take_positives_from]);
+positives = training_set.data(training_set.labels==1,:);
+
 
 dist1 = sqrt(sum( (positives-repmat(centers(1,:),size(positives,1),1)).^2 ,2));
 dist2 = sqrt(sum( (positives-repmat(centers(2,:),size(positives,1),1)).^2 ,2));
@@ -124,9 +129,9 @@ savefig(f,sprintf('dataset%d-smallsuperpixels.fig',dataset));
 %% Show clusters in image space
 figure;
 plot_idx = 1;
-for i = 1:3:length(kept_record)
-%     subplot(3,6,i); % dataset 7
-    subplot(5,13,plot_idx); % dataset 8
+for i = 1:length(kept_record)
+    subplot(3,6,i); % dataset 7
+%     subplot(5,13,plot_idx); % dataset 8
     frame_no = kept_record(i).frame;
     descriptor_file = [superpixel_dir,sprintf('frame_%05d.mat',frame_no)];
     img_file = [frames_dir,sprintf('frame_%05d.png',frame_no)];

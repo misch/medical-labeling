@@ -6,8 +6,8 @@ function [model] = trainClassifier(dataset, classifier, training_file)
 
 load([dataset_folder, training_file]);
 
-train_data = processed_ROIs; clear processed_ROIs;
-train_labels = labels; clear labels;
+train_data = training_set.data;
+train_labels = training_set.labels;
 
 model = 0;
 
