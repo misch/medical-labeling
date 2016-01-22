@@ -65,6 +65,11 @@ function assembleTrainingDataSuperpixels(dataset,output_filename)
                         repmat([gaze_x,gaze_y],n_samples,1)); % observed gaze-position when this sample was taken
     end
 
+    % todo: add the median superpixel position to training_set
+    % finding the median position of observed superpixel:
+%     [X,Y] = ind2sub([frame_height,frame_width],(find(frameDescriptor.superpixels == 27)));
+%       plot(median(Y), median(X),'*')
+    
     function appendSamples(data,labels,frame_numbers,sup_idx,gaze)
         training_set.data = cat(1,training_set.data,data);
         training_set.labels = cat(1,training_set.labels,labels);
