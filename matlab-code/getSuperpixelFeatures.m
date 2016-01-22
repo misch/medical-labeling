@@ -1,4 +1,4 @@
-function [featureMat] = getSuperpixelFeatures(image, super)
+function [features] = getSuperpixelFeatures(image, super)
 % This function returns a 42xN-matrix, N being the number of superpixels
 % in the image.
 % 
@@ -12,6 +12,7 @@ if (size(image,3) == 3)
 end
 
 featureMat = zeros(n_superpixels,76);
+superpixel_idx = zeros(n_superpixels,1);
 
 
 
@@ -21,6 +22,15 @@ for i = 0:n_superpixels-1
     values = image(mask);
     
     if (~isempty(values))
-        featureMat(i+1,:) = [histcounts(values,histogram_bins), mean(values), var(values), glcm(:)']; 
+        featureMat(i+1,:) = [histcounts(values,histogram_bins), mean(values), var(values), glcm(:)'];
+        superpixel_idx(i+1) = i;
+    else
+        superpixel_idx(i+1) = NaN;
     end
 end
+
+featureMat =  featureMat(~isnan(superpixel_idx),:);
+superpixel_idx = superpixel_idx(~isnan(superpixel_idx));
+
+
+features = struct('features',featureMat,'superpixel_idx',superpixel_idx,'superpixels',super);
