@@ -1,6 +1,6 @@
 %% new main structure:
 
-% run prepareData
+run prepareData
 
 dataset = 7;
 	
@@ -11,7 +11,7 @@ classifier = 'pu_grad_boost';
 model = trainClassifier(dataset, classifier, 'trainingSmallSuperpixelsCoocc');
 
 %%
-testSuperpixelClassifier(model, dataset, [30:3:60], classifier);
+testSuperpixelClassifier(model, dataset, [30:3:60], classifier,'small-superpixel-coocc-descriptors/');
 % testPatchClassifier(model,dataset,[139:10:229], classifier);
 
 % frames to test:

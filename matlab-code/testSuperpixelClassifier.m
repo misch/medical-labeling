@@ -1,4 +1,4 @@
-function testSuperpixelClassifier(model, dataset, test_frames, classifier)
+function testSuperpixelClassifier(model, dataset, test_frames, classifier,descriptor_dir)
 % model: a trained classifier model
 % test_frames: a Nx1 array containing the frames for which the pixels
 % should be classified
@@ -16,7 +16,7 @@ test_labels = [];
 for frame = test_frames
     frame_no = sprintf('%05d', frame); 
     
-    load([dataset_folder,'small-superpixel-coocc-descriptors/','frame_',frame_no]);
+    load([dataset_folder,descriptor_dir,'frame_',frame_no]);
     test_data = frameDescriptor.features;
 
     if strcmp(classifier,'svm')
