@@ -48,9 +48,11 @@ elseif strcmp(classifier,'grad_boost')
     model = SQBMatrixTrain( single(train_data), train_labels, uint32(2000), options);
 elseif strcmp(classifier,'pu_grad_boost')
     addpath('./pugradboost/');
-    prob = zeros(size(train_labels,1),1);
-    prob(train_labels == -1) = 0.001;
-    prob(7:15) = 0.4;
+    
+    distances = sqrt(sum((training_set.gaze_position - training_set.median_superpixel_pos).^2,2));
+    prob = exp(-distances/22);
+%     prob(train_labels == -1) = 0.001;
+%     prob(7:15) = 0.4;
     train_labels(train_labels == -1) = 0;
     train_labels(7:15) = 0;
 
