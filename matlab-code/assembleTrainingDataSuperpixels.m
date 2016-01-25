@@ -33,7 +33,8 @@ function assembleTrainingDataSuperpixels(dataset,output_filename)
                             'labels',[],...
                             'frame_numbers',[],...
                             'superpixel_idx',[],...
-                            'gaze_position',[]);
+                            'gaze_position',[],...
+                            'median_superpixel_pos',[]);
 
     for i = 1:length(interesting_frames)
         idx = interesting_frames_indices(i);
@@ -57,25 +58,31 @@ function assembleTrainingDataSuperpixels(dataset,output_filename)
 
         positive_mask = frameDescriptor.superpixel_idx == positiveSuperpixel_idx;
         negative_mask = ~positive_mask;
+        
+        med_superpix_pos = zeros(n_samples,2);
+        vec_idx = 1;
+        
+        for jj = frameDescriptor.superpixel_idx'
+            [X,Y] = ind2sub([frame_height,frame_width],(find(frameDescriptor.superpixels == jj)));
+            med_superpix_pos(vec_idx,:) = median([X,Y]);
+            vec_idx = vec_idx + 1;
+        end
 
         appendSamples(  frameDescriptor.features,... % data
                         positive_mask-negative_mask,... % labels
                         idx * ones(n_samples,1),... % originate frame_no for each sample
                         frameDescriptor.superpixel_idx,... % originate superpixel for each sample
-                        repmat([gaze_x,gaze_y],n_samples,1)); % observed gaze-position when this sample was taken
+                        repmat([gaze_x,gaze_y],n_samples,1),...
+                        med_superpix_pos); % observed gaze-position when this sample was taken
     end
-
-    % todo: add the median superpixel position to training_set
-    % finding the median position of observed superpixel:
-%     [X,Y] = ind2sub([frame_height,frame_width],(find(frameDescriptor.superpixels == 27)));
-%       plot(median(Y), median(X),'*')
     
-    function appendSamples(data,labels,frame_numbers,sup_idx,gaze)
+    function appendSamples(data,labels,frame_numbers,sup_idx,gaze,med_superpix_pos)
         training_set.data = cat(1,training_set.data,data);
         training_set.labels = cat(1,training_set.labels,labels);
         training_set.frame_numbers = cat(1,training_set.frame_numbers,frame_numbers);
         training_set.superpixel_idx = cat(1,training_set.superpixel_idx,sup_idx);
         training_set.gaze_position = cat(1,training_set.gaze_position,gaze);
+        training_set.median_superpixel_pos = cat(1,training_set.median_superpixel_pos,med_superpix_pos);
     end
 
     save([dataset_folder,output_filename],'training_set');
