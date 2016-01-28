@@ -42,7 +42,7 @@ for m = 1:nbRounds
     
 %     dispData(R_vec,data);
     
-    classifier{m}.wl     = getBestWeakLearner(data,R_vec);
+    classifier{m}.wl     = getBestWeakLearner(data,R_vec');
     classifier{m}.alpha  = 1;%compAlpha(Pdata,Udata,PWeights,UWeights,UProb,ULab,gamma,bRound.wl);
    
     F_vec   = evalClassifier(labels,data,classifier, shrinkage,m);
@@ -87,10 +87,15 @@ end
 function  weakStruc = getBestWeakLearner(data,R_vec)
 
 tttest = 0;
+
 nbFeat = size(data,2);
+score = Inf*ones(1,nbFeat);
+theta = zeros(1,nbFeat);
+coord = zeros(1,nbFeat);
+pol = zeros(1,nbFeat);
 
 for pp = [-1,1]
-    for cc = 1:nbFeat
+    parfor (cc = 1:nbFeat,8)
         for tt = 0:0.01:1
            
             if pp > 0
@@ -103,28 +108,23 @@ for pp = [-1,1]
                 H   = P_1 - N_1;
             end
             
-            score        = R_vec'*H;
+            new_score        = R_vec*H;
             
             if (tttest== 1)
-                fprintf('%d %d %f %f %f \n',pp,cc,tt,score,pE_err);
+                fprintf('%d %d %f %f %f \n',pp,cc,tt,new_score,pE_err);
             end
-            
-            if exist('weakStruc','var') ==0
-                weakStruc.score = score;
-                %    weakStruc.alpha = alpha;
-                weakStruc.theta = tt;
-                weakStruc.coord = cc;
-                weakStruc.pol   = pp;
-            elseif weakStruc.score >= score
-                weakStruc.score = score;
-                %   weakStruc.alpha = alpha;
-                weakStruc.theta = tt;
-                weakStruc.coord = cc;
-                weakStruc.pol   = pp;
+
+            if score(cc) >= new_score
+              score(cc) = new_score;
+              theta(cc) = tt;
+              coord(cc) = cc;
+              pol(cc) = pp;
             end
         end
     end
 end
+    [min_score, min_idx] = min(score);
+    weakStruc = struct('score',min_score,'theta',theta(min_idx),'coord',coord(min_idx),'pol',pol(min_idx));
 end
 
 %%
