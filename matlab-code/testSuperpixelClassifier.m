@@ -36,9 +36,11 @@ for frame = test_frames
     super_img = frameDescriptor.superpixels;
 
     projected_img = zeros(size(super_img));
-    for i = 0:(max(super_img(:)))
-        projected_img(super_img == i) = scores(i+1);
+    
+    for jj = frameDescriptor.superpixel_idx'
+            projected_img(super_img == jj) = scores(frameDescriptor.superpixel_idx == jj);
     end
+    
 
     projected_scores = cat(1,projected_scores,projected_img(:)); % add new scores to already existing thing
 
@@ -103,5 +105,5 @@ end
     axis( [0 1 0 1] );
     title('ROC curve');
     xlabel('False Positive Rate');
-    ylabel('True Positive Rate');
+    ylabel('True Positive Rate (Recall)');
     save('ROC.mat','false_positive_rate','recall','-v7.3');
