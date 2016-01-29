@@ -56,7 +56,7 @@ elseif strcmp(classifier,'pu_grad_boost')
     train_labels(train_labels == -1) = 0;
     train_labels(7:15) = 0;
 
-    [model,~] = learnPuboost(rescale_data(train_data),train_labels, prob,200);
+    [model,~] = learnPuboost(train_data,train_labels, prob,200);
 else
     disp('SVM and Gradient Boost are currently the only available classifiers.')
 end
