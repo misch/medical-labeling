@@ -32,7 +32,8 @@ gamma          =  numel(Uindex) / nbSamples;
 
 % figure(2);
 h = waitbar(0,'PU-boost training...');
-feature_range = [min(data); max(data)];
+min_vals = min(data); 
+max_vals = max(data);
 for m = 1:nbRounds
  
     % for labeled and unlabeled, the negative gradient of the loss function
@@ -42,7 +43,7 @@ for m = 1:nbRounds
                           - labels(Uindex).*(1-prob(Uindex)).*exp(labels(Uindex).*F_vec(Uindex)));
     
 %     dispData(R_vec,data);
-    classifier{m}.wl     = getBestWeakLearner(data,R_vec',feature_range);
+    classifier{m}.wl     = getBestWeakLearner(data,R_vec', min_vals, max_vals);
     classifier{m}.alpha  = 1;%compAlpha(Pdata,Udata,PWeights,UWeights,UProb,ULab,gamma,bRound.wl);
    
     F_vec   = evalClassifier(labels,data,classifier, shrinkage,m);
@@ -84,7 +85,7 @@ end
 end
 
 %%
-function  weakStruc = getBestWeakLearner(data,R_vec,feature_range)
+function  weakStruc = getBestWeakLearner(data,R_vec,min_vals,max_vals)
 
 tttest = 0;
 
@@ -95,8 +96,8 @@ coord = zeros(1,nbFeat);
 pol = zeros(1,nbFeat);
 
 for pp = [-1,1]
-    parfor (cc = 1:nbFeat,8)
-        for tt = linspace(feature_range(1,cc), feature_range(2,cc),200)
+    parfor (cc = 1:nbFeat,4)
+        for tt = linspace(min_vals(cc), max_vals(cc),100)
            
             if pp > 0
                 P_1 = data(:,cc) >  tt;
