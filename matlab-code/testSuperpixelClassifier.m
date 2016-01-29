@@ -27,7 +27,7 @@ for frame = test_frames
     elseif strcmp(classifier,'pu_grad_boost')
         scores = zeros(size(test_data,1),1);
         test_data = rescale_data(test_data);
-        for m=1:50
+        for m=1:length(model)
             scores = scores + model{m}.alpha.*evalWL(model{m}.wl,test_data);
         end
     end
