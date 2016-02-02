@@ -19,7 +19,7 @@ frameDescriptor = getSuperpixelFeatures(image, super_img);
 frameDescriptor.frame_no = 206;
 
 positiveSuperpixel_idx = super_img(round(y),round(x));
-features = getSuperpixelFeatures(image, super_img);
+features = getSuperpixelFeaturesBeta(image, super_img);
 ref_feat = features.features(features.superpixel_idx == positiveSuperpixel_idx,:);
 
 distances = zeros(size(image,1),size(image,2));
