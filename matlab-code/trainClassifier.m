@@ -49,7 +49,15 @@ elseif strcmp(classifier,'grad_boost')
 elseif strcmp(classifier,'pu_grad_boost')
     addpath('./pugradboost/');
     
-    distances = sqrt(sum((training_set.gaze_position - training_set.median_superpixel_pos).^2,2));
+%     distances = sqrt(sum((training_set.gaze_position - training_set.median_superpixel_pos).^2,2));
+    
+    
+    positive_idx = training_set.labels == 1;
+    positives = training_set.data(positive_idx,:);
+    
+    distances = sqrt(sum((training_set.data - repmat(median(positives),size(training_data.data,1),1)).^2,2));
+    
+    
     prob = exp(-distances/22);
 %     prob(train_labels == -1) = 0.001;
 %     prob(7:15) = 0.4;

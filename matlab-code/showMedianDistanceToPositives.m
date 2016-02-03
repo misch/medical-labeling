@@ -8,6 +8,11 @@
 positive_idx = training_set.labels == 1;
 
 positives = training_set.data(positive_idx,:);
+
+med_positives = median(positives);
+min_positives = min(positives);
+max_positives = max(positives);
+mean_positives = mean(positives);
 % show_frame_number = 2;
 
 % if frameDescriptor.frame_no ~= show_frame_number
@@ -26,11 +31,18 @@ for ii = 1:length(frameDescriptor.superpixel_idx)
    idx = frameDescriptor.superpixel_idx(ii);
    feature_vec = frameDescriptor.features(frameDescriptor.superpixel_idx == idx,:);
    
-   distance = sqrt(sum((repmat(feature_vec,size(positives,1),1) - positives).^2,2));
-   med_distance = median(distance);
-   min_distance = min(distance);
-   max_distance = max(distance);
-   mean_distance = mean(distance);
+   % median distance to positives
+%    distance = sqrt(sum((repmat(feature_vec,size(positives,1),1) - positives).^2,2));
+%    med_distance = median(distance);
+%    min_distance = min(distance);
+%    max_distance = max(distance);
+%    mean_distance = mean(distance);
+
+    % distance to the median of the positives
+    med_distance = sqrt(sum((feature_vec - med_positives).^2,2));
+    min_distance = sqrt(sum((feature_vec - min_positives).^2,2));
+    max_distance = sqrt(sum((feature_vec - max_positives).^2,2));
+    mean_distance = sqrt(sum((feature_vec - mean_positives).^2,2));
    
    heat_map_img_med(frameDescriptor.superpixels == idx) = med_distance;
    heat_map_img_min(frameDescriptor.superpixels == idx) = min_distance;
