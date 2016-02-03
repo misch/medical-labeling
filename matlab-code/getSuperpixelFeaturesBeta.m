@@ -1,11 +1,11 @@
-function [features] = getSuperpixelFeatures(image, super)
+function [features] = getSuperpixelFeaturesBeta(image, super)
 % This function returns a 42xN-matrix, N being the number of superpixels
 % in the image.
 % 
 % At the moment, an amount of 40 bins for the intensity historgram is
 % fixed.
 
-betaFeature = 2;
+betaFeature = 1;
 
 if betaFeature == 1 % simple relative color features (Dataset 2)
     
