@@ -38,10 +38,10 @@ if strcmp(classifier,'svm')
     end
 elseif strcmp(classifier,'grad_boost')
    addpath('../sqb-0.1/build/');
-   options = struct(   'loss', 'exploss',...
+   options = struct(   'loss', 'squaredloss',...
                     'shrinkageFactor', 0.1,...
                     'subsamplingFactor', 0.1,...
-                    'maxTreeDepth', uint32(2),...
+                    'maxTreeDepth', uint32(0),...
                     'disableLineSearch', uint32(0),...
                      'mtry',uint32(ceil(sqrt(size(train_data,2)))));
     disp('Train gradient boost classifier...');
@@ -50,23 +50,20 @@ elseif strcmp(classifier,'pu_grad_boost')
     
     addpath('./pugradboost/');
     
-%     distances = sqrt(sum((training_set.gaze_position - training_set.median_superpixel_pos).^2,2));
+    s_distances = sqrt(sum((training_set.gaze_position - training_set.median_superpixel_pos).^2,2));
     
     
     positive_idx = training_set.labels == 1;
     positives = training_set.data(positive_idx,:);
     
-    distances = sqrt(sum((training_set.data - repmat(median(positives),size(training_data.data,1),1)).^2,2));
-    
-    
-    prob = exp(-distances/22);
+    f_distances = sqrt(sum((training_set.data - repmat(median(positives),size(training_set.data,1),1)).^2,2));
+       
+    prob = exp(-f_distances/0.15) .* exp(-s_distances/400);
+%     load('prob_spatialAndColor');
 
-%     prob(train_labels == -1) = 0.001;
-%     prob(7:15) = 0.4;
     train_labels(train_labels == -1) = 0;
-%     train_labels(7:15) = 0;
 
-    [model,~] = learnPuboost(train_data,train_labels, prob,200);
+    [model,~] = learnPuboost(train_data,train_labels, prob,500);
 else
     disp('SVM and Gradient Boost are currently the only available classifiers.')
 end
