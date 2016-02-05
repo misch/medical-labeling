@@ -1,17 +1,17 @@
 %% new main structure:
 
-% run prepareData
+run prepareData
 
-dataset = 7;
+dataset = 2;
 	
 assembleTrainingDataSuperpixels(dataset,'trainingSuperpixelsCoocc.mat');
 % assembleTrainingDataPatches(dataset,'trainingPatches.mat');
 
 classifier = 'pu_grad_boost';
-model = trainClassifier(dataset, classifier, 'trainingSmallSuperpixelsCoocc');
+model = trainClassifier(dataset, classifier, 'trainingSuperpixelsCoocc');
 
 %%
-testSuperpixelClassifier(model, dataset, [30:3:60], classifier);
+testSuperpixelClassifier(model, dataset, [105:50:655], classifier,'superpixel-coocc-descriptors/');
 % testPatchClassifier(model,dataset,[139:10:229], classifier);
 
 % frames to test:

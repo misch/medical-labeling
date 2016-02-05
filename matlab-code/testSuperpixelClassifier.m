@@ -1,4 +1,4 @@
-function testSuperpixelClassifier(model, dataset, test_frames, classifier)
+function testSuperpixelClassifier(model, dataset, test_frames, classifier,descriptor_dir)
 % model: a trained classifier model
 % test_frames: a Nx1 array containing the frames for which the pixels
 % should be classified
@@ -16,7 +16,7 @@ test_labels = [];
 for frame = test_frames
     frame_no = sprintf('%05d', frame); 
     
-    load([dataset_folder,'small-superpixel-coocc-descriptors/','frame_',frame_no]);
+    load([dataset_folder,descriptor_dir,'frame_',frame_no]);
     test_data = frameDescriptor.features;
 
     if strcmp(classifier,'svm')
@@ -26,8 +26,7 @@ for frame = test_frames
         scores = SQBMatrixPredict(model, single(test_data)); 
     elseif strcmp(classifier,'pu_grad_boost')
         scores = zeros(size(test_data,1),1);
-        test_data = rescale_data(test_data);
-        for m=1:50
+        for m=1:length(model)
             scores = scores + model{m}.alpha.*evalWL(model{m}.wl,test_data);
         end
     end
@@ -36,9 +35,11 @@ for frame = test_frames
     super_img = frameDescriptor.superpixels;
 
     projected_img = zeros(size(super_img));
-    for i = 0:(max(super_img(:)))
-        projected_img(super_img == i) = scores(i+1);
+    
+    for jj = frameDescriptor.superpixel_idx'
+            projected_img(super_img == jj) = scores(frameDescriptor.superpixel_idx == jj);
     end
+    
 
     projected_scores = cat(1,projected_scores,projected_img(:)); % add new scores to already existing thing
 
@@ -103,5 +104,5 @@ end
     axis( [0 1 0 1] );
     title('ROC curve');
     xlabel('False Positive Rate');
-    ylabel('True Positive Rate');
+    ylabel('True Positive Rate (Recall)');
     save('ROC.mat','false_positive_rate','recall','-v7.3');

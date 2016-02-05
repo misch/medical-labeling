@@ -16,6 +16,7 @@ function [classifier,sInfo ] = learnPuboost(data,L,prob,nbRounds)
 shrinkage      = 0.1;
 
 nbSamples      = size(data,1);
+nbFeat = size(data,2);
 
 labels         = L;
 Uindex         = find(labels==0); % unlabeled data
@@ -32,6 +33,14 @@ gamma          =  numel(Uindex) / nbSamples;
 
 % figure(2);
 h = waitbar(0,'PU-boost training...');
+% min_vals = min(data); 
+% max_vals = max(data);
+sorted_data = sort(data,1);
+
+for ii = 1:nbFeat
+    sorted_attr_values{ii} = uniquetol(sorted_data(:,ii),0.00005)';
+end
+
 for m = 1:nbRounds
  
     % for labeled and unlabeled, the negative gradient of the loss function
@@ -41,8 +50,7 @@ for m = 1:nbRounds
                           - labels(Uindex).*(1-prob(Uindex)).*exp(labels(Uindex).*F_vec(Uindex)));
     
 %     dispData(R_vec,data);
-    
-    classifier{m}.wl     = getBestWeakLearner(data,R_vec);
+    classifier{m}.wl     = getBestWeakLearner(data,R_vec',sorted_attr_values);
     classifier{m}.alpha  = 1;%compAlpha(Pdata,Udata,PWeights,UWeights,UProb,ULab,gamma,bRound.wl);
    
     F_vec   = evalClassifier(labels,data,classifier, shrinkage,m);
@@ -84,15 +92,21 @@ end
 end
 
 %%
-function  weakStruc = getBestWeakLearner(data,R_vec)
+function  weakStruc = getBestWeakLearner(data,R_vec,sorted_attr_values)
 
 tttest = 0;
+
 nbFeat = size(data,2);
+score = Inf*ones(1,nbFeat);
+theta = zeros(1,nbFeat);
+coord = zeros(1,nbFeat);
+pol = zeros(1,nbFeat);
 
 for pp = [-1,1]
-    for cc = 1:nbFeat
-        for tt = 0:0.01:1
-           
+    parfor (cc = 1:nbFeat,12)
+        for tt = sorted_attr_values{cc}
+%         for tt = linspace(min_vals(cc), max_vals(cc),300)
+%            for tt = [0:0.1:0.4, 0.401:0.01:0.7, 0.8,0.9,1]
             if pp > 0
                 P_1 = data(:,cc) >  tt;
                 N_1 = data(:,cc) <  tt;
@@ -103,28 +117,23 @@ for pp = [-1,1]
                 H   = P_1 - N_1;
             end
             
-            score        = R_vec'*H;
+            new_score        = R_vec*H;
             
             if (tttest== 1)
-                fprintf('%d %d %f %f %f \n',pp,cc,tt,score,pE_err);
+                fprintf('%d %d %f %f %f \n',pp,cc,tt,new_score,pE_err);
             end
-            
-            if exist('weakStruc','var') ==0
-                weakStruc.score = score;
-                %    weakStruc.alpha = alpha;
-                weakStruc.theta = tt;
-                weakStruc.coord = cc;
-                weakStruc.pol   = pp;
-            elseif weakStruc.score >= score
-                weakStruc.score = score;
-                %   weakStruc.alpha = alpha;
-                weakStruc.theta = tt;
-                weakStruc.coord = cc;
-                weakStruc.pol   = pp;
+
+            if score(cc) >= new_score
+              score(cc) = new_score;
+              theta(cc) = tt;
+              coord(cc) = cc;
+              pol(cc) = pp;
             end
         end
     end
 end
+    [min_score, min_idx] = min(score);
+    weakStruc = struct('score',min_score,'theta',theta(min_idx),'coord',coord(min_idx),'pol',pol(min_idx));
 end
 
 %%
