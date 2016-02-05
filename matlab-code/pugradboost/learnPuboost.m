@@ -16,6 +16,7 @@ function [classifier,sInfo ] = learnPuboost(data,L,prob,nbRounds)
 shrinkage      = 0.1;
 
 nbSamples      = size(data,1);
+nbFeat = size(data,2);
 
 labels         = L;
 Uindex         = find(labels==0); % unlabeled data
@@ -32,8 +33,14 @@ gamma          =  numel(Uindex) / nbSamples;
 
 % figure(2);
 h = waitbar(0,'PU-boost training...');
-min_vals = min(data); 
-max_vals = max(data);
+% min_vals = min(data); 
+% max_vals = max(data);
+sorted_data = sort(data,1);
+
+for ii = 1:nbFeat
+    sorted_attr_values{ii} = uniquetol(sorted_data(:,ii),0.00005)';
+end
+
 for m = 1:nbRounds
  
     % for labeled and unlabeled, the negative gradient of the loss function
@@ -43,7 +50,7 @@ for m = 1:nbRounds
                           - labels(Uindex).*(1-prob(Uindex)).*exp(labels(Uindex).*F_vec(Uindex)));
     
 %     dispData(R_vec,data);
-    classifier{m}.wl     = getBestWeakLearner(data,R_vec', min_vals, max_vals);
+    classifier{m}.wl     = getBestWeakLearner(data,R_vec',sorted_attr_values);
     classifier{m}.alpha  = 1;%compAlpha(Pdata,Udata,PWeights,UWeights,UProb,ULab,gamma,bRound.wl);
    
     F_vec   = evalClassifier(labels,data,classifier, shrinkage,m);
@@ -85,7 +92,7 @@ end
 end
 
 %%
-function  weakStruc = getBestWeakLearner(data,R_vec,min_vals,max_vals)
+function  weakStruc = getBestWeakLearner(data,R_vec,sorted_attr_values)
 
 tttest = 0;
 
@@ -96,9 +103,10 @@ coord = zeros(1,nbFeat);
 pol = zeros(1,nbFeat);
 
 for pp = [-1,1]
-    parfor (cc = 1:nbFeat,4)
-        for tt = linspace(min_vals(cc), max_vals(cc),100)
-           
+    parfor (cc = 1:nbFeat,12)
+        for tt = sorted_attr_values{cc}
+%         for tt = linspace(min_vals(cc), max_vals(cc),300)
+%            for tt = [0:0.1:0.4, 0.401:0.01:0.7, 0.8,0.9,1]
             if pp > 0
                 P_1 = data(:,cc) >  tt;
                 N_1 = data(:,cc) <  tt;
