@@ -1,17 +1,9 @@
 % Autoencoder test
 
-% rng(0,'twister'); % For reproducibility
-% n = 1000;
-% r = linspace(-10,10,n)';
-% x = 1 + r*5e-2 + sin(r)./r + 0.2*randn(n,1);
-
 hiddenSize = 1;
 
-img = imresize(img,[50 63]);
 
-test{1} = img(:,:,1);
-test{2} = img(:,:,2);
-test{3} = img(:,:,3);
+% test = cell array containing many padded superpixels
 
 autoenc = trainAutoencoder(test,hiddenSize,...
         'EncoderTransferFunction','satlin',...
