@@ -7,12 +7,12 @@ file_names = dir([frames_dir, '*.png']);
 
 num_frames = length(file_names);
 
-frame_percentage = 5;
+frame_percentage = 10;
 frame_indices = find(rand(1,num_frames) <= frame_percentage/100);
 superpixel_scale = 16.5;
 regularizer = 300;
 
-patch_size = 100; % has to be an even number!
+patch_size = 80; % has to be an even number!
 
 if mod(patch_size,2) ~= 0
    error('patch_size has to be even');
@@ -41,7 +41,7 @@ for idx = frame_indices
     super_img = padarray(super_img, [d d],-Inf);
     image = padarray(image, [d d]);
     
-    superpixel_indices = find(rand(1,n_superpixels) <= 5/100);
+    superpixel_indices = find(rand(1,n_superpixels) <= 50/100);
     for ii = superpixel_indices
         current_superpixel = unique_superpixels(ii);
         if (current_superpixel == 0)
@@ -60,23 +60,11 @@ end
 disp(sprintf('Collected %d superpixels',total_idx-1));
 % test = cell array containing many padded superpixels
 %%
-hiddenSize = 50;
-autoenc = trainAutoencoder(padded_superpixels,hiddenSize,...
+hiddenSize = 100;
+autoenc = trainAutoencoder(padded_superpixels(1:4000),hiddenSize,...
+        'MaxEpochs',500,...
         'EncoderTransferFunction','satlin',...
         'DecoderTransferFunction','purelin',...
         'L2WeightRegularization',0.01,...
         'SparsityRegularization',4,...
-        'SparsityProportion',0.10,...
-        'UseGPU',true);
-    
-
-%%
-
-features = encode(autoenc,padded_superpixels{3});
-% 
-% xReconstructed = predict(autoenc,xtest');
-% 
-% figure;
-% plot(xtest,'r.');
-% hold on
-% plot(xReconstructed,'go');
+        'SparsityProportion',0.1);
