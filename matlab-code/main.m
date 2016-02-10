@@ -4,7 +4,7 @@ run prepareData
 
 dataset = 2;
 	
-assembleTrainingDataSuperpixels(dataset,'trainingSuperpixelsCoocc.mat');
+assembleTrainingDataSuperpixels(dataset,'trainingAutoencodedSuperpixels.mat');
 % assembleTrainingDataPatches(dataset,'trainingPatches.mat');
 
 classifier = 'pu_grad_boost';

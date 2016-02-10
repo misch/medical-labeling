@@ -15,11 +15,8 @@ super_img = getSuperPixels(single(lab_image), superpixel_size, 300);
 imshow(image);
 [x,y] = ginput(1);
 
-frameDescriptor = getSuperpixelFeatures(image, super_img);
-frameDescriptor.frame_no = 206;
-
 positiveSuperpixel_idx = super_img(round(y),round(x));
-features = getSuperpixelFeaturesBeta(image, super_img);
+features = getSuperpixelFeaturesBeta(image, super_img,3);
 ref_feat = features.features(features.superpixel_idx == positiveSuperpixel_idx,:);
 
 distances = zeros(size(image,1),size(image,2));

@@ -1,11 +1,9 @@
-function [features] = getSuperpixelFeaturesBeta(image, super)
+function [features] = getSuperpixelFeaturesBeta(image, super,betaFeature)
 % This function returns a 42xN-matrix, N being the number of superpixels
 % in the image.
 % 
 % At the moment, an amount of 40 bins for the intensity historgram is
 % fixed.
-
-betaFeature = 1;
 
 if betaFeature == 1 % simple relative color features (Dataset 2)
     
@@ -51,6 +49,37 @@ elseif betaFeature == 2 % median intensity
             superpixel_idx(i+1) = NaN;
         end
     end
+elseif betaFeature == 3 % auto-encoded feature
+    load('encoder100Dataset2');
+
+    patch_size = 80; % todo: can that be inferred from autoencoder or so?
+    d = patch_size/2;
+    
+    super_img = repmat(super,1,1,size(image,3));
+    
+    unique_superpixels = unique(super_img);
+    n_superpixels = length(unique_superpixels);
+    superpixel_idx = zeros(n_superpixels,1);
+    
+    super_img = padarray(super_img, [d d],-Inf);
+    image = padarray(image, [d d]);
+    
+    padded_superpixels = cell(1,n_superpixels);
+    cell_idx = 1;
+    for ii = unique_superpixels'
+        if (ii == 0)
+            disp(sprintf('Uh, the one at cell_idx = %d was 0...',cell_idx));
+        end
+        masked = image .* (super_img == ii);
+        [X, Y] = find(super_img(:,:,1) == ii);
+        c = round(median([X,Y]));
+        patch = masked(c(1)-d:c(1)+d, c(2)-d:c(2)+d,:);
+        padded_superpixels{cell_idx} = patch;
+        superpixel_idx(cell_idx) = ii;
+        cell_idx = cell_idx + 1;
+    end
+    
+    featureMat = encode(autoenc,padded_superpixels)';
 end
 
     featureMat =  featureMat(~isnan(superpixel_idx),:);
