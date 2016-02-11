@@ -50,7 +50,7 @@ elseif betaFeature == 2 % median intensity
         end
     end
 elseif betaFeature == 3 % auto-encoded feature
-    load('encoder100Dataset2');
+    load('encoder3Dataset2');
 
     patch_size = 80; % todo: can that be inferred from autoencoder or so?
     d = patch_size/2;
@@ -67,9 +67,6 @@ elseif betaFeature == 3 % auto-encoded feature
     padded_superpixels = cell(1,n_superpixels);
     cell_idx = 1;
     for ii = unique_superpixels'
-        if (ii == 0)
-            disp(sprintf('Uh, the one at cell_idx = %d was 0...',cell_idx));
-        end
         masked = image .* (super_img == ii);
         [X, Y] = find(super_img(:,:,1) == ii);
         c = round(median([X,Y]));

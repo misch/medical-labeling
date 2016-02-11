@@ -3,7 +3,7 @@
 
 % first:
 %   - load training set
-%   - set wished show_frame_number
+%   - load a frameDescriptor
 %   - load corresponding frame-descriptor 
 positive_idx = training_set.labels == 1;
 
