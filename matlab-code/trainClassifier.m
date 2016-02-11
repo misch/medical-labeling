@@ -41,11 +41,11 @@ elseif strcmp(classifier,'grad_boost')
    options = struct(   'loss', 'squaredloss',...
                     'shrinkageFactor', 0.1,...
                     'subsamplingFactor', 0.1,...
-                    'maxTreeDepth', uint32(0),...
+                    'maxTreeDepth', uint32(2),...
                     'disableLineSearch', uint32(0),...
                      'mtry',uint32(ceil(sqrt(size(train_data,2)))));
     disp('Train gradient boost classifier...');
-    model = SQBMatrixTrain( single(train_data), train_labels, uint32(1000), options);
+    model = SQBMatrixTrain( single(train_data), train_labels, uint32(5000), options);
 elseif strcmp(classifier,'pu_grad_boost')
     
     addpath('./pugradboost/');
@@ -61,9 +61,9 @@ elseif strcmp(classifier,'pu_grad_boost')
     prob = exp(-f_distances/0.15) .* exp(-s_distances/400);
 %     load('prob_spatialAndColor');
 
-    train_labels(train_labels == -1) = 0;
+%     train_labels(train_labels == -1) = 0;
 
-    [model,~] = learnPuboost(train_data,train_labels, prob,500);
+    [model,~] = learnPuboost(train_data,train_labels, prob,200);
 else
     disp('SVM and Gradient Boost are currently the only available classifiers.')
 end
