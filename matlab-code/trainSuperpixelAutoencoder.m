@@ -48,10 +48,9 @@ for idx = frame_indices
             disp('Uh, one was 0...');
             continue;
         end
-        masked = image .* (super_img == current_superpixel);
         [X, Y] = find(super_img(:,:,1) == current_superpixel);
         c = round(median([X,Y]));
-        patch = masked(c(1)-d:c(1)+d, c(2)-d:c(2)+d,:);
+        patch = image(c(1)-d:c(1)+d, c(2)-d:c(2)+d,:);
         padded_superpixels{total_idx} = patch;
         total_idx = total_idx + 1;
     end

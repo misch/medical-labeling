@@ -67,10 +67,9 @@ elseif betaFeature == 3 % auto-encoded feature
     padded_superpixels = cell(1,n_superpixels);
     cell_idx = 1;
     for ii = unique_superpixels'
-        masked = image .* (super_img == ii);
         [X, Y] = find(super_img(:,:,1) == ii);
         c = round(median([X,Y]));
-        patch = masked(c(1)-d:c(1)+d, c(2)-d:c(2)+d,:);
+        patch = image(c(1)-d:c(1)+d, c(2)-d:c(2)+d,:);
         padded_superpixels{cell_idx} = patch;
         superpixel_idx(cell_idx) = ii;
         cell_idx = cell_idx + 1;
