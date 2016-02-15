@@ -8,8 +8,8 @@ dataset = 2;
 assembleReferenceTrainingDataSuperpixels(dataset,'trainingSuperpixelsColorReference.mat','../data/Dataset2/ground_truth-frames/');
 % assembleTrainingDataPatches(dataset,'trainingPatches.mat');
 
-classifier = 'pu_grad_boost';
-model = trainClassifier(dataset, classifier, 'trainingSuperpixelsColorReference');
+classifier = 'svm';
+model = trainClassifier(dataset, classifier, 'trainingSuperpixelsColor');
 
 %%
 testSuperpixelClassifier(model, dataset, [105:50:655], classifier,'simple-color-descriptors/');

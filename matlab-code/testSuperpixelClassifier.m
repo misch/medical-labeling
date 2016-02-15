@@ -13,11 +13,15 @@ ground_truth_dir = [dataset_folder,'ground_truth-frames/'];
 
 projected_scores = [];
 test_labels = [];
+classifier_results = struct('scores',[],'frame_idx',[],'input',[],'classifier',classifier,'dataset',dataset);
+
 for frame = test_frames
     frame_no = sprintf('%05d', frame); 
     
     load([dataset_folder,descriptor_dir,'frame_',frame_no]);
     test_data = frameDescriptor.features;
+    classifier_results.input = cat(1,classifier_results.input,test_data);
+    classifier_results.frame_idx = cat(1,classifier_results.frame_idx,frame*ones(size(test_data,1),1));
 
     if strcmp(classifier,'svm')
         [~,~, scores] = libsvmpredict(ones(size(test_data,1),1), test_data, model);
@@ -31,6 +35,8 @@ for frame = test_frames
         end
     end
 
+    classifier_results.scores = cat(1,classifier_results.scores,scores);
+    
     % Project predictions back to pixels
     super_img = frameDescriptor.superpixels;
 
@@ -69,7 +75,9 @@ for frame = test_frames
     savefig(f,['frame_',frame_no,'.fig']);
     close(f)
 end
-                            
+
+classifier_results.smoothed_scores = smoothFrameLabels(classifier_results.input, classifier_results.scores>0,0.4);
+
 
 % At the very end, only once per bunch of frames                            
 % disp('Show performance measures...');
