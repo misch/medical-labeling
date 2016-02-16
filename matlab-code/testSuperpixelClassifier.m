@@ -3,6 +3,7 @@ function testSuperpixelClassifier(model, dataset, test_frames, classifier,descri
 % test_frames: a Nx1 array containing the frames for which the pixels
 % should be classified
 % classifier: either 'svm' or 'grad_boost'
+% descriptor_dir: the directory where the descriptors are stored
         
 
 %% Test Classifier
@@ -13,7 +14,7 @@ ground_truth_dir = [dataset_folder,'ground_truth-frames/'];
 
 projected_scores = [];
 test_labels = [];
-classifier_results = struct('scores',[],'frame_idx',[],'input',[],'classifier',classifier,'dataset',dataset);
+classifier_results = struct('scores',[],'frame_idx',[],'input',[],'classifier',classifier,'dataset',dataset,'descriptor_dir',[dataset_folder,descriptor_dir],'ground_truth_dir',ground_truth_dir);
 
 for frame = test_frames
     frame_no = sprintf('%05d', frame); 
@@ -38,7 +39,8 @@ for frame = test_frames
     classifier_results.scores = cat(1,classifier_results.scores,scores);
 end
 
-classifier_results.smoothed_scores = smoothFrameLabels(classifier_results.input, classifier_results.scores>0,0.4);
+classifier_results.scores = smoothFrameLabels(classifier_results.input, classifier_results.scores>0,0.56);
+
 [projected_scores, test_labels] = projectToPixels(classifier_results);
 
 
