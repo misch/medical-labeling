@@ -36,47 +36,10 @@ for frame = test_frames
     end
 
     classifier_results.scores = cat(1,classifier_results.scores,scores);
-    
-    % Project predictions back to pixels
-    super_img = frameDescriptor.superpixels;
-
-    projected_img = zeros(size(super_img));
-    
-    for jj = frameDescriptor.superpixel_idx'
-            projected_img(super_img == jj) = scores(frameDescriptor.superpixel_idx == jj);
-    end
-    
-
-    projected_scores = cat(1,projected_scores,projected_img(:)); % add new scores to already existing thing
-
-    gt = getGrayScaleImage([ground_truth_dir,'frame_',frame_no,'.png']);
-
-    threshold = 0.1;
-    gt(gt > threshold) = 1;
-    gt(gt < threshold) = -1;
-
-    test_labels = cat(1,test_labels,gt(:)); % add new labels to already existing ones
-
-    
-    % Heat map
-    f(1) = figure;
-    colormap('hot');   % set colormap
-    imagesc(projected_img); % draw image and scale colormap to values range
-    colorbar;          % show color scale
-
-    % Binary decisions
-    f(2) = figure;
-    imshow(projected_img>0);
-
-    % Ground truth
-    f(3) = figure;
-    imshow(gt);
-    
-    savefig(f,['frame_',frame_no,'.fig']);
-    close(f)
 end
 
 classifier_results.smoothed_scores = smoothFrameLabels(classifier_results.input, classifier_results.scores>0,0.4);
+[projected_scores, test_labels] = projectToPixels(classifier_results);
 
 
 % At the very end, only once per bunch of frames                            
