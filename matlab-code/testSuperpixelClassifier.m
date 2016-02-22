@@ -3,6 +3,7 @@ function testSuperpixelClassifier(model, dataset, test_frames, classifier,descri
 % test_frames: a Nx1 array containing the frames for which the pixels
 % should be classified
 % classifier: either 'svm' or 'grad_boost'
+% descriptor_dir: the directory where the descriptors are stored
         
 
 %% Test Classifier
@@ -13,11 +14,15 @@ ground_truth_dir = [dataset_folder,'ground_truth-frames/'];
 
 projected_scores = [];
 test_labels = [];
+classifier_results = struct('scores',[],'frame_idx',[],'input',[],'classifier',classifier,'dataset',dataset,'descriptor_dir',[dataset_folder,descriptor_dir],'ground_truth_dir',ground_truth_dir);
+
 for frame = test_frames
     frame_no = sprintf('%05d', frame); 
     
     load([dataset_folder,descriptor_dir,'frame_',frame_no]);
     test_data = frameDescriptor.features;
+    classifier_results.input = cat(1,classifier_results.input,test_data);
+    classifier_results.frame_idx = cat(1,classifier_results.frame_idx,frame*ones(size(test_data,1),1));
 
     if strcmp(classifier,'svm')
         [~,~, scores] = libsvmpredict(ones(size(test_data,1),1), test_data, model);
@@ -31,45 +36,13 @@ for frame = test_frames
         end
     end
 
-    % Project predictions back to pixels
-    super_img = frameDescriptor.superpixels;
-
-    projected_img = zeros(size(super_img));
-    
-    for jj = frameDescriptor.superpixel_idx'
-            projected_img(super_img == jj) = scores(frameDescriptor.superpixel_idx == jj);
-    end
-    
-
-    projected_scores = cat(1,projected_scores,projected_img(:)); % add new scores to already existing thing
-
-    gt = getGrayScaleImage([ground_truth_dir,'frame_',frame_no,'.png']);
-
-    threshold = 0.1;
-    gt(gt > threshold) = 1;
-    gt(gt < threshold) = -1;
-
-    test_labels = cat(1,test_labels,gt(:)); % add new labels to already existing ones
-
-    
-    % Heat map
-    f(1) = figure;
-    colormap('hot');   % set colormap
-    imagesc(projected_img); % draw image and scale colormap to values range
-    colorbar;          % show color scale
-
-    % Binary decisions
-    f(2) = figure;
-    imshow(projected_img>0);
-
-    % Ground truth
-    f(3) = figure;
-    imshow(gt);
-    
-    savefig(f,['frame_',frame_no,'.fig']);
-    close(f)
+    classifier_results.scores = cat(1,classifier_results.scores,scores);
 end
-                            
+
+classifier_results.scores = smoothFrameLabels(classifier_results.input, classifier_results.scores>0,0.56);
+
+[projected_scores, test_labels] = projectToPixels(classifier_results);
+
 
 % At the very end, only once per bunch of frames                            
 % disp('Show performance measures...');
