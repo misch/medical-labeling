@@ -11,7 +11,7 @@ distance_to_screen = 60; % in cm
 % These values are screen-specific. With Ubuntu, the values can be found
 % using the following command in a terminal:
 %
-%   xdpyinfo | grep dimensions
+%   xrandr
 %
 screen_width = 51.8; % in cm
 screen_height = 32.4; % in cm
