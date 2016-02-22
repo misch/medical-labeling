@@ -7,7 +7,7 @@ file_names = dir([frames_dir, '*.png']);
 
 num_frames = length(file_names);
 
-frame_percentage = 10;
+frame_percentage = 5;
 frame_indices = find(rand(1,num_frames) <= frame_percentage/100);
 superpixel_scale = 16.5;
 regularizer = 300;
@@ -41,30 +41,26 @@ for idx = frame_indices
     super_img = padarray(super_img, [d d],-Inf);
     image = padarray(image, [d d]);
     
-    superpixel_indices = find(rand(1,n_superpixels) <= 50/100);
+    superpixel_indices = find(rand(1,n_superpixels) <= 8/100);
     for ii = superpixel_indices
         current_superpixel = unique_superpixels(ii);
-        if (current_superpixel == 0)
-            disp('Uh, one was 0...');
-            continue;
-        end
+
         [X, Y] = find(super_img(:,:,1) == current_superpixel);
         c = round(median([X,Y]));
         patch = image(c(1)-d:c(1)+d, c(2)-d:c(2)+d,:);
-        padded_superpixels{total_idx} = patch;
+        padded_superpixels{total_idx} = imresize(patch,0.5);
         total_idx = total_idx + 1;
     end
 end
 
 disp(sprintf('Collected %d superpixels',total_idx-1));
-% test = cell array containing many padded superpixels
+
 %%
-hiddenSize = 6400;
+hiddenSize = 500;
 autoenc = trainAutoencoder(padded_superpixels,hiddenSize,...
         'MaxEpochs',10000,...
         'EncoderTransferFunction','satlin',...
         'DecoderTransferFunction','purelin',...
         'L2WeightRegularization',0.01,...
         'SparsityRegularization',4,...
-        'SparsityProportion',0.1,...
-        'UseGPU',true);
+        'SparsityProportion',0.1);
