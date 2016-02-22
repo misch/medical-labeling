@@ -4,6 +4,7 @@ run prepareData
 
 dataset = 2;
 	
+%assembleTrainingDataSuperpixels(dataset,'trainingAutoencodedSuperpixels.mat');
 % assembleTrainingDataSuperpixels(dataset,'trainingTest.mat');
 assembleReferenceTrainingDataSuperpixels(dataset,'trainingSuperpixelsColorReference.mat','../data/Dataset2/ground_truth-frames/');
 % assembleTrainingDataPatches(dataset,'trainingPatches.mat');

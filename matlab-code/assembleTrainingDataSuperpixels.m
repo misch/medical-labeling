@@ -85,6 +85,6 @@ function assembleTrainingDataSuperpixels(dataset,output_filename)
         training_set.median_superpixel_pos = cat(1,training_set.median_superpixel_pos,med_superpix_pos);
     end
 
-    save([dataset_folder,output_filename],'training_set');
+    save([dataset_folder,output_filename],'training_set','-v7.3');
     disp(['Saved training data to: ', dataset_folder, output_filename]);
 end
