@@ -36,15 +36,16 @@ for frame = test_frames
     f(1) = figure;
     colormap('hot');   % set colormap
     imagesc(final_image_scores); % draw image and scale colormap to values range
+    axis 'off';
     colorbar;          % show color scale
     
     % Binary decisions
     f(2) = figure;
-    imshow(final_image_scores>=0);
+    imshow(final_image_scores>=0, 'Border', 'tight');
 
     % Ground truth
     f(3) = figure;
-    imshow(reshape(gt,height,[]));
+    imshow(reshape(gt,height,[]), 'Border', 'tight');
     
     savefig(f,['frame_',frame_no,'.fig']);
     close(f)
