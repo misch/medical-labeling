@@ -30,7 +30,9 @@ for frame = test_frames
     gt = frameDescriptor.groundTruthLabels;
     test_labels = cat(1,test_labels,gt);
 
+    % just for visualization: reshape and pad
     final_image_scores = reshape(scores, height, []);
+    final_image_scores = padarray(padarray(final_image_scores,[64 64], 'pre'),[63 63], 'post');
     
     % Heat map
     f(1) = figure;
@@ -41,11 +43,13 @@ for frame = test_frames
     
     % Binary decisions
     f(2) = figure;
-    imshow(final_image_scores>=0, 'Border', 'tight');
+    imshow(final_image_scores>0, 'Border', 'tight');
 
     % Ground truth
+    padded_gt = reshape(gt,height,[]);
+    padded_gt = padarray(padarray(padded_gt,[64 64], 'pre'), [63 63], 'post');
     f(3) = figure;
-    imshow(reshape(gt,height,[]), 'Border', 'tight');
+    imshow(padded_gt, 'Border', 'tight');
     
     savefig(f,['frame_',frame_no,'.fig']);
     close(f)
