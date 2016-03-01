@@ -32,9 +32,11 @@ end
 if size(negatives,3) == 1 % if gray-scale patches
     negatives = squeeze(negatives);
     negatives = negatives(:,:,any(any(negatives)));
+    frame_numbers = frame_numbers(any(any(negatives)));
     nROIs = size(negatives,3);
 elseif size(negatives,3) == 3
     negatives = negatives(:,:,:,any(any(any(negatives))));
+    frame_numbers = frame_numbers(any(any(any(negatives))));
     nROIs = size(negatives,4);
 else
     disp('Weird frame dimensions...');
