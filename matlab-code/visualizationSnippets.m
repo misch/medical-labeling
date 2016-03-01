@@ -5,14 +5,14 @@
 
 %% Create video with recorded mouse positions
 dataset = 5;
-[dataset_folder,frames_dir, ~, frame_height, frame_width, ~] = getDatasetDetails(dataset);
+[dataset_folder, frames_dir, ~, frame_height, frame_width] = getDatasetDetails(dataset);
 
-filename = [dataset_folder, 'framePositions2.csv'];
+filename = [dataset_folder, 'framePositions6.csv'];
 framePositions = readCSVFile(filename);
 framePositions(:,1) = framePositions(:,1) * frame_width;
 framePositions(:,2) = framePositions(:,2) * frame_height;
 
-makeVideoWithDots('../data/Dataset5/input-frames/', framePositions, ['../data/Dataset5/', 'with_dots2.avi'],20);
+    makeVideoWithDots(frames_dir, framePositions, [dataset_folder, 'with_dots6.avi'],20);
 
 %% Show ROIs - in case of quadratic patches...
 if (show_ROIs)

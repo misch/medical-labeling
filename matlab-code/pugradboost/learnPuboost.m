@@ -38,7 +38,7 @@ h = waitbar(0,'PU-boost training...');
 sorted_data = sort(data,1);
 
 for ii = 1:nbFeat
-    sorted_attr_values{ii} = uniquetol(sorted_data(:,ii),0.00005)';
+    sorted_attr_values{ii} = uniquetol(sorted_data(:,ii),0.005)';
 end
 
 for m = 1:nbRounds

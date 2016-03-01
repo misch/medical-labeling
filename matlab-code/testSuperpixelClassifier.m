@@ -39,7 +39,7 @@ for frame = test_frames
     classifier_results.scores = cat(1,classifier_results.scores,scores);
 end
 
-classifier_results.scores = smoothFrameLabels(classifier_results.input, classifier_results.scores>0,0.56);
+% classifier_results.scores = smoothFrameLabels(classifier_results.input, classifier_results.scores>0,0.56);
 
 [projected_scores, test_labels] = projectToPixels(classifier_results);
 
