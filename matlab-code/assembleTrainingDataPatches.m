@@ -20,8 +20,8 @@ function assembleTrainingDataPatches(dataset, output_filename)
 extract_new_ROIs = true; % can be changed if, for some reason, only the preprocess-steps are changed
 if (extract_new_ROIs)
     
-    [positive_ROIs, nPos] = extractPositivePatches(frames_dir, file_names, framePositions);
-    [negative_ROIs, nNeg] = extractNegativePatches(frames_dir, file_names, framePositions, frame_height, frame_width);
+    [positive_ROIs, nPos, pos_frame_numbers] = extractPositivePatches(frames_dir, file_names, framePositions);
+    [negative_ROIs, nNeg, neg_frame_numbers] = extractNegativePatches(frames_dir, file_names, framePositions, frame_height, frame_width);
  
     save([dataset_folder,'raw_positiveROIs.mat'],'positive_ROIs','nPos');
     save([dataset_folder,'raw_negativeROIs.mat'], 'negative_ROIs','nNeg','-v7.3');
@@ -69,5 +69,22 @@ end
 close(h)
 
 labels = [ones(nPos,1); -ones(nNeg,1)];
-save([dataset_folder,output_filename],'processed_ROIs', 'labels');
+
+%% ... Make correctly!!
+
+pos_gaze_positions = flip(round(framePositions(pos_frame_numbers,:),2));
+neg_gaze_positions = flip(round(framePositions(neg_frame_numbers,:),2));
+
+ gaze_x = round(framePositions(idx,2));
+        gaze_y = round(framePositions(idx,1));
+        repmat([gaze_x,gaze_y],n_samples,1)
+
+training_set = struct(  'data',processed_ROIs,...
+                        'labels',labels,...
+                        'frame_numbers',[pos_frame_numbers;neg_frame_numbers],...
+                        'superpixel_idx',NaN,...
+                        'gaze_position',[pos_gaze_positions; neg_gaze_positions],...
+                        'median_superpixel_pos',NaN);
+
+save([dataset_folder,output_filename],'training_set','-v7.3');
 disp(['Saved training data to: ', dataset_folder, output_filename]);

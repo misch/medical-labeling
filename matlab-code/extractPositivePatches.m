@@ -1,4 +1,4 @@
-function [positives, nROIs] = extractPositivePatches(frames_dir, file_names,framePositions)
+function [positives, nROIs, interesting_frames] = extractPositivePatches(frames_dir, file_names,framePositions)
 % positives = patch / superpixel / whatev around the frame position, if key pressed.
 
 % Usage:
