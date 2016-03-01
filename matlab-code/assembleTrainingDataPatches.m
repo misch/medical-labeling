@@ -75,10 +75,6 @@ labels = [ones(nPos,1); -ones(nNeg,1)];
 pos_gaze_positions = flip(round(framePositions(pos_frame_numbers,:),2));
 neg_gaze_positions = flip(round(framePositions(neg_frame_numbers,:),2));
 
- gaze_x = round(framePositions(idx,2));
-        gaze_y = round(framePositions(idx,1));
-        repmat([gaze_x,gaze_y],n_samples,1)
-
 training_set = struct(  'data',processed_ROIs,...
                         'labels',labels,...
                         'frame_numbers',[pos_frame_numbers;neg_frame_numbers],...
