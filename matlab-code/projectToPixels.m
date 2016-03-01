@@ -25,7 +25,13 @@ function [projected_scores, test_labels] = projectToPixels(classifier_results)
     projected_scores = cat(1,projected_scores,projected_img(:)); % add new scores to already existing thing
     
     current_frame_str = sprintf('%05d',current_frame);
-    gt = getGrayScaleImage([classifier_results.ground_truth_dir,'frame_',current_frame_str,'.png']);
+    gt_filename = [classifier_results.ground_truth_dir,'frame_',current_frame_str,'.png'];
+    
+    if exist(gt_filename, 'file') == 2
+        gt = getGrayScaleImage(gt_filename);
+    else
+        gt = zeros(size(super_img));
+    end
 
     threshold = 0.1;
     gt(gt > threshold) = 1;
