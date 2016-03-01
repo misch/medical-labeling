@@ -21,7 +21,7 @@ for i = 1:length(interesting_frames)
    image = im2double(imread(image_file));
    idx = interesting_frames_indices(i);
    [negative_patches_from_frame, nPatches] = getNonOverlappingPatches(image, flip(framePositions(idx,1:2)), frame_dimensions);
-   frame_numbers = cat(1,frame_numbers,interesting_frames(i)*ones(nPatches,1));
+   frame_numbers = cat(1,frame_numbers,idx*ones(nPatches,1));
 
    negatives(:,:,:,neg_idx:neg_idx+nPatches-1) = negative_patches_from_frame;
    neg_idx = neg_idx + nPatches;
