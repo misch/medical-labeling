@@ -1,5 +1,5 @@
 function m = my_csvread(filename, r, c, delimiter)
-%CSVREAD Read a comma separated value file.
+%CSVREAD Read a comma (or specified) delimiter separated value file.
 %   M = CSVREAD('FILENAME') reads a comma separated value formatted file
 %   FILENAME.  The result is returned in M.  The file can only contain
 %   numeric values.
