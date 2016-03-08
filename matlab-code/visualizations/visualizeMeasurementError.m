@@ -1,10 +1,10 @@
-testimg = im2double(imread('testimg.png'));
+testimg = im2double(imread('../../data/dotInMiddle/testimg.png'));
 
 frame_height = size(testimg,1);
 frame_width = size(testimg,2);
 
-framePositions1 = readCSVFile('dotInMiddle1.csv');
-framePositions2 = readCSVFile('dotInMiddle2.csv');
+framePositions1 = readCSVFile('../../data/dotInMiddle/dotInMiddle1.csv');
+framePositions2 = readCSVFile('../../data/dotInMiddle/dotInMiddle2.csv');
 
 
 framePositions1(:,1) = framePositions1(:,1) * frame_width;
@@ -18,13 +18,13 @@ pixel_radius_on_image = 18.6187; % get exact pixel_radius_on_image from calculat
 
 center = [frame_width frame_height]/2;
 h = figure;
-imshow(img,'Border','tight');
+imshow(testimg,'Border','tight');
 hold on; legend_text(1) = plot(framePositions1(:,1),framePositions1(:,2),'-','Color',[0 0.7 0]);
 axis([0 frame_width 0 frame_height]);
 axis off;
 hold on; legend_text(2) = plot(framePositions2(:,1), framePositions2(:,2),'-','Color',[0 0 0.7]);
 legend_text(3) = plot(center(1),center(2),'+r','LineWidth',2);
-legend_text(4) = viscircles(middle, pixel_radius_on_image,'EnhanceVisibility',false); 
+legend_text(4) = viscircles(center, pixel_radius_on_image,'EnhanceVisibility',false); 
 le = legend(legend_text,'1st measurement', '2nd measurement','center','1 degree visual angle');
 le.FontSize = 14;
 saveToPDFWithoutMargins(h,'untitled2.pdf');
