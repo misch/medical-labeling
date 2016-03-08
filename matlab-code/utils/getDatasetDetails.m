@@ -4,7 +4,12 @@ function [dataset_folder, frames_dir, file_names, frame_height, frame_width, num
 %   - dataset:  A scalar to indicate which of the datasets should be chosen.
 %               The datasets are assumed to be in ../data/Dataset[dataset].
 
-dataset_folder = ['../../data/Dataset',num2str(dataset),'/'];
+strpath = pwd;
+if strcmp(strpath(end-10:end),'matlab-code')
+    dataset_folder = ['../data/Dataset',num2str(dataset),'/'];
+else
+    dataset_folder = ['../../data/Dataset',num2str(dataset),'/'];
+end
 
 frames_dir = [dataset_folder,'input-frames/'];
 file_names = dir([frames_dir, '*.png']);

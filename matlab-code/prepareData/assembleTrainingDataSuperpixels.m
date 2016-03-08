@@ -1,4 +1,4 @@
-function assembleTrainingDataSuperpixels(dataset,output_filename)
+function assembleTrainingDataSuperpixels(dataset,output_filename,csvFilename)
     % This function can be applied when the video and the eye-tracking data is
     % available (see ReadMe for the exact assumed file structure)
     %
@@ -15,7 +15,7 @@ function assembleTrainingDataSuperpixels(dataset,output_filename)
 
 
     % Get Eye-Tracking information
-    filename = [dataset_folder, 'framePositions.csv'];
+    filename = [dataset_folder,'gaze-measurements/', csvFilename];
     framePositions = readCSVFile(filename);
     framePositions(:,1) = framePositions(:,1) * frame_width;
     framePositions(:,2) = framePositions(:,2) * frame_height;
@@ -23,7 +23,8 @@ function assembleTrainingDataSuperpixels(dataset,output_filename)
 
     %% Get Regions of Interest (ROI's)
     disp('In which folder are the descriptors stored?');
-    descriptors_dir = [uigetdir(dataset_folder),'/'];
+%     descriptors_dir = [uigetdir(dataset_folder),'/'];
+    descriptors_dir = [dataset_folder,'simple-color-descriptors/'];
     file_names = dir([descriptors_dir,'*.mat']);
 
     interesting_frames = file_names(key_pressed);
