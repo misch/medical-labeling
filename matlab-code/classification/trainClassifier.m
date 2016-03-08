@@ -12,7 +12,7 @@ train_labels = training_set.labels;
 model = 0;
 
 if strcmp(classifier,'svm')
-    addpath('../libsvm-3.20/libsvm-3.20/matlab/')
+    addpath('../../libsvm-3.20/libsvm-3.20/matlab/')
     cross_validation = false;
 
     if (cross_validation) % Perform cross-validation
@@ -39,7 +39,7 @@ if strcmp(classifier,'svm')
 %         model = fitcsvm(train_data, train_labels,'KernelFunction','RBF','KernelScale','auto');
     end
 elseif strcmp(classifier,'grad_boost')
-   addpath('../sqb-0.1/build/');
+   addpath('../../sqb-0.1/build/');
 %     [train_data, train_labels] = getFiftyFiftySamples(train_data,train_labels);
    options = struct(   'loss', 'exploss',...
                     'shrinkageFactor', 0.1,...
@@ -51,7 +51,7 @@ elseif strcmp(classifier,'grad_boost')
     model = SQBMatrixTrain( single(train_data), train_labels, uint32(50000), options);
 elseif strcmp(classifier,'pu_grad_boost')
     
-    addpath('./pugradboost/');
+    addpath('../pugradboost/');
     
     s_distances = sqrt(sum((training_set.gaze_position - training_set.median_superpixel_pos).^2,2));
     

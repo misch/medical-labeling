@@ -1,5 +1,5 @@
 
-gt_dir = uigetdir('../data')
+gt_dir = uigetdir('../../data')
 
 files = dir([gt_dir,'/*.png']);
 

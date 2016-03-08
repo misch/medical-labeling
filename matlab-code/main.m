@@ -1,12 +1,14 @@
-%% new main structure:
+%% Add subfolders
+addpath(genpath('./'));
 
+%% new main structure:
 run prepareData
 
 dataset = 5;
 	
 %assembleTrainingDataSuperpixels(dataset,'trainingAutoencodedSuperpixels.mat');
 % assembleTrainingDataSuperpixels(dataset,'trainingSuperpixelsColor.mat');
-% assembleReferenceTrainingDataSuperpixels(dataset,'trainingSuperpixelsColorReference.mat','../data/Dataset2/ground_truth-frames/');
+% assembleReferenceTrainingDataSuperpixels(dataset,'trainingSuperpixelsColorReference.mat','../../data/Dataset2/ground_truth-frames/');
 assembleTrainingDataPatches(dataset,'trainingPatchesTest.mat');
 
 classifier = 'grad_boost';

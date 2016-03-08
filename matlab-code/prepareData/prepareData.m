@@ -13,7 +13,7 @@ if (choice(1) == 'Y')
     
     if strcmp(choice(1:5), 'Video')
         disp('Choose input video (.avi)');
-        [filename, data_path] = uigetfile('../data/*.avi');
+        [filename, data_path] = uigetfile('../../data/*.avi');
         if(filename ~= 0)
             videoToFrames([data_path,filename], [data_path,'input-frames/']);
         else
@@ -22,7 +22,7 @@ if (choice(1) == 'Y')
         end
 
         disp('Choose ground-truth file (.avi)');
-        [filename, data_path] = uigetfile('../data/*.avi');
+        [filename, data_path] = uigetfile('../../data/*.avi');
         if(filename ~= 0)
             videoToFrames([data_path,filename], [data_path,'ground_truth-frames/']);
         end
@@ -30,7 +30,7 @@ if (choice(1) == 'Y')
     % nifti input: write 3D slices to frames and create video
     elseif strcmp(choice(1:5), 'NIfTI')
         disp('Choose input file (.nii)');
-        [filename, data_path] = uigetfile('../data/*.nii');
+        [filename, data_path] = uigetfile('../../data/*.nii');
 
         if(filename ~= 0)
             writeNiiToFrames([data_path,filename],[data_path,'input-frames/'],4);
@@ -40,7 +40,7 @@ if (choice(1) == 'Y')
         end 
 
         disp('Choose ground truth file (.nii)');
-        [filename, data_path] = uigetfile('../data/*.nii');
+        [filename, data_path] = uigetfile('../../data/*.nii');
         if(filename ~= 0)
             writeNiiToFrames([data_path,filename],[data_path,'ground_truth-frames/'],4);
         end
@@ -57,7 +57,7 @@ choice = questdlg(  'What kind of descriptor do you wanna generate?',... % quest
                     
 if strcmp(choice,'superpixels') % superpixel features
     disp('Choose folder with input frames');
-    frames_dir = [uigetdir('../data/')];
+    frames_dir = [uigetdir('../../data/')];
     if (frames_dir == 0)
         disp('No directory chosen. Aborting script...');
         return
@@ -66,7 +66,7 @@ if strcmp(choice,'superpixels') % superpixel features
     end
 
     disp('Choose folder to store superpixel descriptors');
-    superpixel_dir = uigetdir('../data/');
+    superpixel_dir = uigetdir('../../data/');
     
     if (superpixel_dir == 0)
         disp('No directory chosen. Aborting script...');
@@ -78,7 +78,7 @@ if strcmp(choice,'superpixels') % superpixel features
     createTestData_superpixels(frames_dir,superpixel_dir,101,300,16.5);
 elseif strcmp(choice,'patches')
     disp('Choose folder with input frames');
-    frames_dir = [uigetdir('../data/')];
+    frames_dir = [uigetdir('../../data/')];
     if (frames_dir == 0)
         disp('No directory chosen. Aborting script...');
         return
@@ -88,7 +88,7 @@ elseif strcmp(choice,'patches')
 
     
     disp('Choose folder with ground truth frames');
-    gt_dir = [uigetdir('../data/')];
+    gt_dir = [uigetdir('../../data/')];
     if (gt_dir  == 0)
 %         disp('No directory chosen. Aborting script...');
 %         return
@@ -99,7 +99,7 @@ elseif strcmp(choice,'patches')
     
     
     disp('Choose folder to store patch descriptors');
-    descriptor_dir = [uigetdir('../data/'),'/'];
+    descriptor_dir = [uigetdir('../../data/'),'/'];
     
     if (descriptor_dir == 0)
         disp('No directory chosen. Aborting script...');

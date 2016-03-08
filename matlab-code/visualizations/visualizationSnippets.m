@@ -48,13 +48,13 @@ end
 
 %% Show image with gaze dot on it
 frame_no = 207;
-figure; imshow(im2double(imread(['../data/Dataset2/input-frames/',sprintf('frame_%05d.png',frame_no)])),'Border','tight');
+figure; imshow(im2double(imread(['../../data/Dataset2/input-frames/',sprintf('frame_%05d.png',frame_no)])),'Border','tight');
 hold on; plot(framePositions(frame_no,1),framePositions(frame_no,2),'Marker','.','Color',[1, 0, 0], 'MarkerSize',30);
 
 %%
-load('../data/Dataset2/simple-color-descriptors/frame_00207');
+load('../../data/Dataset2/simple-color-descriptors/frame_00207');
 super = frameDescriptor.superpixels;
-image = im2double(imread('../data/Dataset2/input-frames/frame_00207.png'));
+image = im2double(imread('../../data/Dataset2/input-frames/frame_00207.png'));
 
 labels_f = training_set.labels(training_set.frame_numbers == 207);
 super_idx_f = training_set.superpixel_idx(training_set.frame_numbers == 207);

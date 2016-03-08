@@ -1,8 +1,8 @@
 % This script puts a 1° radius on an image that has been shown on full
 % screen
-% img = im2double(imread('../data/Dataset8/input-frames/frame_00195.png'));
-% img = im2double(imread('../data/Dataset2/input-frames/frame_00206.png'));
-img = im2double(imread('../data/Dataset7/input-frames/frame_00046.png'));
+% img = im2double(imread('../../data/Dataset8/input-frames/frame_00195.png'));
+% img = im2double(imread('../../data/Dataset2/input-frames/frame_00206.png'));
+img = im2double(imread('../../data/Dataset7/input-frames/frame_00046.png'));
 
 % These values are taken from http://dev.theeyetribe.com/general/
 insecurity = 1; % in degrees

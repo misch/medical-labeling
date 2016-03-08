@@ -1,6 +1,6 @@
 function writeNiiToFrames(input_filename,frames_dir,scale)
     % Write .nii file to frames
-    nifti_path = '../NIfTI_20140122/';
+    nifti_path = '../../NIfTI_20140122/';
 
     addpath(nifti_path);
 

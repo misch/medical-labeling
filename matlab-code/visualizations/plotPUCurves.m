@@ -1,4 +1,4 @@
-res_fold = '../results/comparisons/Dataset2/';
+res_fold = '../../results/comparisons/Dataset2/';
     figure;
     load([res_fold,'PRpu400']);
     plot(recall, precision);

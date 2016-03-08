@@ -1,6 +1,6 @@
 dataset = 2;
 
-dataset_folder = ['../results/Dataset', num2str(dataset),'/'];
+dataset_folder = ['../../results/Dataset', num2str(dataset),'/'];
 
 disp('Choose superpixel PR.mat');
 [filename, data_path_super] = uigetfile([dataset_folder,'*.mat']);

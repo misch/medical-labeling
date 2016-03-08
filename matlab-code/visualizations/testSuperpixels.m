@@ -1,7 +1,7 @@
 % first: drag the corresponding image to the workspace
-% [filename, impath] = uigetfile('../data/*.png');
+% [filename, impath] = uigetfile('../../data/*.png');
 % image = im2double(imread([impath,filename]));
-image = im2double(imread('../data/Dataset2/input-frames/frame_00207.png'));
+image = im2double(imread('../../data/Dataset2/input-frames/frame_00207.png'));
 
 lab_image = image;
 

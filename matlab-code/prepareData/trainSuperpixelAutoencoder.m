@@ -1,5 +1,5 @@
 % train an autoencoder for later usage as feature descriptor
-frames_dir = '../data/Dataset2/input-frames/';
+frames_dir = '../../data/Dataset2/input-frames/';
 
 % get/create some superpixels
 file_names = dir([frames_dir, '*.png']);

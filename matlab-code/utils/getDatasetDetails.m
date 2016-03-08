@@ -4,7 +4,7 @@ function [dataset_folder, frames_dir, file_names, frame_height, frame_width, num
 %   - dataset:  A scalar to indicate which of the datasets should be chosen.
 %               The datasets are assumed to be in ../data/Dataset[dataset].
 
-dataset_folder = ['../data/Dataset',num2str(dataset),'/'];
+dataset_folder = ['../../data/Dataset',num2str(dataset),'/'];
 
 frames_dir = [dataset_folder,'input-frames/'];
 file_names = dir([frames_dir, '*.png']);

@@ -1,5 +1,5 @@
 % image_file = [frames_dir, file_names(idx).name];
-image_file = '../data/Dataset2/input-frames/frame_00206.png';
+image_file = '../../data/Dataset2/input-frames/frame_00206.png';
 image = im2double(imread(image_file));
 
 lab_image = image;
