@@ -1,3 +1,4 @@
+addpath(genpath('../'));
 dataset = 7;
 [dataset_folder, frames_dir, ~, frame_height, frame_width] = getDatasetDetails(dataset);
 ground_truth_dir = [dataset_folder,'ground_truth-frames/'];

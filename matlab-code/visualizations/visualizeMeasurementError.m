@@ -34,6 +34,11 @@ n_frames = size(framePositions1,1);
 distances1 = sqrt(sum((framePositions1(:,1:2) - repmat([center(1), center(2)],n_frames,1)).^2,2));
 distances2 = sqrt(sum((framePositions2(:,1:2) - repmat([center(1), center(2)],n_frames,1)).^2,2));
 
+% smooth distances
+% gaussFlt = gausswin(50);
+% gaussFlt = gaussFlt/sum(gaussFlt);
+% distances1 = conv(distances1,gaussFlt)
+% distances2 = conv(distances2,gaussFlt)
 h = figure;
 plot(distances1,'Color',[0 0.7 0]);
 hold on;
@@ -41,10 +46,12 @@ plot(distances2,'Color',[0 0 0.7]);
 xlabel('time (frames)','FontSize',14);
 ylabel('euclidean distance to center [px]','FontSize',14);
 hold on; plot(1:1000,pixel_radius_on_image*ones(1,1000),'-r','LineWidth',2);
-le= legend('1st measurement','2nd measurement','1 degree visual angle');
+hold on; plot(1:1000,4.6542*ones(1,1000),'--r','LineWidth',1.5);
+hold on; plot(1:1000,7.4469*ones(1,1000),'--r','LineWidth',1.5);
+le= legend('1st measurement','2nd measurement','1 degree visual angle','0.25 / 0.4 degree visual angle');
 le.FontSize = 14;
 hold on; plot(1:1000, mean(distances1)*ones(1,1000),'--','Color',[0 0.7 0]);
 hold on; plot(1:1000, mean(distances2)*ones(1,1000),'--','Color',[0 0 0.7]);
-saveToPDFWithoutMargins(h,'untitled.pdf');
+saveToPDFWithoutMargins(h,'gazeMeasurementAccuracy1D.pdf');
 
 
