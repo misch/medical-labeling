@@ -1,22 +1,28 @@
-function [] = clusterSuperpixels()
+function [] = showAmountOfTruePositiveInformation()
 
 % This script will collect positive superpixels and cluster them.
 close all;
 
-dataset = 7;
+dataset = 2;
 [dataset_folder,frames_dir, ~, frame_height, frame_width, ~] = getDatasetDetails(dataset);
 
-training_file_to_take_positives_from = 'testtraining.mat';
-superpixel_dir = [dataset_folder,'small-superpixel-coocc-descriptors/'];
-frame_percentage = 101;
+video_name = 'video5.csv';
+filename = [dataset_folder, 'gaze-measurements/',video_name];
+framePositions = readCSVFile(filename);
+framePositions(:,1) = framePositions(:,1) * frame_width;
+framePositions(:,2) = framePositions(:,2) * frame_height;
 
-%% get some positive superpixels:
+% training_file_to_take_positives_from = 'trainingSuperpixelsColor5.mat';
+superpixel_dir = [dataset_folder,'simple-color-descriptors/'];
+
 
 ground_truth_dir = [dataset_folder,'ground_truth-frames/'];
 file_names = dir([ground_truth_dir, '*.png']);
 
 num_frames = length(file_names);
-
+%% get some positive superpixels:
+%{
+frame_percentage = 101;
 frame_indices = find(rand(1,num_frames) <= frame_percentage/100);
 
 kept_record = struct();
@@ -51,8 +57,9 @@ for idx = frame_indices
     end
     positive_descriptors = cat(1,positive_descriptors,frameDescriptor.features(superpixel_list+1,:));
 end
-
+%}
 %% Cluster them
+%{
 [idx, centers] = kmeans(positive_descriptors,3);
 
 % Project back the clusters to the superpixels
@@ -72,14 +79,10 @@ cols = [(idx ==1), (idx==2), (idx==3)];
 f(1) = figure; 
 scatter(score(:,1), score(:,2), [], cols);
 title('clusters in feature space (76-dim), visualized using PCA'); 
-
+%}
 %% Get the gaze-superpixels
+%{
 
-% Get Eye-Tracking information
-filename = [dataset_folder, 'framePositions.csv'];
-framePositions = readCSVFile(filename);
-framePositions(:,1) = framePositions(:,1) * frame_width;
-framePositions(:,2) = framePositions(:,2) * frame_height;
 
 load([dataset_folder,training_file_to_take_positives_from]);
 positives = training_set.data(training_set.labels==1,:);
@@ -104,29 +107,34 @@ legend('gaze-positions closest cluster','positive ground truth superpixels belon
 title(sprintf('Positive samples found by gaze positions (Dataset %d)',dataset));
 Labels = {'red', 'green', 'blue'};
 set(gca, 'XTick', 1:3, 'XTickLabel', Labels);
-
+%}
 %% get the fraction of gaze positions that actually were positive superpixels...
-f(3) = figure;
+f(1) = figure;
 [keypressed_frames,pos_fract] = getFractionOfPositiveAndNegativeSuperpixels(superpixel_dir, ground_truth_dir, framePositions);
 plot(keypressed_frames,pos_fract,'*'); 
 
-ylim([-0.1, 1.1]);
+axis([1 num_frames -0.1, 1.1]);
 posline = refline(0,0.5); posline.Color = 'r'; posline.LineStyle = '--';
-xlabel('observed frame [key pressed by user]');
-ylabel('positive pixels (%) in stared-at superpixels');
-legend('fraction of positive pixels','fraction > 0.5 means: staring at a true positive superpixel', 'Location','northoutside');
-title('Fraction of positive pixels in the observed superpixels');
+xlabel('observed frame [key pressed by user]','FontSize',14);
+ylabel('positive pixels (%) in stared-at superpixels','FontSize',14);
+% legend('fraction of positive pixels','fraction > 0.5 means: staring at a true positive superpixel', 'Location','northoutside');
+% title('Fraction of positive pixels in the observed superpixels');
+% saveToPDFWithoutMargins(f(1),['fractions','Dataset',num2str(dataset),video_name(1:end-4),'.pdf']);
 
-f(4) = figure;
+f(2) = figure;
 labelvec = {'pos (>50% positive pixels)','neg (<=50% positive pixels)'};
 bar([sum(pos_fract > 0.5) sum(pos_fract <= 0.5)]);
-title('Observed superpixels')
+% title('Observed superpixels')
 set(gca, 'XTick', 1:2, 'XTickLabel',labelvec);
+% saveToPDFWithoutMargins(f(2),'../untitled2.pdf');
 
+saveToPDFWithoutMargins(f(1),['../fractions','Dataset',num2str(dataset),video_name(1:end-4),'.pdf']);
+saveToPDFWithoutMargins(f(2),['../posNegHist','Dataset',num2str(dataset),video_name(1:end-4),'.pdf']);
 %% save it all 
-savefig(f,sprintf('dataset%d-smallsuperpixels.fig',dataset));
+% savefig(f,['fractions','Dataset',num2str(dataset),video_name(1:end-4)]);
 
 %% Show clusters in image space
+%{
 figure;
 plot_idx = 1;
 for i = 1:length(kept_record)
@@ -151,7 +159,7 @@ for i = 1:length(kept_record)
     title(him.Parent, sprintf('frame %d',frame_no));
     plot_idx = plot_idx + 1;
 end
-
+%}
 end 
 
 function [kept_record] = appendToStruct(kept_record,idx,superpixel_list)
