@@ -1,7 +1,7 @@
 % first: drag the corresponding image to the workspace
 % [filename, impath] = uigetfile('../../data/*.png');
 % image = im2double(imread([impath,filename]));
-image = im2double(imread('../../data/Dataset2/input-frames/frame_00207.png'));
+image = im2double(imread('../../data/Dataset7/input-frames/frame_00045.png'));
 
 lab_image = image;
 
@@ -11,22 +11,22 @@ if (size(image,3) == 3)
 end
 
 superpixel_size = round(min([size(image,1), size(image,2)]) / 16.5);
-super_img = getSuperPixels(single(lab_image), superpixel_size, 300);
+super_img = getSuperPixels(single(lab_image), 100, 0.05);
 
 grad = imgradient(super_img)>0;
 %%
-boundary_color = [0 0.2 0.7];
+boundary_color = [1 1 1];
 
 show_grad = zeros(size(grad,1),size(grad,2),size(image,3));
-show_grad(:,:,1) = boundary_color(1) * grad;
-show_grad(:,:,2) = boundary_color(2) * grad;
-show_grad(:,:,3) = boundary_color(3) * grad;
+for component = 1:size(image,3)
+    show_grad(:,:,component) = boundary_color(component) * grad;
+end
 
 image_segmented = image.*repmat(~grad,1,1,size(image,3));
 
 figure;
 imshow(image_segmented + show_grad,'Border','tight');
-
+hold on; plot(150,210,'.','MarkerSize',20,'Color','yellow');
 % used regularizer values:
 % Dataset2: 300, big size: 11.5; small size = 16.5
 % Dataset5: 40
