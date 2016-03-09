@@ -107,8 +107,8 @@ set(gca, 'XTick', 1:3, 'XTickLabel', Labels);
 
 %% get the fraction of gaze positions that actually were positive superpixels...
 f(3) = figure;
-[pos_fract] = getFractionOfPositiveAndNegativeSuperpixels(superpixel_dir, ground_truth_dir, framePositions);
-plot(pos_fract,'*'); 
+[keypressed_frames,pos_fract] = getFractionOfPositiveAndNegativeSuperpixels(superpixel_dir, ground_truth_dir, framePositions);
+plot(keypressed_frames,pos_fract,'*'); 
 
 ylim([-0.1, 1.1]);
 posline = refline(0,0.5); posline.Color = 'r'; posline.LineStyle = '--';

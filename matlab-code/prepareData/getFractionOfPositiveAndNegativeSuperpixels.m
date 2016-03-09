@@ -1,4 +1,4 @@
-function [positive_fraction] = getFractionOfPositiveAndNegativeSuperpixels(descriptors_dir, ground_truth_dir, framePositions)
+function [interesting_frames_indices,positive_fraction] = getFractionOfPositiveAndNegativeSuperpixels(descriptors_dir, ground_truth_dir, framePositions)
 % From descriptors and gaze positions, extract positive and negative descriptors.
 
 file_names = dir([descriptors_dir,'*.mat']);
