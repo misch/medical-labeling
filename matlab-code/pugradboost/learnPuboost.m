@@ -26,7 +26,7 @@ prob(Uindex)   = (prob(Uindex) < 0.5).*(1-prob(Uindex)) + (prob(Uindex) > 0.5).*
 
 classifier{nbRounds} = [];
 L_Vec = zeros(nbRounds,1); % loss vector
-R_vec = zeros(nbSamples,1); % "negative gradient" vector
+R_vec = zeros(nbSamples,1); % pseudo residuals
 F_vec = zeros(nbSamples,1); % current scores vector
 
 gamma          =  numel(Uindex) / nbSamples;
@@ -38,26 +38,36 @@ h = waitbar(0,'PU-boost training...');
 sorted_data = sort(data,1);
 
 for ii = 1:nbFeat
-    sorted_attr_values{ii} = uniquetol(sorted_data(:,ii),0.005)';
+    sorted_attr_values{ii} = uniquetol(sorted_data(:,ii),0.0005)';
 end
 
 for m = 1:nbRounds
  
     % for labeled and unlabeled, the negative gradient of the loss function
     % is computed separately...
-    R_vec(Lindex) = (-labels(Lindex).*exp(-labels(Lindex).*F_vec(Lindex)));
-    R_vec(Uindex) = -gamma*(labels(Uindex).*prob(Uindex).*exp(-labels(Uindex).*F_vec(Uindex))...
-                          - labels(Uindex).*(1-prob(Uindex)).*exp(labels(Uindex).*F_vec(Uindex)));
+%     R_vec(Lindex) = (-labels(Lindex).*exp(-labels(Lindex).*F_vec(Lindex)));
+%     R_vec(Uindex) = -gamma*(labels(Uindex).*prob(Uindex).*exp(-labels(Uindex).*F_vec(Uindex))...
+%                           - labels(Uindex).*(1-prob(Uindex)).*exp(labels(Uindex).*F_vec(Uindex)));
     
-%     dispData(R_vec,data);
+%     R_vec(Lindex) = -labels(Lindex);
+%     R_vec(Uindex) = -labels(Uindex).*((labels(Uindex).*F_vec(Uindex))<-1)-0.5*labels(Uindex).*(abs(labels(Uindex).*F_vec(Uindex))<=1);
+
+   R_vec(Lindex) = (-labels(Lindex) .* exp(-labels(Lindex).*F_vec(Lindex)) - labels(Lindex).*exp(labels(Lindex) .* F_vec(Lindex)));
+   R_vec(Uindex) = (-labels(Uindex).* exp(-labels(Uindex).*F_vec(Uindex)));
+
+                      
+    dispData(R_vec,data);
     classifier{m}.wl     = getBestWeakLearner(data,R_vec',sorted_attr_values);
     classifier{m}.alpha  = 1;%compAlpha(Pdata,Udata,PWeights,UWeights,UProb,ULab,gamma,bRound.wl);
    
-    F_vec   = evalClassifier(labels,data,classifier, shrinkage,m);
-    
+    F_vec   = evalClassifier(labels,data,classifier, shrinkage,m); 
+    figure(10); hold on;
+    plot(1:length(F_vec),F_vec);
     L_Vec(m) = sum(exp(-labels(Lindex).*F_vec(Lindex)))+...
                gamma*sum(prob(Uindex).*exp(-labels(Uindex).*F_vec(Uindex)) +...
                       (1-prob(Uindex)).*exp(labels(Uindex).*F_vec(Uindex)));
+                  
+%      L_Vec(m) = 1;  
     waitbar(m/nbRounds);
 end
 close(h);
@@ -68,7 +78,7 @@ end
 
 %% 
 function dispData(W,D)
-figure(1); subplot(1,3,3);
+figure(1); subplot(3,1,3);
 hold on;
 for dd=1:size(D,1)
     if W(dd) >0.5

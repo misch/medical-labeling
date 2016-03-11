@@ -21,7 +21,7 @@ pN         = mvnpdf(trainData,mu2,Sigma2);
 ProbWeight = pP ./ (pP + pN);
 
 rnP        = randperm(nbTrainSamples);
-PIndex     = rnP(1:nbTrainSamples-39);
+PIndex     = rnP(1:nbTrainSamples-38);
 trainLabel = [zeros(nbTrainSamples,1) ; zeros(nbTrainSamples,1) ];
 trainLabel(PIndex) = 1;
 
@@ -57,6 +57,7 @@ for vv=1:nbTrainSamples*2
         plot(trainData(vv,1),trainData(vv,2),'ro','MarkerSize',round(12*(1-ProbWeight(vv))));
     end
 end
+title('Probability Weights', 'FontSize',16,'FontWeight','bold');
 hold off;
 
 %%
@@ -74,7 +75,7 @@ end
 %%
 
 if 1
-nbTestSamples = 200;
+nbTestSamples = 500;
 
 figure(3);
 mu1 = [2 3]; Sigma1 = [.7 .2; .2 .5];
@@ -99,7 +100,7 @@ set(gcf,'color','w');
 %export_fig('figs/testData.pdf',gcf);
 
 %%
-figure(2);
+figure(3);
 nbRoundsTest = [nbRounds];
 scores1      = zeros(size(testData,1),length(nbRoundsTest));
 scores2      = zeros(size(testData,1),length(nbRoundsTest));
