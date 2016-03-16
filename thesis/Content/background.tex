@@ -1,44 +1,29 @@
 \chapter{Background}
 \label{chap:background}
 \todoWriteMore{1st paper and its limitations (my own ideas: add also things about: supervised learning, tree models, boosting, gradient boosting, loss functions in gradient boosting, PU formulation, loss functions in gradient boosting, PU formulation, loss functions for PU problems (see paper)}
-\todoWriteMore{!!!restructure!!!}
-
 This chapter will briefly explain the method of Vilari\~no et al. to use gaze-tracking for polyp detection as well as elaborate their assumptions, limitations and conceptual problems that arise when trying to generalize their methods to arbitrary data, namely, other data than colonoscopy video. Further, there will be given a brief overview and explanation of the used techniques during this project.
 
 
-\section{Previous work}
-\subsection{Goal of Vilari\~no et al.}
+\section{Build a classifier using gaze-tracking}
 In 2007, Vilari\~no et al. published a method that used gaze-tracking for polyp detection ( \todoRef{reference...}). The core idea of Vilari\~no et al. was to train a classifier using expert's gaze positions to generate positive and negative training samples, instead of manually labeled training data. 
-The availability of labeled training data has been the bottleneck for enabling Machine Learning and Computer Vision methods for clinical applications for the last \todo{\#years?} years. 
-The idea of Vilari\~no et al. has a great potential to tackle this issue because it's aimed at reducing the time costs to create training data for classifiers.
+The availability of labeled training data is the bottleneck for enabling Machine Learning and Computer Vision methods for clinical applications. 
+The idea of Vilari\~no et al. has a great potential to tackle this issue because it is aimed at reducing the time costs to create training data for classifiers. 
 
-\subsection{Assumptions}
-Vilari\~no et al. made assumptions about gaze positions and their associations with salient features of the image. 
-In this project, we elaborated whether or not these assumptions are appropriate, and for what datasets. 
-Also, they made implicit assumptions about the number and size of interesting objects in their data, namely that there is at most one object of interest in a time frame and that it fits within a patch of $128 \times 128$ pixels.
-
-\subsection{Evaluation}
-Their training data: 80\% of the ``gaze-labeled'' ROIs. Their test data: 20\% of the ``gaze-labeled'' ROIs. They didn't compare to any ``real'' ground truth, but basically only evaluated how well the SVM separates ``observed'' vs. ``not observed'' regions \todo{how do we do in this case?} -- however, this evaluation does not take into account that the generated labels from the gaze positions are inherently noisy.
-
-
-\section{Initial position (case of Vilari\~no et al.)}
-The application of Vilari\~no et al. was limited to polyp detection in colonoscopy videos. In their particular case, it seems that the following two crucial implicit assumption were fulfilled:
+However, the application of Vilari\~no et al. was limited to polyp detection in colonoscopy videos. In their particular case, it seems that the following two crucial implicit assumptions were made and fulfilled:
 \begin{enumerate}
  \item in each video frame, there was at most one structure of interest (polyp)
  \item a structure of interest never exceeded the size of $128 \times 128$ pixels
 \end{enumerate}
-Examples of how their data looked like are shown in Figure \ref{fig:vilarinoPolypExamples}.
+Examples of how their data looked like are shown in Figure \ref{fig:vilarinoPolypExamples}.\todoRef{ref in Caption}
 
 \begin{figure}[ht]
 	\centering
 	\includegraphics[width=\textwidth]{vilarino-polyp-examples}
-	\caption{heat map of the resulting scores with a SVM trained on all the labeled samples }
+	\caption{some examples of image patches containing polyps in Vilari\~no et al.'s work. The pictures are taken from [??]}.
 	\label{fig:vilarinoPolypExamples}
 \end{figure}
 
-
-\section{Generalization to wider applications / datasets -- problems}
-Using datasets that fulfill assumptions 1 and 2 from above, we could achieve quite some reasonable results with Vilari\~no's approach regarding detection (Figure \ref{fig:theirapproachairplane}). As we are aiming for a pixel-/voxelwise segmentation of our input, we have to capture the object boundaries and regarding this task, we could significantly improve the quality of the output by using color-based features \todo{perhaps specify} of SLIC superpixels instead of the values of pre-processed image patches to describe image regions. The results are visible in Figure \ref{fig:airplaneSLIC}. To get a useful binary result, we could not use all of the negatively labeled superpixels because the SVM classifier could not handle the class imbalance, as can be seen from the heat map in Figure \ref{fig:airplaneSVMclassImbalance}: Even though the aircraft clearly gets higher scores than the background, they remain below zero. Therefore we decided to work with a gradient boosting technique as described in Chapter \ref{chap:background}.
+Using datasets that fulfill assumptions 1 and 2 from above, we could achieve quite some reasonable results with Vilari\~no's approach regarding detection (Figure \ref{fig:theirapproachairplane}). As we are aiming for a pixel-/voxelwise segmentation of our input, we have to capture the object boundaries and regarding this task, we could significantly improve the quality of the output by using color-based features \todo{perhaps specify} of SLIC superpixels instead of the values of pre-processed image patches to describe image regions. The results are visible in Figure \ref{fig:airplaneSLIC}. [\todo{reason with data (compare SVM and grad boost)!}To get a useful binary result, we could not use all of the negatively labeled superpixels because the SVM classifier could not handle the class imbalance, as can be seen from the heat map in Figure \ref{fig:airplaneSVMclassImbalance}: Even though the aircraft clearly gets higher scores than the background, they remain below zero. Therefore we decided to work with a gradient boosting technique as described in Chapter \ref{chap:background}].
 
 \begin{figure}[ht]
 	\centering
@@ -132,7 +117,7 @@ Using datasets that fulfill assumptions 1 and 2 from above, we could achieve qui
 \end{figure}
 
 
-Datasets that do not fulfill both assumptions cause conceptual and practical problems. In the ideal case we have, for each frame, one true positive patch / superpixel given by the recorded gaze position. However, the assumption that all the other non-overlapping patches / superpixels are negative, is not valid, if one of the above-mentioned assumptions is not fulfilled. Figure \ref{fig:nonValidAssumption} shows a dataset containing a surgical instrument with a bigger extent. It is clearly visible that the negatively labeled patches / superpixels are not necessarily true negatives.
+Datasets that do not fulfill both assumptions cause conceptual and practical problems. In the ideal case we have, for each frame, one true positive patch / superpixel given by the recorded gaze position. However, the assumption that all the other non-overlapping patches / superpixels are negative, is not valid, if one of the above-mentioned assumptions is not fulfilled. Unfortunately, for many datasets those are not valid assumptions. Figure \ref{fig:nonValidAssumption} shows a dataset containing a surgical instrument with a bigger extent. It is clearly visible that the negatively labeled patches / superpixels are not necessarily true negatives.
 
 
 
@@ -180,20 +165,32 @@ Datasets that do not fulfill both assumptions cause conceptual and practical pro
 \end{figure}
 
 
-
-
-\todoWriteMore{show some positive and ``negative'' patches / superpixels like in 1st presentation}
 If we consider one $128 \times 128$-patch / superpixel positive and all the other non-overlapping ones as negative examples, we run into mainly 2 issues: 
 \begin{enumerate}
  \item unbalanced dataset (few positives, many negatives)
- \item very high likelihood that each positive sample has a corresondance in the negative training set.
+ \item very high likelihood that each positive sample has a corresondance in the negative training set.\todo{rewrite}
 \end{enumerate}
 This leads to the optimal solution being a negative label for each test sample.
 
 A natural step is therefore to formulate the problem in a different way, namely not in ``separate positive from negative samples'', but instead as ``given some positive samples, figure out whether or not the other, unlabeled ones, also belong to the positive or instead to the negative class.'' \todo{maybe illustration?}
 \todo{somewhere here... split in chap 2 and chap 4; chap 4 should start only here!}
-This so-called PU-problem recently got a lot of attention and applications in document classification, ... \todoRef{reference}.
+This so-called PU-problem recently got a lot of attention and applications in document classification and will be discussed in Chapter \ref{chap:chap:learning-with-unlabeled-data}.
 
+Their training data: 80\% of the ``gaze-labeled'' ROIs. Their test data: 20\% of the ``gaze-labeled'' ROIs. They didn't compare to any ``real'' ground truth, but basically only evaluated how well the SVM separates ``observed'' vs. ``not observed'' regions \todo{how do we do in this case?} -- however, this evaluation does not take into account that the generated labels from the gaze positions are inherently noisy.
+\todoWriteMore{mention their actual results}
 
 \section{Classifiers and Boosting}
-\todoWriteMore{give some basics about classifiers, and about boosting}
+In classification, the task is to find for a given data sample $x \in \mathcal{R}^n$ a class label $f(x) \in \{c_1, c_2, ..., c_k\}$. As an example, $x$ could be a representation of an e-mail and $\{c_1,c_2\}$ could be \{``spam'', ``business'', ``private''\}. For simplicity, usually a binary classifier with $f(x) \in \{-1,1\}$ is considered and multiclass problems are later formulated in terms of the two-class approach. \todo{mention margins} 
+Finding the function $f^*$ that optimally assigns positive and negative class labels to all inputs has been one of the big focuses in research within the Machine Learning and Computer Vision community. There are different approaches to handle different situations: Supervised learning methods depend on the availability of labeled training data, whereas unsupervised methods aim at making sense of the data without any examples. Vilari\~o et al.\ used gaze-data to directly generate training examples for the widely used Support Vector Machine (SVM) classifier to show some first promising results. 
+This classifier optimizes a linear\footnote{kernels...}\todo{footnote} boundary between the classes of a given training set. Instead of directly using the gaze positions as training set for a fully supervised method like a SVM classifier, we will investigate the meta-problem of creatng correct training data from gaze positions for later usage in supervised settings. 
+We formulate this meta-problem as a classification-/segmentation task itself and put it into the context of a semi-supervised setting. 
+Whereas there have been suggestions to extend SVM classifiers for usage in semi-suervised settings \todoRef{add ref}, we are going to use a Gradient Boosting algorithm that allows more flexibility in what is optimized, and will enable us to formulate the optimization goal in an intuitive way, taking into consideration the fact that for a big part of the given data, we don't know the labels.
+
+The idea of boosting is that while a simple ``weak'' classifier might produce predictions that are only slightly better than random guessing, combining several weak classifiers could produce a powerful committee. 
+Boosting sequentially applies the weak classifier (e.g.\ decision trees or neural nets) to modified versions of the original input data. 
+The modification of the input data in each step depends on the previously generated classifier: Observations that were misclassified by the previous classifier get higher weights and the weights for already correctly classified observations are decreased. 
+A very popular boosting algorithm is the so-called AdaBoost algorithm introduced by Freund and Schapire in 1997 \todoRef{add to bibliography: Yoav Freund and Robert E. Schapire. A decision-theoretic generalization of on-line learning and an application to boosting}. 
+From a statistical point of view, this algorithm minimizes the exponential loss of the margin, a loss function that gives a very high penalty to negative margins (i.e.\ wrongly classified samples),$\sum_i e^{-y_i f(x_i)}$. 
+It turned out that this is not always the desired thing to do; especially if the training data contains outliers, concentrating on the correct classification of those rather leads to a bad generalizatin error and it might be better to tolerate the outlier to be classified wrongly \todo{maybe make a figure}. 
+Using more robust criteria instead does not give rise to such simple boosting algorithms. 
+Inspired by AdaBoost and Gradient Descent methods\todo{omg check...}, gradient boosting was introduced... general way, different loss functions...
