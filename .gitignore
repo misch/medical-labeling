@@ -19,3 +19,16 @@ NIfTI_20140122/*
 
 #SQB
 sqb-0.1/*
+
+#LaTex
+*.aux
+*.bbl
+*.blg
+*.lof
+*.log
+*.lot
+*.out
+*.tdo
+*.toc
+*.pdf
+thesis/Figures/*

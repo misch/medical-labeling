@@ -1,0 +1,78 @@
+\chapter{Learning with unlabeled data}
+\label{chap:learning-with-unlabeled-data}
+In this chapter, we will discuss the inherently noisy labels in the setup of Vilari\~no et al. and how to overcome the issues. 
+The underlying conceptual problem to solve is the following: Assuming we have only true positive gaze positions (see Chapter \ref{chap:characterizing-gaze} for a discussion about this assumption), we can still not infer any reliable information about the negative labels. Instead, we are facing the so-called PU-Learning Problem that will be explained in the following.
+
+\section{Problem formulation}
+The problem of learning a classifier from positive and unlabeled data is aimed at assigning labels to the unlabeled dataset. 
+It can be considered a semi-supervised learning setup: Instead of having a positive and a negative set of examples, we are given an incomplete set of positives and a set of unlabeled examples. 
+The unlabeled data contains positive and negative examples which we aim to assign to either the positive or negative class. \todoWriteMore{perhaps mention papers: elkan2008learning, plessis2015convex}
+%Plessis et al. \todoRef{reference} found that solving the PU-problem corresponds to minimizing a non-convex loss function, and in 2000? \todoRef{year, reference} they presented a way to formulate it in a convex way. As discussed in Chapter ?? \todoRef{reference}, gradient boosting gives us a general way to minimize a loss function. Following the suggestion of ...? \todoRef{ref to cvx pu-formulation}, we chose the following loss function:
+Usually, gradient boosting is used to minimize a loss function $L(y,f(x))$, where $y \in \{-1,1\}^m$ is a vector of labels and $x \in \mathbb{R}^{m\times n}$ is a matrix containing $n$-dimensional features. In our case of the PU-learning problem, however, not all the labels $y_i, i \in \{1,\dots,m\}$ are given. Instead we have only an incomplete set of positive labels ($+1$) and the rest is unknown. In order to handle this problem within the gradient boosting framework, we need some pseudo labels (see ???). Our pseudo labels are based on the probabilities of training samples $(x_i)_{i=1}^m$ being positive or negative. The loss function is then defined as
+
+\begin{equation*}
+L(y,f(x)) = \underbrace{\sum_{\{i :~ y_i = 1\}} e^{-y_i f(x_i)}}_{P} \quad + \quad \gamma\underbrace{\sum_{\{i:~ y_i \text{unknown}\}} \left( p_i e^{-y_i f(x_i)} + (1-p_i) e^{y_i f(x_i)}\right)}_{U}, 
+\end{equation*}
+where $y_i$ denotes the (pseudo-)label of sample $x_i$, $p_i$ is the confidence that the pseudo-label $y_i$ is correct and $f(x_i)$ is the predicted score of the classifier.
+Note that if we consider the fully supervised case, the U-term will be 0 and a standard exponential loss function will be optimized. 
+The U-term of the loss function will penalize small margins if we are very confident about our pseudo-label being correct ($p_i \approx 1$) and it will penalize large margins, if the pseudo-label is very unlikely to be correct ($p_i \approx 0$). 
+If we don't know whether or not our label is correct or incorrect ($p_i = 0.5$), then what will be penalized are very small as well as very large margins, as this would mean a confident decision towards one direction based on a randomly chosen pseudo-label. Figure \ref{fig:ourlossfunctionplot} shows the U-term of the loss function for different values of the probabilities.
+
+\begin{figure}[ht]
+	\centering
+	%\begin{subfigure}[h]{0.45\textwidth}
+	\includegraphics[width=\textwidth]{loss_function_different_p.pdf}	
+	%\missingfigure[figwidth=\textwidth]{different plots of loss functions with different p's. read again explanation of loss functions in statistical learning book!}
+		\caption{U-term of the loss function for different values of p. For samples whose label is most likely incorrect ($p \approx 0$), small margins mean correct decisions (i.e.\ different from the label) and they are therefore rewarded whereas large margins are penalized. In the case of $p \approx 1$, it is the opposite.}
+		\label{fig:ourlossfunctionplot}
+	%\end{subfigure}
+\end{figure}
+
+The derivatives (...) \todo{refer to gradient boost algorithm} are then given by 
+
+\begin{equation*}
+ \frac{\partial L(y_i,f(x_i))}{\partial f(x_i)} = 
+    \begin{cases}
+	-y_i e^{-y_i f(x_i)}, & \text{if $y_i = 1$}\\
+	-\gamma \cdot \left(y_i p_i e^{-y_i f(x_i)} - y_i (1 - p_i) e^{y_i f(x_i)} \right), & \text{if $y_i$ unknown.}
+      \end{cases}
+\end{equation*}
+
+The key for this method is the probability $p_i$ for each sample $x_i$ to be a correctly labeled sample. While we give as input a probability of a sample being positive, it's later converted to a probability of a sample being correctly labeled for positive and negative samples. \todo{check...} In our case this does not matter because we give only positive and unlabeled, but no negative input samples.
+
+Plessis et al. \todoRef{reference} found that solving the PU-problem corresponds to minimizing a non-convex loss function, and in 2000? \todoRef{year, reference} they presented a convex formulation by using different loss functions for the positive and the unlabeled data samples. As discussed in Chapter ?? \todoRef{reference}, gradient boosting gives us a general way to minimize a loss function, and we also tried their suggested double hinge loss. We conducted some basic experiments on synthetic data (see Figure \ref{fig:synthetic_train_data}) to compare the performances. The positive training samples consisted of 40 samples, 20 of them generated from normal distributions $\mathcal{N}(\mu_1,\Sigma_1)$ and the other 20 from $\mathcal{N}(\mu_2, \Sigma_2)$ with 
+$$\mu_1= \begin{bmatrix}2 \\ 3 \end{bmatrix}, \Sigma_1 = \begin{bmatrix}0.7 & 0.2 \\ 0.2 & 0.5 \end{bmatrix}, \quad \mu_2 = [4.5 2], \Sigma_2 = [.2 0; 0 .2]$$
+and the negatives were 40 samples generated from a normal distribution with $\mu_3 = [2 1.5]$  and $\Sigma_3 = [.6 .1; .1 .7]$
+
+
+\begin{figure}[ht]
+	\centering
+	\begin{subfigure}[h]{0.45\textwidth}
+	\includegraphics[width=\textwidth]{synthetic_train_data.pdf}	
+	%\missingfigure[figwidth=\textwidth]{different plots of loss functions with different p's. read again explanation of loss functions in statistical learning book!}
+		\caption{real labels of synthetic training data generated according to 3 normal distributions}
+	\end{subfigure}
+	~
+	\begin{subfigure}[h]{0.45\textwidth}
+	\includegraphics[width=\textwidth]{synthetic_train_data_estimated_labels.pdf}	
+	%\missingfigure[figwidth=\textwidth]{different plots of loss functions with different p's. read again explanation of loss functions in statistical learning book!}
+		\caption{labels estimated from probabilities given by the known sample distributions}
+	\end{subfigure}
+	\label{fig:synthetic_train_data}
+\end{figure}
+
+The double hinge loss shows comparable results to the traditional exponential loss (assuming the input-labels are based on probabilities of the underlying distribution whether or not they are positive) -- however, the above mentioned loss function performs better; the reason for this can be explained very easily: The margin is not available and has to be estimated -- our loss function takes into consideration that the label estimates might not be accurate whereas the plain double hinge loss and the traditional exponential loss assume that the margins are correctly estimated (i.e.\ having the correct labels) and then basically solve a completely supervised problem. Whereas Plessis et al.\ construct an empirical version of the objective function that can be optimized using quadratic programming, we tried to solve the problem using gradient boosting techniques -- in this setup, what is usually done is an estimation of the labels for the unlabeled set and then, based on this, a supervised learning process. There have been suggestions to adaptively set the labels for the unlabeled data (\todoRef{SSMBoost [d'Alch\`e-Buc et al., 2002], SemiBoost [Mallapragada et al., 2009]}). 
+
+Using our loss function, we could achieve even slightly better results than with the traditional exponential loss using the true labels (i.e.\ not estimated by probabilities of the underlying distribution).
+
+A drawback of our approach is, however, that giving the correct probabilities as inputs is not a trivial task. For many datasets, it is not easy to infer, from a few given gaze positions, how likely it is for other samples to be positive or negative. Datasets ``airplane'' and ``instrument'' were okay... terms dependent on spatial distance from gaze, feature-space distance from ``positive'' gaze-feature,... other datasets much more difficult...
+
+\section{On the real data}
+
+
+
+\todoWriteMore{show results with ``normal'' plus/minus 1 labeled data as in Vilari\~no et al., consider patches and also superpixels (good features!)}
+\todoWriteMore{contrast to what they did in 1st paper. Training labels according to real ground truth vs. training labels according to gaze position as suggested by Vilari\~no et al.:
+...}
+
+
