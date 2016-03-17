@@ -31,4 +31,5 @@ sqb-0.1/*
 *.tdo
 *.toc
 *.pdf
+*.backup
 thesis/Figures/*
