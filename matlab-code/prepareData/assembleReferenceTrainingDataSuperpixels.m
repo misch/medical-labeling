@@ -15,7 +15,7 @@ function assembleReferenceTrainingDataSuperpixels(dataset,output_filename,ground
 
 
     % Get Eye-Tracking information
-    filename = [dataset_folder, 'framePositions.csv'];
+    filename = [dataset_folder, 'gaze-measurements/vid_10fps1.csv']; % todo: annoying to always change when dataset changes!
     framePositions = readCSVFile(filename);
     framePositions(:,1) = framePositions(:,1) * frame_width;
     framePositions(:,2) = framePositions(:,2) * frame_height;
@@ -74,7 +74,7 @@ function assembleReferenceTrainingDataSuperpixels(dataset,output_filename,ground
             running_idx = running_idx + 1;
         end
 
-        positive_mask = ismember(frameDescriptor.superpixel_idx,frameDescriptor.superpixel_idx(positive_fraction >= 0.3));
+        positive_mask = ismember(frameDescriptor.superpixel_idx,frameDescriptor.superpixel_idx(positive_fraction >= 0.5));
         negative_mask = ~positive_mask;
         
         med_superpix_pos = zeros(n_samples,2);

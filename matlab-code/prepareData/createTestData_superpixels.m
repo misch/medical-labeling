@@ -20,7 +20,7 @@ function [] = createTestData_superpixels(frames_dir,superpixel_dir,frame_percent
         superpixel_size = round(min([size(image,1), size(image,2)]) / superpixel_scale);
         super_img = getSuperPixels(single(lab_image), superpixel_size, regularizer);
         
-        frameDescriptor = getSuperpixelFeaturesBeta(image, super_img,3);
+        frameDescriptor = getSuperpixelFeatures(image, super_img);
         frameDescriptor.frame_no = idx;
         
         save([superpixel_dir,'frame_',sprintf('%05d', idx),'.mat'], 'frameDescriptor','-v7.3')
