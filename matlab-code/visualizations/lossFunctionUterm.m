@@ -1,0 +1,31 @@
+[Z,P] = meshgrid(-2:0.1:2, 0:0.1:1);
+L = P .* exp(-Z) + (1-P).*exp(Z);
+
+surf(Z,P,L)
+xlabel('margin')
+ylabel('p(correct label)')
+zlabel('U-term')
+colormap winter
+
+%%
+z = -2:0.001:2;
+probabilities = [0,0.25,0.5,1];
+f = figure;
+
+% for p = probabilities
+%     hold on; plot(z,p.*exp(-z) + (1-p).*exp(z));
+% end
+hold on; plot(z,probabilities(1).*exp(-z) - (1-probabilities(1)).*exp(z),'Color',[1 0.4 0], 'LineWidth',2);
+hold on; plot(z,probabilities(2).*exp(-z) - (1-probabilities(2)).*exp(z),'Color',[1 0.8 0],'LineWidth',2);
+hold on; plot(z,probabilities(3).*exp(-z) - (1-probabilities(3)).*exp(z),'Color',[0.6 0.8 0.2], 'LineWidth',2);
+hold on; plot(z,probabilities(4).*exp(-z) - (1-probabilities(4)).*exp(z),'Color',[0 0.4 0.65],'LineWidth',2);
+grid on;
+xlabel('margin','FontSize',14); ylabel('U-term','FontSize',14);
+
+lh = legend( sprintf('p = %0.2f',probabilities(1)),...
+        sprintf('p = %0.2f',probabilities(2)),...
+        sprintf('p = %0.2f',probabilities(3)),...
+        sprintf('p = %0.2f',probabilities(4)),...
+        'Location','north');
+lh.FontSize = 14;
+saveToPDFWithoutMargins(f,'loss_function_different_p.pdf');
