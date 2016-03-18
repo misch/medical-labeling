@@ -35,7 +35,7 @@ h = waitbar(0,'PU-boost training...');
 sorted_data = sort(data,1);
 
 for ii = 1:nbFeat
-    sorted_attr_values{ii} = uniquetol(sorted_data(:,ii),0.0005)';
+    sorted_attr_values{ii} = uniquetol(sorted_data(:,ii),0.005)';
 end
 
 for m = 1:nbRounds
@@ -50,7 +50,7 @@ for m = 1:nbRounds
 %     R_vec(Lindex) = -labels(Lindex);
 %     R_vec(Uindex) = -labels(Uindex).*((labels(Uindex).*F_vec(Uindex))<-1)-0.5*labels(Uindex).*(abs(labels(Uindex).*F_vec(Uindex))<=1);
                      
-    dispData(R_vec,data);
+%     dispData(R_vec,data);
     classifier{m}.wl     = getBestWeakLearner(data,R_vec',sorted_attr_values);
     classifier{m}.alpha  = 1;%compAlpha(Pdata,Udata,PWeights,UWeights,UProb,ULab,gamma,bRound.wl);
    

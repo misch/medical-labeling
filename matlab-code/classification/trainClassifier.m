@@ -12,8 +12,8 @@ train_labels = training_set.labels;
 model = 0;
 
 if strcmp(classifier,'svm')
-    addpath('../../libsvm-3.20/libsvm-3.20/matlab/')
-    cross_validation = false;
+    addpath('../libsvm-3.20/libsvm-3.20/matlab/')
+    cross_validation = true;
 
     if (cross_validation) % Perform cross-validation
         disp('Start cross-validation...');
@@ -21,7 +21,7 @@ if strcmp(classifier,'svm')
 
         bestacc = 0;
         for log2c = -3:3,
-          for log2g = -4:2,
+          for log2g = -4:4,
             cmd = ['-v 5 -c ', num2str(2^log2c), ' -g ', num2str(2^log2g)];
             cv = libsvmtrain(train_labels, train_data, cmd);
             if (cv >= bestacc),
@@ -48,7 +48,7 @@ elseif strcmp(classifier,'grad_boost')
                     'disableLineSearch', uint32(0),...
                      'mtry',uint32(ceil(sqrt(size(train_data,2)))));
     disp('Train gradient boost classifier...');
-    model = SQBMatrixTrain( single(train_data), train_labels, uint32(50000), options);
+    model = SQBMatrixTrain( single(train_data), train_labels, uint32(5000), options);
 elseif strcmp(classifier,'pu_grad_boost')
     
 %     addpath('../pugradboost/');
@@ -67,7 +67,7 @@ elseif strcmp(classifier,'pu_grad_boost')
 
     train_labels(train_labels == -1) = 0;
 
-    [model,~] = learnPuboost(train_data,train_labels, prob,5000);
+    [model,~] = learnPuboost(train_data,train_labels, prob,500);
 else
     disp('SVM and Gradient Boost are currently the only available classifiers.')
 end
