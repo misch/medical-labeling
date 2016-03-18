@@ -20,7 +20,7 @@ classifier = 'svm';
 model = trainClassifier(dataset, classifier, 'trainingSuperpixelsColorReference-0_5');
 
 %%
-testSuperpixelClassifier(model, dataset, [189], classifier,'simple-color-descriptors/');
+testSuperpixelClassifier(model, dataset, find(~key_pressed2)', classifier,'simple-color-descriptors/');
 % testPatchClassifier(model,dataset,[189], classifier);
 
 % frames to test:
