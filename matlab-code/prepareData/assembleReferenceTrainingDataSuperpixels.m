@@ -56,7 +56,7 @@ function assembleReferenceTrainingDataSuperpixels(dataset,output_filename,ground
         
         gt_name = interesting_frames(i).name;
         gt_name = [gt_name(1:end-3),'png'];
-        gt = getGrayScaleImage([ground_truth_dir,gt_name]); % todo: get ground_truth_dir from somewhere
+        gt = getGrayScaleImage([ground_truth_dir,gt_name]); 
 
         
         threshold = 0.1;
@@ -74,11 +74,7 @@ function assembleReferenceTrainingDataSuperpixels(dataset,output_filename,ground
             running_idx = running_idx + 1;
         end
 
-%         disp('Ran through this stuff and should now have positive fraction for every superpixel...');
-        
-        
-
-        positive_mask = ismember(frameDescriptor.superpixel_idx,frameDescriptor.superpixel_idx(positive_fraction >= 0.5));
+        positive_mask = ismember(frameDescriptor.superpixel_idx,frameDescriptor.superpixel_idx(positive_fraction >= 0.3));
         negative_mask = ~positive_mask;
         
         med_superpix_pos = zeros(n_samples,2);
