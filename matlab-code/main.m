@@ -15,13 +15,17 @@ for ii = 1:length(observations)
 end
 %%
 assembleReferenceTrainingDataSuperpixels(dataset,'trainingSmallSuperpixelsCooccReference-0_5.mat','../data/Dataset8/ground_truth-frames/');
+% for reference: key_pressed values of:
+% - d2: gaze observation #2
+% - d7: gaze observation #2
+% - d8: gaze observation #7
 % assembleTrainingDataPatches(dataset,'trainingPatchesTest.mat');
 %%
 classifier = 'grad_boost';
-model = trainClassifier(dataset, classifier, 'trainingSmallSuperpixelsCooccReference-0_3');
+model = trainClassifier(dataset, classifier, 'trainingSmallSuperpixelsCooccReference-0_5');
 
 %%
-testSuperpixelClassifier(model, dataset, [39:50], classifier,'small-superpixels-coocc-descriptors/'); %find(~key_pressed2)'
+testSuperpixelClassifier(model, dataset, find(~key_pressed)', classifier,'small-superpixels-coocc-descriptors/'); %find(~key_pressed2)'
 % testPatchClassifier(model,dataset,[189], classifier);
 
 % frames to test:
