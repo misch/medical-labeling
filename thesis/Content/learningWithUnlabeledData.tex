@@ -97,8 +97,25 @@ Using our loss function, we could achieve even slightly better results than with
 A drawback of our approach is, however, that giving the correct probabilities as inputs is not a trivial task. For many datasets, it is not easy to infer, from a few given gaze positions, how likely it is for other samples to be positive or negative. Datasets ``airplane'' and ``instrument'' were okay... terms dependent on spatial distance from gaze, feature-space distance from ``positive'' gaze-feature,... other datasets much more difficult...
 
 \section{On the real data}
-Assuming that we have for a certain amount of frames / slices the correct superpixel labels (in the real setting, that corresponds to the frames where the user pressed the key, indicating that he is observing a interesting structure), we checked how well a standard gradient boost classifier generalized to the remaining frames, on a pixelwise basis -- that is, we classify whole superpixels, but at the end we are interested in the pixelwise segmentation result and compute Receiver Operator Characteristics (ROC) and Precision-Recall values on a pixelwise basis. 
-Especially when a superpixel contains positive and negative ground truth regions, these scores might look a bit odd due to ambiguities in sorting of the resulting scores (all pixels of one superpixel get the same score), they still give a good idea about the actual performance of the different methods. Also, this strategy allows us to make direct comparisons with the usage of whole patches instead of superpixels.
+Assuming that we have for a certain amount of frames / slices the correct superpixel labels
+%(in the real setting, that will correspond to the frames where the user pressed the key, indicating that he is observing a interesting structure)
+, we checked how well a standard gradient boost classifier generalized to the remaining frames, on a pixelwise basis -- that is, we classify whole superpixels, but at the end we are interested in the pixelwise segmentation result and compute Receiver Operator Characteristics (ROC) and Precision-Recall values on a pixelwise basis. 
+Especially when a superpixel contains positive and negative ground truth regions, these scores might look a bit odd due to ambiguities in sorting of the resulting scores (all pixels of one superpixel get the same score), they still give a good idea about the actual performance of the different methods. Also, this strategy allows us to compare the results of different superpixel sizes with respect to the real pixelwise ground truth instead of a ``constructed'' ground truth of e.g.\ declaring a superpixel as positive, if it contains more than 30\% or 50\% positive ground truth pixels.
+
+\begin{figure}[ht]
+	\centering
+	\begin{subfigure}[h]{0.45\textwidth}
+	\includegraphics[width=\textwidth]{reference_ROC.pdf}	
+		\caption*{ROC curves}
+	\end{subfigure}
+	~
+	\begin{subfigure}[h]{0.45\textwidth}
+	\includegraphics[width=\textwidth]{reference_PR.pdf}	
+		\caption*{PR curves}
+	\end{subfigure}
+	\caption{Reference curves. Blue: instrument; red: eye tumor; yellow: cochlea. Note that the precision-recall curves for indicate that the obtained classifier is most confident about positive decisions that are actually wrong. This might indicate that our features are not very suitable for the task, and it is also a hint to the fact that very similar structures appear in the images that are actually sometimes positive and sometimes negative. A further reason is that only a few frames of those datasets contain positive information at all. As the user presses the key only if he sees ``interesting'' (positive) information, we gathered the positive and negative labels from the frames with a pressed key. Therefore, the positive information might be over-represented whereas at the same time some significant negative examples (from frames that do not contain any positive information) might not be contained in the training set.}
+	\label{fig:loss-functions-comparisons}
+\end{figure}
 
 Illustrating our starting point, we also show the results obtained with the approach of considering only the directly observed superpixels as positives and everything else as negative. The standard classifiers will try to separate observed from non-observed superpixels, which is only the correct behaviour if the assumptions discussed in Chapter \ref{chap:background} are fulfilled -- if they are not fulfilled, it means that the learned classifier holds a bias. It can be clearly seen that positions that have been observed only for a short time, even though they belong to the positive set, are not well separated from the negative set because very similar parts will end up in the negative set.
 
