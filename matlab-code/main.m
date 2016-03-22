@@ -19,14 +19,15 @@ assembleReferenceTrainingDataSuperpixels(dataset,'trainingSmallSuperpixelsColorR
 % - d2: gaze observation #2
 % - d7: gaze observation #2
 % - d8: gaze observation #7
-% assembleTrainingDataPatches(dataset,'trainingPatchesTest.mat');
 %%
-classifier = 'pu_grad_boost';
-model = trainClassifier(dataset, classifier, 'trainingSmallSuperpixelsColorReferenceOnePosPerFrame-0_5');
+assembleTrainingDataPatches(dataset,'trainingPatchesTest2.mat');
+%%
+classifier = 'grad_boost';
+model = trainClassifier(dataset, classifier, 'trainingPatches2');
 
 %%
-testSuperpixelClassifier(model, dataset, [105:50:655], classifier,'simple-color-descriptors/'); %find(~key_pressed)'
-% testPatchClassifier(model,dataset,[189], classifier);
+% testSuperpixelClassifier(model, dataset, [105:50:655], classifier,'simple-color-descriptors/'); %find(~key_pressed)'
+testPatchClassifier(model,dataset,[105:50:655], classifier);
 
 % frames to test:
 % Dataset2: [105:50:655]
