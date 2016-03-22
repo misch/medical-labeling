@@ -13,7 +13,7 @@ model = 0;
 
 if strcmp(classifier,'svm')
     addpath('../libsvm-3.20/libsvm-3.20/matlab/')
-    cross_validation = true;
+    cross_validation = false;
 
     if (cross_validation) % Perform cross-validation
         disp('Start cross-validation...');

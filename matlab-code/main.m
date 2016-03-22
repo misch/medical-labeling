@@ -5,7 +5,7 @@ addpath(genpath(pwd));
 %%
 run prepareData
 %%
-dataset = 8;
+dataset = 2;
 %%
 %assembleTrainingDataSuperpixels(dataset,'trainingAutoencodedSuperpixels.mat');
 
@@ -14,18 +14,18 @@ for ii = 1:length(observations)
     assembleTrainingDataSuperpixels(dataset,['trainingSmallSuperpixelsCoocc',num2str(ii),'.mat'],observations(ii).name);
 end
 %%
-assembleReferenceTrainingDataSuperpixels(dataset,'trainingSmallSuperpixelsCooccReference-0_5.mat','../data/Dataset8/ground_truth-frames/');
+assembleReferenceTrainingDataSuperpixels(dataset,'trainingSmallSuperpixelsColorReferenceOnePosPerFrame-0_5.mat','../data/Dataset2/ground_truth-frames/');
 % for reference: key_pressed values of:
 % - d2: gaze observation #2
 % - d7: gaze observation #2
 % - d8: gaze observation #7
 % assembleTrainingDataPatches(dataset,'trainingPatchesTest.mat');
 %%
-classifier = 'grad_boost';
-model = trainClassifier(dataset, classifier, 'trainingSmallSuperpixelsCooccReference-0_5');
+classifier = 'pu_grad_boost';
+model = trainClassifier(dataset, classifier, 'trainingSmallSuperpixelsColorReferenceOnePosPerFrame-0_5');
 
 %%
-testSuperpixelClassifier(model, dataset, find(~key_pressed)', classifier,'small-superpixels-coocc-descriptors/'); %find(~key_pressed2)'
+testSuperpixelClassifier(model, dataset, [105:50:655], classifier,'simple-color-descriptors/'); %find(~key_pressed)'
 % testPatchClassifier(model,dataset,[189], classifier);
 
 % frames to test:
