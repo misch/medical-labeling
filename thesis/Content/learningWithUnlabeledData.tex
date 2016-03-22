@@ -117,7 +117,101 @@ Especially when a superpixel contains positive and negative ground truth regions
 	\label{fig:loss-functions-comparisons}
 \end{figure}
 
-Illustrating our starting point, we also show the results obtained with the approach of considering only the directly observed superpixels as positives and everything else as negative. The standard classifiers will try to separate observed from non-observed superpixels, which is only the correct behaviour if the assumptions discussed in Chapter \ref{chap:background} are fulfilled -- if they are not fulfilled, it means that the learned classifier holds a bias. It can be clearly seen that positions that have been observed only for a short time, even though they belong to the positive set, are not well separated from the negative set because very similar parts will end up in the negative set.
+%Illustrating our starting point, we also show the results obtained with the approach of considering only the directly observed superpixels as positives and everything else as negative. 
+%
+
+In our setting, the best we can hope for is one true positive superpixel in every frame. Choosing one true positive superpixel at random from the observed frames\footnote{the frames where the key was pressed in one of the gaze position observations}, and setting the others to negative / unlabeled, we can see in Figure \ref{fig:one-random-tp-per-frame} that our loss function leads to comparable results to a standard gradient boosting classifier, if we find a reasonable way to estimate the probabilities \todo{explain how this was done} of unlabeled superpixels being positive or negative. However, the standard classifier will strictly try to separate observed from non-observed superpixels, which is only the correct behaviour if the assumptions discussed in Chapter \ref{chap:background} are fulfilled -- if they are not fulfilled, it means that the learned classifier holds a bias (this has been discussed e.g.\ in \todoRef{give reference}). That this is truly happening in this case can, for example, be seen from the heat maps in Figure \ref{fig:bias-in-heatmaps}: Using our constructed PU-loss function, 0 becomes a reasonable threshold to distinguish between positive and negative samples, whereas for the other classifiers we would have to find a threshold below zero to get any positive labels in the output.
+
+\begin{figure}[ht]
+	\centering
+	\begin{subfigure}[h]{0.45\textwidth}
+	\includegraphics[width=\textwidth]{roc-one_random_tp_per_frame.pdf}	
+		\caption*{ROC curves}
+	\end{subfigure}
+	~
+	\begin{subfigure}[h]{0.45\textwidth}
+	\includegraphics[width=\textwidth]{pr-one_random_tp_per_frame.pdf}	
+		\caption*{PR curves}
+	\end{subfigure}
+	\caption{Randomly chosen true positive for each frame that was observed (i.e.\ where the user pressed the key) in one of the gaze observations.}
+	\label{fig:one-random-tp-per-frame}
+\end{figure}
+
+
+\begin{figure}[ht]
+	\centering
+ 	\begin{subfigure}[h]{0.48\textwidth}
+	  \includegraphics[width=\textwidth]{d2-frame_00455-input}
+	  \caption*{input image \\ (frame 455 of dataset ``instrument'')}
+	\end{subfigure}
+	~
+	\begin{subfigure}[h]{0.48\textwidth}
+	  \includegraphics[width=\textwidth]{d2-frame_00455-groundtruth}
+	  \caption*{ground truth \\ \quad}
+	\end{subfigure}
+	
+	\vspace{3mm}
+	\begin{subfigure}[h]{0.495\textwidth}
+	  \includegraphics[height=4.4cm]{d2-frame_00455-gradboost-heatmap}
+	  \includegraphics[height=4.4cm]{d2-frame_00455-gradboost-colorbar}
+	  \caption*{exponential loss \\ (gradient boosting)}
+	  % shrinkage = 0.1, 5000 iterations, max tree depth = 2
+	\end{subfigure}
+	
+	\vspace{3mm}
+	\begin{subfigure}[h]{0.495\textwidth}
+	  \includegraphics[height=4.4cm]{d2-frame_00455-svm-heatmap}
+	  \includegraphics[height=4.4cm]{d2-frame_00455-svm-colorbar}
+	  \caption*{SVM classifier \\ (rbf kernel with $\gamma = 0.0625$, $c = 10$)\\}
+	\end{subfigure}	
+	\begin{subfigure}[h]{0.495\textwidth}
+	  \includegraphics[height=4.4cm]{d2-frame_00455-pugradboost-heatmap}
+	  \includegraphics[height=4.4cm]{d2-frame_00455-pugradboost-colorbar}
+		  \caption*{PU-losss \\ (gradient boosting)}
+		  % 500 iterations, shrinkage = 0.1, stumps
+	\end{subfigure}		
+	\caption{}
+	\label{fig:bias-in-heatmaps}
+\end{figure}
+
+The difference from this best case to our actual situation lies in the distribution of the positive labels -- they are not, as assumed until now, randomly taken from all the positives, but instead they might often over-represent certain positives and under-represent other due to e.g.\ the fact that it is easier to fixate an edge than a smooth region in an image. Moreover, the labels can also be noisy, that is some of them might actually be negative samples and we wrongly assume them to be positive. Experiments already done:
+\begin{itemize}
+\item dataset 2
+  \begin{itemize}
+  \item standard gradient boost with superpixels (color features) (\path{results/Dataset2/grad_boost_color_gaze2/})
+  \item standard gradient boost with patches (preprocessed values as in V. et al.) (\path{results/Dataset2/grad_boost_patches_gaze2/})
+  \item pu-gradient boost with superpixels (color features) (\path{results/Dataset2/pu_grad_boost_color_gaze2/})
+  \item svm with superpixels (color features) (\path{results/Dataset2/svm_color_gaze2})
+  \end{itemize}
+\item dataset 7
+  \begin{itemize}
+  \item ?
+  \end{itemize}
+\item dataset 8
+  \begin{itemize}
+  \item ?
+  \end{itemize}
+
+
+\end{itemize}
+
+
+%\begin{itemize}
+%\item First level, itemize, first item
+%\begin{itemize}
+%\item Second level, itemize, first item
+%\item Second level, itemize, second item
+%\begin{enumerate}
+%\item Third level, enumerate, first item
+%\item Third level, enumerate, second item
+%\end{enumerate}
+%\end{itemize}
+%\item First level, itemize, second item
+%\end{itemize}
+
+
+%mainly because it means that a superpixel that has been labeled positive will have a multitude of negatively labeled ``opponents'' that look almost the same. It can be clearly seen that positions that have been observed only for a short time, even though they belong to the positive set, are not well separated from the negative set because very similar parts will end up in the negative set.
+
 
 
 \todoWriteMore{show results with ``normal'' plus/minus 1 labeled data as in Vilari\~no et al., consider patches and also superpixels (good features!)}
