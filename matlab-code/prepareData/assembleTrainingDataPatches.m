@@ -11,7 +11,7 @@ function assembleTrainingDataPatches(dataset, output_filename)
 [dataset_folder, frames_dir, file_names, frame_height, frame_width] = getDatasetDetails(dataset);
 
 %% Get Eye-Tracking information
-    filename = [dataset_folder, 'framePositions.csv'];
+    filename = [dataset_folder, 'gaze-measurements/video2.csv'];
     framePositions = readCSVFile(filename);
     framePositions(:,1) = framePositions(:,1) * frame_width;
     framePositions(:,2) = framePositions(:,2) * frame_height;
