@@ -22,7 +22,7 @@ If we don't know whether or not our label is correct or incorrect ($p_i = 0.5$),
 \begin{figure}[ht]
   \centering
   \includegraphics[width=\textwidth]{loss_function_different_p.pdf}	
-  \caption{U-term of the loss function for different values of p. For samples whose label is most likely incorrect ($p \approx 0$), small margins mean correct decisions (i.e.\ different from the label) and they are therefore rewarded whereas large margins are penalized. In the case of $p \approx 1$, it is the opposite.}
+  \caption{U-term of the loss function for different values of $p$. For samples whose label is most likely incorrect ($p \approx 0$), small margins mean correct decisions (i.e.\ different from the label) and they are therefore rewarded whereas large margins are penalized. In the case of $p \approx 1$, it is the opposite.}
   \label{fig:ourlossfunctionplot}
 \end{figure}
 
@@ -67,6 +67,7 @@ and the negatives were 40 samples generated from a normal distribution with $\mu
 	\includegraphics[width=\textwidth]{synthetic_train_data_estimated_labels.pdf}	
 		\caption*{labels estimated from probabilities given by the known sample distributions}
 	\end{subfigure}
+	\caption{Generated training samples (40 positives, 40 negatives) and labels according to the true probabilities of the generating distributions.}
 	\label{fig:synthetic_train_data}
 \end{figure}
 
@@ -99,7 +100,7 @@ A drawback of our approach is, however, that giving the correct probabilities as
 \section{On the real data}
 Assuming that we have for a certain amount of frames / slices the correct superpixel labels
 %(in the real setting, that will correspond to the frames where the user pressed the key, indicating that he is observing a interesting structure)
-, we checked how well a standard gradient boost classifier generalized to the remaining frames, on a pixelwise basis -- that is, we classify whole superpixels, but at the end we are interested in the pixelwise segmentation result and compute Receiver Operator Characteristics (ROC) and Precision-Recall values on a pixelwise basis. 
+, we checked how well a standard gradient boost classifier generalized to the remaining frames, on a pixelwise basis -- that is, we classify whole superpixels, but at the end we are interested in the pixelwise segmentation result and compute Receiver Operator Characteristics (ROC) and Precision-Recall values on a pixelwise basis (Figure \ref{fig:reference-known-labels}). 
 Especially when a superpixel contains positive and negative ground truth regions, these scores might look a bit odd due to ambiguities in sorting of the resulting scores (all pixels of one superpixel get the same score), they still give a good idea about the actual performance of the different methods. Also, this strategy allows us to compare the results of different superpixel sizes with respect to the real pixelwise ground truth instead of a ``constructed'' ground truth of e.g.\ declaring a superpixel as positive, if it contains more than 30\% or 50\% positive ground truth pixels.
 
 \begin{figure}[ht]
@@ -114,7 +115,7 @@ Especially when a superpixel contains positive and negative ground truth regions
 		\caption*{PR curves}
 	\end{subfigure}
 	\caption{Reference curves. Blue: instrument; red: eye tumor; yellow: cochlea. Note that the precision-recall curves for indicate that the obtained classifier is most confident about positive decisions that are actually wrong. This might indicate that our features are not very suitable for the task, and it is also a hint to the fact that very similar structures appear in the images that are actually sometimes positive and sometimes negative. A further reason is that only a few frames of those datasets contain positive information at all. As the user presses the key only if he sees ``interesting'' (positive) information, we gathered the positive and negative labels from the frames with a pressed key. Therefore, the positive information might be over-represented whereas at the same time some significant negative examples (from frames that do not contain any positive information) might not be contained in the training set.}
-	\label{fig:loss-functions-comparisons}
+	\label{fig:reference-known-labels}
 \end{figure}
 
 %Illustrating our starting point, we also show the results obtained with the approach of considering only the directly observed superpixels as positives and everything else as negative. 
@@ -174,7 +175,8 @@ In our setting, the best we can hope for is one true positive superpixel in ever
 	\label{fig:bias-in-heatmaps}
 \end{figure}
 
-The difference from this best case to our actual situation lies in the distribution of the positive labels -- they are not, as assumed until now, randomly taken from all the positives, but instead they might often over-represent certain positives and under-represent other due to e.g.\ the fact that it is easier to fixate an edge than a smooth region in an image. Moreover, the labels can also be noisy, that is some of them might actually be negative samples and we wrongly assume them to be positive. Experiments already done:
+The difference between this best case to our actual situation lies in the distribution of the positive labels -- they are not, as assumed until now, randomly taken from all the positives, but instead they might often over-represent certain positives and under-represent others due to e.g.\ the fact that it is easier to fixate an edge than a smooth region in an image. 
+Moreover, the labels can also be noisy, that is some of them might actually be negative samples and we wrongly assume them to be positive. Experiments already done:
 \begin{itemize}
 \item dataset 2
   \begin{itemize}
@@ -196,18 +198,21 @@ The difference from this best case to our actual situation lies in the distribut
 \end{itemize}
 
 
-%\begin{itemize}
-%\item First level, itemize, first item
-%\begin{itemize}
-%\item Second level, itemize, first item
-%\item Second level, itemize, second item
-%\begin{enumerate}
-%\item Third level, enumerate, first item
-%\item Third level, enumerate, second item
-%\end{enumerate}
-%\end{itemize}
-%\item First level, itemize, second item
-%\end{itemize}
+\begin{figure}[ht]
+	\centering
+	\begin{subfigure}[h]{0.45\textwidth}
+	\includegraphics[width=\textwidth]{d2-gaze2-ROCresults-different-loss-functions.pdf}	
+		\caption*{ROC curves}
+	\end{subfigure}
+	~
+	\begin{subfigure}[h]{0.45\textwidth}
+	\includegraphics[width=\textwidth]{d2-gaze2-PRresults-different-loss-functions.pdf}	
+		\caption*{PR curves}
+	\end{subfigure}
+	\caption{Randomly chosen true positive for each frame that was observed (i.e.\ where the user pressed the key) in one of the gaze observations.}
+	\label{fig:one-random-tp-per-frame}
+\end{figure}
+
 
 
 %mainly because it means that a superpixel that has been labeled positive will have a multitude of negatively labeled ``opponents'' that look almost the same. It can be clearly seen that positions that have been observed only for a short time, even though they belong to the positive set, are not well separated from the negative set because very similar parts will end up in the negative set.
