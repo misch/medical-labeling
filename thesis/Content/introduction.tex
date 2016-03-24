@@ -4,17 +4,17 @@
 \section{Motivation}
       Medical imaging is a set of techniques to produce visual representations of the interior of a body. 
       Such images are used for clinical analysis and medical intervention, e.g. to diagnose and treat disease. 
-      Techniques like computed tomography or magnetic resonance imaging reveal internal structures hidden by skin and bones. 
-      Clinical decisions are nowadays often based on these data, and the desire for automated systems to support the data analysis is high. 
-      Yet, the data situation in medicine is not satisfying; we have in general large amounts of data produced by medical devices, but it cannot straight away be used to create automated systems to support clinicians in their everyday work, that is, for diagnosis or even treatment purposes. 
-
-    \begin{enumerate}
-      \item not enough data for training supervised methods; that's what we wanna change
-      \item gaze: lower time bound
-    \end{enumerate}
-  
+      Techniques like Computed Tomography (CT) or Magnetic Resonance Imaging (MRI) reveal internal structures hidden by skin and bones. 
+      Clinical decisions are nowadays often based on these data, and the desire for automated systems to support data analysis is high. 
+      Therefore, creating automated systems to support clinicians in their everyday work, that is e.g.\ for diagnosis or treatment purposes, has been an important topic in biomedical engineering research for a few decades.
+      However, the data situation in medicine is not satisfying: 
+      Whereas we have in general large amounts of data available, gathering annotations in those data for later usage in supervised learning settings is a bottleneck. 
+      Following up on an idea of Vilari\~no et al.\ \cite{vilarino2007automatic}, we apply eye-tracking to get expert knowledge about the data and therefore allow clinicians to annotate data in their everyday life, without losing a tremendous amount of time and doing the tedious and unrewarding work of annotating data manually.
   
 \section{Goal}
-Produce reliable ground truth data for future training while achieving the lower bound of time given by experts seeing a structure of interest.
+The ultimate goal of this research project is to produce reliable ground truth annotations / segmentations for future supervised training at low time costs. 
+This thesis elaborates... \todo{?}
 
 \section{Overview}
+Chapter \ref{chap:background} gives a short overview about general notions considering classification in Machine Learning, segmentation approaches in medical imaging and also, the approach and implicit assumptions of Vilari\~no et al.\ will be briefly elaborated. Chapter \ref{chap:characterizing-gaze} ... Chapter \ref{chap:learning-with-unlabeled-data} ...  Chapter \ref{chap:conclusion}
+
