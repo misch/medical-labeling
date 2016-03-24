@@ -48,7 +48,7 @@ elseif strcmp(classifier,'grad_boost')
                     'disableLineSearch', uint32(0),...
                      'mtry',uint32(ceil(sqrt(size(train_data,2)))));
     disp('Train gradient boost classifier...');
-    model = SQBMatrixTrain( single(train_data), train_labels, uint32(5000), options);
+    model = SQBMatrixTrain( single(train_data), train_labels, uint32(10000), options);
 elseif strcmp(classifier,'pu_grad_boost')
     
 %     addpath('../pugradboost/');
@@ -59,16 +59,21 @@ elseif strcmp(classifier,'pu_grad_boost')
     positive_idx = training_set.labels == 1;
     positives = training_set.data(positive_idx,:);
     
-       
-    prob = exp(-f_distances/0.15) .* exp(-s_distances/400);
     % distance to median
 %     f_distances = sqrt(sum((training_set.data - repmat(median(positives),size(training_set.data,1),1)).^2,2));
     
-%     load('prob_spatialAndColor');
     % median of distances
-    f_distances = median(pdist2(training_set.data,positives),2);
+    f_distances = median(pdist2(training_set.data,positives,'cosine'),2);
+    
+%     prob = exp(-f_distances/0.15) .* exp(-s_distances/400); % dataset 2
+    prob = exp(-(f_distances)/0.15) .* exp(-s_distances/100); % dataset 7
+    
+    % try a bit lower values...! 180/200 was not bad (but not much better
+    % than normal grad boost either...)
+    
 
-    train_labels(train_labels == -1) = 0;
+%     train_labels(train_labels == -1) = 0;
+    train_labels(s_distances<30) = 1;
 
     [model,~] = learnPuboost(train_data,train_labels, prob,500);
 else
