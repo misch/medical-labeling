@@ -59,11 +59,14 @@ elseif strcmp(classifier,'pu_grad_boost')
     positive_idx = training_set.labels == 1;
     positives = training_set.data(positive_idx,:);
     
-    f_distances = sqrt(sum((training_set.data - repmat(median(positives),size(training_set.data,1),1)).^2,2));
        
     prob = exp(-f_distances/0.15) .* exp(-s_distances/400);
+    % distance to median
+%     f_distances = sqrt(sum((training_set.data - repmat(median(positives),size(training_set.data,1),1)).^2,2));
     
 %     load('prob_spatialAndColor');
+    % median of distances
+    f_distances = median(pdist2(training_set.data,positives),2);
 
     train_labels(train_labels == -1) = 0;
 
