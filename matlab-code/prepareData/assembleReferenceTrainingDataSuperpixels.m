@@ -15,7 +15,7 @@ function assembleReferenceTrainingDataSuperpixels(dataset,output_filename,ground
     only_one_positive_per_frame = true; %todo: maybe take as argument...
 
     % Get Eye-Tracking information
-    filename = [dataset_folder, 'gaze-measurements/video2.csv']; % todo: annoying to always change when dataset changes!
+    filename = [dataset_folder, 'gaze-measurements/vid_10fps2.csv']; % todo: annoying to always change when dataset changes!
     framePositions = readCSVFile(filename);
     framePositions(:,1) = framePositions(:,1) * frame_width;
     framePositions(:,2) = framePositions(:,2) * frame_height;
@@ -79,7 +79,15 @@ function assembleReferenceTrainingDataSuperpixels(dataset,output_filename,ground
             pos_mask_idx = find(positive_mask);
             random_permutation = randperm(length(pos_mask_idx));
             positive_mask = zeros(size(positive_mask,1),1);
-            positive_mask(pos_mask_idx(random_permutation(1))) = 1;
+            
+            if i==45
+                disp('stop');
+            end
+            
+            if random_permutation
+                positive_mask(pos_mask_idx(random_permutation(1))) = 1;
+            end
+            
         end
         negative_mask = ~positive_mask;
         
@@ -90,7 +98,7 @@ function assembleReferenceTrainingDataSuperpixels(dataset,output_filename,ground
             [X,Y] = ind2sub([frame_height,frame_width],(find(frameDescriptor.superpixels == jj)));
             med_superpix_pos(vec_idx,:) = median([X,Y]);
             vec_idx = vec_idx + 1;
-        end
+         end
 
         appendSamples(  frameDescriptor.features,... % data
                         positive_mask-negative_mask,... % labels

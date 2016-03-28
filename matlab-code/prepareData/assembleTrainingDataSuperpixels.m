@@ -23,8 +23,7 @@ function assembleTrainingDataSuperpixels(dataset,output_filename,csvFilename)
 
     %% Get Regions of Interest (ROI's)
     disp('In which folder are the descriptors stored?');
-%     descriptors_dir = [uigetdir(dataset_folder),'/'];
-    descriptors_dir = [dataset_folder,'small-superpixels-coocc-descriptors/']; % todo: annoying to change when dataset changes!
+    descriptors_dir = [uigetdir(dataset_folder),'/'];
     file_names = dir([descriptors_dir,'*.mat']);
 
     interesting_frames = file_names(key_pressed);
