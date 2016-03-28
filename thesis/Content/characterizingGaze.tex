@@ -3,7 +3,7 @@
 This chapter will discuss the used setup and the quality of extracted positive labels gained from the observed gaze positions. The important question to answer is, how reliable our data is with respect to the assumption that gaze observation can naturally provide us with positive labels for the data. 
 
 \section{Setup}
-We used an affordable eye-tracking device called ``The Eye Tribe''. According to the producer's website (\url{http://dev.theeyetribe.com/general/}), the device has an accuracy of at least 1 degree visual angle. We placed the device on a tripod below a [?]-inch screen \todo{screen size} and observed the screen from a distance of approximately 60cm. 
+We used an affordable eye-tracking device called ``The Eye Tribe''. According to the producer's website (\url{http://dev.theeyetribe.com/general/}), the device has an accuracy of at least 1 degree visual angle. We placed the device on a tripod below a [?]-inch screen \todo{screen size} and observed the screen from a distance of approximately 60cm.  \todoWriteMore{tell that scans were converted to video sequences}
 
 \begin{figure}[ht]
 	\centering
@@ -13,41 +13,42 @@ We used an affordable eye-tracking device called ``The Eye Tribe''. According to
 	\label{fig:theeyetribe}
 \end{figure}
 
-The video sequences were played on full screen. In this setup, the minimum accuracy of 1 degree corresponds to an on-screen error of approximately 1cm. Figure \ref{fig:onedegreecircle} shows that this has a significant influence on our performance, depending on the actual dataset. The instrument dataset is less sensitive to this than e.g.\ the cochlea CT scan that has fine structures to be recognized.
+The video sequences were played on full screen. In this setup, the minimum accuracy of 1 degree corresponds to an on-screen error of approximately 1cm. 
+Figure \ref{fig:onedegreecircle} gives an idea of how much this error might mean in terms of our used datasets.
+The instrument dataset is less sensitive to this than e.g.\ the cochlea CT scan that has fine structures to be recognized.
 
 \begin{figure}[ht]
 	\centering
 	\begin{subfigure}[h]{0.31\textwidth}
 		\includegraphics[width=\textwidth]{one-degree-circle-cochlea-17pix-frame195_small_new}	
-		%\missingfigure[figwidth=\textwidth]{}
 		\caption*{cochlea}
 	\end{subfigure}
 	~
 	\begin{subfigure}[h]{0.31\textwidth}
-		\includegraphics[width=\textwidth]{one-degree-circle-instrument-18_62pix-frame195_small_new}	
-		%\missingfigure[figwidth=\textwidth]{}
+		\includegraphics[width=\textwidth]{one-degree-circle-instrument-18_62pix-frame195_small_new}
 		\caption*{instrument}
 	\end{subfigure}
 	~
 	\begin{subfigure}[h]{0.31\textwidth}
 		\includegraphics[width=\textwidth]{one-degree-circle-eyeMRI-12_28pix-frame46_small}	
-		%\missingfigure[figwidth=\textwidth]{}
 		\caption*{eye tumor}
 	\end{subfigure}
 	\caption{Visual illustration of how much error a 1 degree visual angle causes in the different datasets using our described setup. Whereas most parts of the instrument are big in size, the fine structures in the images of the cochlea or the eye tumor might not be hit by the measured gaze position, even when an expert is looking exactly at them.}
 	\label{fig:onedegreecircle}
 \end{figure}
 
-Vilari\~no et al. suggested to explore the analysis of gaze fixation patterns and voice labeling. In this project, we wanted to focus on the other issues of their approach described in Chapter \ref{chap:background}. Therefore, we stick with their appoach of asking the user to press a key when an important structure / object is appearing in the video. More precisely, we asked the user to look at the actual important object. Note that therefore, what is presented in this work, is an active application of eye-tracking with the potential to be improved to become passive.
+Vilari\~no et al. suggested to explore the analysis of gaze fixation patterns and voice labeling in future studies. 
+In this project we want to focus on the other issues of their approach described in Chapter \ref{chap:background}. 
+Therefore, we stick with their appoach and asked the user to press a key when an important structure / object is appearing in the video and to focus on the actual important object. 
+Note that therefore, what is presented in this work, is an active application of eye-tracking with the potential to become passive in the future.
 
 \section{Reliability of gaze observations}
-%\section{Validation}
-Given some ground truth data (datasets ``instrument'', ``cochlea'', ``eye tumor''), we evaluated if the assumption of Vilari\~no et al. \todo{did they really state this assumption?} is reasonable, that only ``positive positions'' are hit by the gaze whenever the observer indicates (by pressing a key) that he sees a structure of interest. 
-As the observer had the task to observe the object in the video, we expected that the majority of recorded gaze positions (when the observer pressed the key) are located at true positives, or that at least some true positive points can be found within a 1 degree visual angle of the recorded gaze position. 
+Given some ground truth data (datasets ``instrument'', ``cochlea'', ``eye tumor''), we evaluated if the assumption of Vilari\~no et al.\ is valid, that only ``positive positions'' are hit by the gaze whenever the observer indicates (by pressing a key) that he sees a structure of interest. 
+As the user had the task to focus on the object in the video, we expected that the majority of recorded gaze positions are located at true positives, or that at least some true positive points can be found within a 1 degree visual angle of the recorded gaze position. 
 Clearly, the smaller the structures, the less likely it was that a true positive was hit. 
 We tried here to separate the human from the measurement error by investigating, for each dataset, the actual distance between the gaze position and the closest true positive point. 
 Values above 1 degree visual angle clearly mean human error whereas values below could mean human error or measurement error. 
-To get a first idea of the actual measurement error \todo{don't call it this way! maybe error that is not ``human staring at the wrong position''}, the gaze positions were measured and evaluated on a very simple dataset; a video of a non-moving black point on white background in the middle of the screen. 
+To get a first idea of the actual measurement error, the gaze positions were measured and evaluated on a very simple dataset; a video of a non-moving black point on white background in the middle of the screen. 
 Two measurements were taken. Figure \ref{fig:gazeMeasurementAccuracy} shows that for the task of staring at this black dot, the errors remain well below 1 degree, except in the case of blinking. 
 The distance to the actual center of the image is on average between 5 and 7 pixels in this test video; this corresponds to a visual angle of approximately 0.25 to 0.4 degrees.
 
@@ -142,11 +143,14 @@ A similar conclusion holds for the eye tumor dataset (Figure \ref{fig:distanceTo
 The gaze observations show that between frames 40 and 50, when the tumor is big in size, it is well hit by the gaze. 
 There are, best visible in the top left figure, some positions that are slightly off the object before frame 47. 
 This might be a measurement error, but more likely, it is because the gaze has not yet settled at the correct position. 
-The rather big distances to any positive pixels before and after this interval reflects the fact that the size of the structure of interest decreases rapidly in these frames. 
-The cochlea dataset suggests, especially the observations shown in the two upper plots between frames 150 and 160, that some positive information could be gained by giving a tolerance of around 0.4 degrees of visual angle. However, most of the measurements show that it is actually a rather rare event in this dataset, that the gaze really hits the object. 
+The rather big distances to any positive pixels before and after this interval reflect the fact that the size of the structure of interest decreases rapidly in these frames. 
+The recordings from the cochlea dataset shown in Figure \ref{fig:distanceToClosestPositiveD8} suggest, especially the observations shown in the two upper plots between frames 150 and 160\todo{explain WHY this is suggested by the plots}, that some positive information could be gained by considering additional nearby points of the recorded gaze position.
+However, most of the measurements show that it is actually a rather rare event in this dataset, that the gaze really hits the object. 
 The variation in distance to the object and the nature of this dataset (fine structures that are rapidly changing over time / depth) indicates that it is either hard to find, or then hard to follow the actual cochlea parts with the eyes, if not both. 
 This can clearly be considered the most challenging dataset used for this project.
-In this dataset, a tolerance of 0.4 degrees will clearly increase the probability to assign real positive data to the actual gaze observations, to the cost of including even more noise into the positive labels (that is, superpixels that are actually containing only negative information).
+In this dataset, considering that the data within a 0.4 degrees visual angle is positive, would clearly increase the probability to assign real positive data to the actual gaze observations. 
+However, the total area ot the positives is in most of the frames very small compared to the whole image (see e.g.\ Figure ...). 
+Therefore we pay the high price of including a lot of noise into the positive training set, in some cases maybe more noise than actual positive data.
 
 \section{Include a certain tolerance}
 \todo{\"uberleitung fehlt... maybe consider the following as ``ways to give this tolerance''}Even when staring exactly on the object, not all of the superpixel's content is necessarily positive. 
