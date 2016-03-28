@@ -35,7 +35,7 @@ if strcmp(classifier,'svm')
 %         [train_data, train_labels] = getFiftyFiftySamples(train_data,train_labels);
 %         save('matlab.mat','train_data','train_labels');
 %         load('matlab.mat');
-        model = libsvmtrain(train_labels,train_data,'-t 2 -g 0.0625 -c 10');
+        model = libsvmtrain(train_labels,train_data,'-t 2 -g 0.0125 -c 0.5');
 %         model = fitcsvm(train_data, train_labels,'KernelFunction','RBF','KernelScale','auto');
     end
 elseif strcmp(classifier,'grad_boost')
@@ -48,7 +48,7 @@ elseif strcmp(classifier,'grad_boost')
                     'disableLineSearch', uint32(0),...
                      'mtry',uint32(ceil(sqrt(size(train_data,2)))));
     disp('Train gradient boost classifier...');
-    model = SQBMatrixTrain( single(train_data), train_labels, uint32(10000), options);
+    model = SQBMatrixTrain( single(train_data), train_labels, uint32(5000), options);
 elseif strcmp(classifier,'pu_grad_boost')
     
 %     addpath('../pugradboost/');
@@ -65,17 +65,19 @@ elseif strcmp(classifier,'pu_grad_boost')
     % median of distances
     f_distances = median(pdist2(training_set.data,positives,'cosine'),2);
     
+    % minimum of distances
+    f_distances = min(pdist2(training_set.data,positives,'cosine'),[],2);
+    
 %     prob = exp(-f_distances/0.15) .* exp(-s_distances/400); % dataset 2
-    prob = exp(-(f_distances)/0.15) .* exp(-s_distances/100); % dataset 7
-    
-    % try a bit lower values...! 180/200 was not bad (but not much better
-    % than normal grad boost either...)
-    
+%     prob = exp(-(f_distances)/0.35) .* exp(-s_distances/5); % dataset 7
+    prob = exp(-(f_distances/max(f_distances(:)))/3).*exp(-s_distances/40); % dataset 8
 
-%     train_labels(train_labels == -1) = 0;
-    train_labels(s_distances<30) = 1;
+    train_labels(train_labels == -1) = 0;
+%     train_labels(s_distances<30) = 1;
 
-    [model,~] = learnPuboost(train_data,train_labels, prob,500);
+    [model,info] = learnPuboost(train_data,train_labels, prob,500);
+    figure(); plot(1:length(info.LOSS),info.LOSS); title('loss');
+    
 else
     disp('SVM and Gradient Boost are currently the only available classifiers.')
 end
