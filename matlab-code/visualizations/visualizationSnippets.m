@@ -4,15 +4,15 @@
 
 
 %% Create video with recorded mouse positions
-dataset = 2;
+dataset = 7;
 [dataset_folder, frames_dir, ~, frame_height, frame_width] = getDatasetDetails(dataset);
 
-filename = [dataset_folder, 'framePositions.csv'];
+filename = [dataset_folder, 'gaze-measurements/','whole_video10fps4.csv'];
 framePositions = readCSVFile(filename);
 framePositions(:,1) = framePositions(:,1) * frame_width;
 framePositions(:,2) = framePositions(:,2) * frame_height;
 
-    makeVideoWithDots(frames_dir, framePositions, [dataset_folder, 'with_dots6.avi'],20);
+%     makeVideoWithDots(frames_dir, framePositions, [dataset_folder, 'with_dots6.avi'],20);
 
 %% Show ROIs - in case of quadratic patches...
 if (show_ROIs)
@@ -47,10 +47,13 @@ for ii = 1:72
 end
 
 %% Show image with gaze dot on it
-frame_no = 207;
-figure; imshow(im2double(imread(['../../data/Dataset2/input-frames/',sprintf('frame_%05d.png',frame_no)])),'Border','tight');
+frame_no = 47;
+figure; imshow(im2double(imread(['../../data/Dataset7/ground_truth-frames/',sprintf('frame_%05d.png',frame_no)])),'Border','tight');
+fp = framePositions;
 hold on; plot(framePositions(frame_no,1),framePositions(frame_no,2),'Marker','.','Color',[1, 0, 0], 'MarkerSize',30);
+hold on; rectangle('Position',[framePositions(frame_no,1)-(128/2) framePositions(frame_no,2)-(128/2) 128 128],'EdgeColor','r','LineWidth',3);
 
+framePositions = fp;
 %%
 load('../../data/Dataset2/simple-color-descriptors/frame_00207');
 super = frameDescriptor.superpixels;
