@@ -58,18 +58,18 @@ elseif strcmp(classifier,'pu_grad_boost')
     positive_idx = training_set.labels == 1;
     positives = training_set.data(positive_idx,:);
     
-    % distance to median
-%     f_distances = sqrt(sum((training_set.data - repmat(median(positives),size(training_set.data,1),1)).^2,2));
     
     % median of distances
-    f_distances = median(pdist2(training_set.data,positives,'cosine'),2);
-    
-    % minimum of distances
-    min_f_distances = min(pdist2(training_set.data,positives,'cosine'),[],2);
-    
-%     prob = exp(-f_distances/0.15) .* exp(-s_distances/400); % dataset 2
-%     prob = exp(-(f_distances)/0.35) .* exp(-s_distances/5); % dataset 7
-    prob = exp(-(min_f_distances/max(min_f_distances(:)))/3).*exp(-s_distances/40); % dataset 8
+    if dataset==2
+        f_distances = median(pdist2(training_set.data,positives),2);
+        prob = exp(-f_distances/0.15) .* exp(-s_distances/400);
+    elseif dataset==7
+        f_distances = median(pdist2(training_set.data,positives,'cosine'),2);
+        prob = exp(-f_distances/0.15) .* exp(-s_distances/400);
+    elseif dataset==8
+        min_f_distances = min(pdist2(training_set.data,positives,'cosine'),[],2);
+        prob = exp(-(min_f_distances/max(min_f_distances(:)))/3).*exp(-s_distances/40);
+    end
 
 %     train_labels(train_labels == -1) = 0;
 %     train_labels(s_distances<30) = 1;
