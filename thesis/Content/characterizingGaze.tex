@@ -3,7 +3,8 @@
 This chapter will discuss the used setup and the quality of extracted positive labels gained from the observed gaze positions. The important question to answer is, how reliable our data is with respect to the assumption that gaze observation can naturally provide us with positive labels for the data. 
 
 \section{Setup}
-We used an affordable eye-tracking device called ``The Eye Tribe''. According to the producer's website (\url{http://dev.theeyetribe.com/general/}), the device has an accuracy of at least 1 degree visual angle. We placed the device on a tripod below a [?]-inch screen \todo{screen size} and observed the screen from a distance of approximately 60cm.  \todoWriteMore{tell that scans were converted to video sequences}
+We used an affordable eye-tracking device called ``The Eye Tribe''. 
+According to the producer's website (\url{http://dev.theeyetribe.com/general/}), the device has an accuracy of at least 1 degree visual angle. We placed the device on a tripod below a 32.4cm $\times$ 51.8cm screen and observed the screen from a distance of approximately 60cm.
 
 \begin{figure}[ht]
 	\centering
@@ -13,7 +14,9 @@ We used an affordable eye-tracking device called ``The Eye Tribe''. According to
 	\label{fig:theeyetribe}
 \end{figure}
 
-The video sequences were played on full screen. In this setup, the minimum accuracy of 1 degree corresponds to an on-screen error of approximately 1cm. 
+The video sequences were played on full screen at 30 frames per second. 
+The 3D scans were converted to a video and played at 10 frames per second. 
+In this setup, the minimum accuracy of 1 degree corresponds to an on-screen error of approximately 1cm. 
 Figure \ref{fig:onedegreecircle} gives an idea of how much this error might mean in terms of our used datasets.
 The instrument dataset is less sensitive to this than e.g.\ the cochlea CT scan that has fine structures to be recognized.
 

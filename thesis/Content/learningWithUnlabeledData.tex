@@ -25,8 +25,8 @@ L(y,f(x)) = \underbrace{\sum_{\{i :~ y_i = 1\}} e^{-y_i f(x_i)}}_{P} \quad + \qu
 where $y_i$ denotes the (pseudo-)label of sample $x_i$, $\tilde p_i$ is the confidence that the pseudo-label $y_i$ is correct and $f(x_i)$ is the predicted score of the classifier.
 Note that if we consider the fully supervised case, the U-term will be 0 and a standard exponential loss function will be optimized. 
 For unlabeled data samples, the U-term of the loss function will heavily penalize negative margins, if we are very confident about our pseudo-label being correct ($\tilde p_i \approx 1$) and it will penalize positive margins, if the pseudo-label is very unlikely to be correct ($\tilde p_i \approx 0$). 
-Note that the latter extreme case can by definition of $y_i$ and $\tilde p_i$ not happen and is therefore just of explanatory value. 
-If we don't know whether or not our label is correct or incorrect ($\tilde p_i = 0.5$), then what will be penalized are negative as well as positive margins, as this would mean a confident decision towards one direction based on a randomly chosen pseudo-label (in our case $y_i = 1$, if $\tilde p_i=0.5$). Figure \ref{fig:ourlossfunctionplot} shows the U-term of the loss function for different values of the probability $\tilde p_i$.
+Note that this extreme case can by definition of $y_i$ and $\tilde p_i$ not occur and is therefore just of explanatory value. 
+If we do not know whether or not our label is correct or incorrect ($\tilde p_i = 0.5$), then what will be penalized are negative as well as positive margins, as this would mean a confident decision towards one direction based on a randomly chosen pseudo-label (in our case $y_i = 1$, if $\tilde p_i=0.5$). Figure \ref{fig:ourlossfunctionplot} shows the U-term of the loss function for different values of the probability $\tilde p_i$.
 
 \begin{figure}[ht]
   \centering
@@ -35,25 +35,25 @@ If we don't know whether or not our label is correct or incorrect ($\tilde p_i =
   \label{fig:ourlossfunctionplot}
 \end{figure}
 
-The derivatives (...) \todo{refer to gradient boost algorithm} are then given by 
+The derivative of the loss function with respect to the classifier's scores is then given by 
 
 \begin{equation*}
  \frac{\partial L(y_i,f(x_i))}{\partial f(x_i)} = 
     \begin{cases}
 	-y_i e^{-y_i f(x_i)}, & \text{if $y_i = 1$}\\
-	-\gamma \cdot \left(y_i p_i e^{-y_i f(x_i)} - y_i (1 - p_i) e^{y_i f(x_i)} \right), & \text{if $y_i$ unknown.}
+	-\gamma \cdot \left(y_i \tilde p_i e^{-y_i f(x_i)} - y_i (1 - \tilde p_i) e^{y_i f(x_i)} \right), & \text{if $y_i$ unknown.}
       \end{cases}
 \end{equation*}
 Clearly, the key for this method is the probability $p_i$ for each sample $x_i$ to be a positive sample. 
 
-Du Plessis et al. showed in \cite{plessis2014PUanalysis} that solving the PU-problem corresponds to minimizing a non-convex loss function, and recently they presented a convex formulation by using different loss functions for the positive and the unlabeled data samples in \cite{plessis2015convex}. As discussed in Chapter \ref{chap:background}, gradient boosting gives us a general way to minimize a loss function, and we also tried their suggested double hinge loss $l(z) = \max(-z,\max(0,0.5 - 0.5 z))$ (for unlabeled samples) and its composite $\tilde l(z) = l(z) - l(-z) = -z$ (for positive samples). 
-
 \section{Synthetic data}
-We conducted some basic experiments on synthetic data (see Figure \ref{fig:synthetic_train_data}) to compare the performances. The positive training samples consisted of 40 samples, 20 of them generated from normal distributions $\mathcal{N}(\mu_1,\Sigma_1)$ and the other 20 from $\mathcal{N}(\mu_2, \Sigma_2)$ with 
-$$\mu_1= \begin{bmatrix}2 \\ 3 \end{bmatrix}, \Sigma_1 = \begin{bmatrix}0.7 & 0.2 \\ 0.2 & 0.5 \end{bmatrix}, \quad \mu_2 = \begin{bmatrix}4.5 \\ 2 \end{bmatrix}, \Sigma_2 = \begin{bmatrix} 0.2 & 0 \\ 0 & 0.2 \end{bmatrix}$$
-and the negatives were 40 samples generated from a normal distribution with 
-$$\mu_3 = \begin{bmatrix} 2\\1.5\end{bmatrix} \text{ and } \Sigma_3 = \begin{bmatrix}0.6 & 0.1\\ 0.1 & 0.7\end{bmatrix}.$$
-
+We conducted some basic experiments on synthetic data. 
+The total size of our synthetic training set contained 160 samples, 80 of which were positive and 80 negative. 
+The positive training samples were equally generated from normal distributions $\mathcal{N}(\mu_1,\Sigma_1)$ and $\mathcal{N}(\mu_2, \Sigma_2)$ with 
+$$\mu_1= \begin{bmatrix}2 \\ 3 \end{bmatrix}, \quad \Sigma_1 = \begin{bmatrix}0.7 & 0.2 \\ 0.2 & 0.5 \end{bmatrix}, \qquad \mu_2 = \begin{bmatrix}4.5 \\ 2 \end{bmatrix}, \quad \Sigma_2 = \begin{bmatrix} 0.2 & 0 \\ 0 & 0.2 \end{bmatrix}$$
+and the 80 negative samples were generated from a normal distribution with parameters 
+$$\mu_3 = \begin{bmatrix} 2\\1.5\end{bmatrix}, \quad \Sigma_3 = \begin{bmatrix}0.6 & 0.1\\ 0.1 & 0.7\end{bmatrix}$$
+as visualized in Figure \ref{fig:synthetic_train_data}. The test set consists of 1000 samples that are identically distributed as the training set.
 \begin{figure}[ht]
 	\centering
 	\begin{subfigure}[h]{0.45\textwidth}
@@ -67,54 +67,58 @@ $$\mu_3 = \begin{bmatrix} 2\\1.5\end{bmatrix} \text{ and } \Sigma_3 = \begin{bma
 	\label{fig:synthetic-gaussians}
 \end{figure}
 
+As a reference, we optimized a standard exponential loss using all the labels from the training set with a gradient boosting method with decision tree stumps as weak learners and a shrinkage factor of $0.1.$ 
+The other experiments were done with the same algorithm, but different assumptions about the available input labels. 
+First, we simulated the case of separating ``observed'' from ``unobserved'' samples, i.e.\ we tried to separate a few positive samples from all the other samples. 
+In the real setting, this corresponds to the naive approach of separating the image regions that were hit by the user's gaze from all the other regions. 
+As expected, there is a considerable performance loss when using this approach (see Figure \ref{fig:synthetic_results}). 
+Our second experiment shows the performance achieved with the standard exponential loss using 5 known positives and some pseudo-labels for the other samples. 
+The pseudo-labels were assigned according to the probabilities of the known underlying distributions (see Figure \ref{subfig:pu_train}). 
+To test the performance of our PU-loss function, we used the same 5 known positives and the probabilities for the unknown labels were given as they were used before to find the pseudo-labels. 
+Finally, we followed the suggestion of Du Plessis et al.\ (\cite{plessis2015convex}) and used the double hinge loss and its composite as shortly described in chapter \ref{chap:background} with the same 5 known positives and the same way of assigning pseudo-labels.
+Our loss-function outperforms the reference approach using the true training labels as well as the standard exponential loss with the ``correct'' pseudo-labels (that is, the pseudo-labels according to the underlying distributions). 
+This can be explained with the fact that our loss function actually takes into account the confidence about the chosen pseudo-labels and adjusts the penalties accordingly. 
+Optimizing the double hinge loss and its composite as suggested in \cite{plessis2015convex} yielded better results than separating observed from unobserved data points, but could not outperform our loss-function. 
+
+\todoWriteMore{put somewhere: Du Plessis et al. showed in \cite{plessis2014PUanalysis} that solving the PU-problem corresponds to minimizing a non-convex loss function, and recently they presented a convex formulation by using different loss functions for the positive and the unlabeled data samples in \cite{plessis2015convex}. As discussed in Chapter \ref{chap:background}, gradient boosting gives us a general way to minimize a loss function, and we also tried their suggested double hinge loss $l(z) = \max(-z,\max(0,0.5 - 0.5 z))$ (for unlabeled samples) and its composite $\tilde l(z) = l(z) - l(-z) = -z$ (for positive samples). Whereas du Plessis et al.\ construct an empirical version of the objective function that can be optimized using quadratic programming, we tried to solve the problem using gradient boosting techniques -- in this setup, what is usually done is an estimation of the labels for the unlabeled set and then, based on this, a supervised learning process. 
+There have been suggestions to adaptively set the labels for the unlabeled data (ref: SSMBoost [d'Alch\`e-Buc et al., 2002], SemiBoost [Mallapragada et al., 2009]). }
 \begin{figure}[ht]
 	\centering
-	\begin{subfigure}[h]{0.45\textwidth}
+	\begin{subfigure}[h]{0.49\textwidth}
 	\includegraphics[width=\textwidth]{synthetic_train_data.pdf}	
-		\caption*{real labels of synthetic training data generated according to 3 normal distributions}
+		\caption{training data (160 samples generated from the described distributions)\newline}
+		\label{subfig:ref_train}
 	\end{subfigure}
 	~
-	\begin{subfigure}[h]{0.45\textwidth}
-	\includegraphics[width=\textwidth]{synthetic_train_data_estimated_labels.pdf}	
-		\caption*{labels estimated from probabilities given by the known sample distributions}
+	\begin{subfigure}[h]{0.49\textwidth}
+	\includegraphics[width=\textwidth]{synthetic_pu_train_data.pdf}	
+		\caption{input for the PU-loss: 5 known positives (blue), pseudo-labels (red = -1 / green = +1), probability weights $\tilde p_i$ that pseudo-labels are correct (circle radius)}
+		\label{subfig:pu_train}
 	\end{subfigure}
-	\caption{Generated training samples (40 positives, 40 negatives) and labels according to the true probabilities of the generating distributions.}
+	\caption{\subref{subfig:ref_train}) training data for the standard approach \subref{subfig:pu_train}) known positives, pseudo-labels and weights used with the standard exploss and the pu-loss, respectively}
 	\label{fig:synthetic_train_data}
 \end{figure}
 
 \begin{figure}[ht]
 	\centering
-	\begin{subfigure}[h]{0.45\textwidth}
-	\includegraphics[width=\textwidth]{lossesComparisonsTestSize200.pdf}	
-		\caption*{200 test samples}
+	\begin{subfigure}[h]{0.49\textwidth}
+	\includegraphics[width=\textwidth]{synthetic_results_roc.pdf}	
 	\end{subfigure}
 	~
-	\begin{subfigure}[h]{0.45\textwidth}
-	\includegraphics[width=\textwidth]{lossesComparisonsTestSize40000.pdf}	
-		\caption*{40000 test samples}
+	\begin{subfigure}[h]{0.49\textwidth}
+	\includegraphics[width=\textwidth]{synthetic_results_pr.pdf}	
 	\end{subfigure}
-	~
-	\begin{subfigure}[h]{\textwidth}
-	\includegraphics[width=\textwidth]{lossesComparisonsTestSize4000.pdf}	
-		\caption*{bigger training set (80 positives, 80 negatives), 4000 test samples}
-	\end{subfigure}
-	\caption{Comparisons of results using different size test sets generated from the same distribution as the training set. }
-	\label{fig:loss-functions-comparisons}
+	\caption{Comparisons of results using different assumptions about available labels. The PU-loss outperforms the standard exploss, even when using the theoretically correct pseudo-labels.}
+	\label{fig:synthetic_results}
 \end{figure}
 
-The double hinge loss (and its composite) shows comparable results to the traditional exponential loss (assuming the input-labels are based on probabilities of the underlying distribution whether or not they are positive) -- however, our above mentioned loss function performs better; the reason for this can be explained very easily: The margin is not available and has to be estimated -- our loss function takes into consideration that the label estimates might not be accurate whereas the plain double hinge loss and the traditional exponential loss assume that the margins are correctly estimated (i.e.\ having the correct labels) and then basically solve a completely supervised problem. 
-Whereas du Plessis et al.\ construct an empirical version of the objective function that can be optimized using quadratic programming, we tried to solve the problem using gradient boosting techniques -- in this setup, what is usually done is an estimation of the labels for the unlabeled set and then, based on this, a supervised learning process. 
-There have been suggestions to adaptively set the labels for the unlabeled data (\todoRef{SSMBoost [d'Alch\`e-Buc et al., 2002], SemiBoost [Mallapragada et al., 2009]}). 
-
-Using our loss function, we could achieve even slightly better results than with the traditional exponential loss using the true labels (i.e.\ not estimated by probabilities of the underlying distribution).
-
-A drawback of our approach is that giving the correct probabilities as inputs is not a trivial task. 
-For many datasets, it is not easy to infer, from a few given gaze positions, how likely it is for other samples to be positive or negative. Datasets ``airplane'' and ``instrument'' were okay... terms dependent on spatial distance from gaze, feature-space distance from ``positive'' gaze-feature,... other datasets much more difficult...
 
 \section{On the real data}
-\subsection{Reference -- all labels inferred from ground truth}
-Assuming that we have for a certain amount of frames / slices the correct superpixel labels \footnote{$y_i = 1$, if more than 50\% of the pixels contained in a superpixel are positive in the ground truth}, we checked how well a standard gradient boost classifier generalized to the remaining frames, on a pixelwise basis -- that is, we classify whole superpixels, but at the end we are interested in the pixelwise segmentation result and compute Receiver Operator Characteristics (ROC) and Precision-Recall values on a pixelwise basis (Figure \ref{fig:reference-known-labels}). 
-Especially if superpixels contain positive and negative ground truth regions, these scores might look a bit odd due to ambiguities in sorting of the resulting scores (all pixels of one superpixel get the same score), but they still give a good idea about the actual performance of the different methods. Also, this strategy allows us to compare the results to the real pixelwise ground truth instead of a ``constructed'' ground truth of e.g.\ declaring a superpixel as positive, if it contains more than 30\% or 50\% positive ground truth pixels.
+\subsection{labels inferred from ground truth}
+Using ground truth data for the three datasets ``instrument'', ``eye tumor'' and ``cochlea,'' we checked on real data how well the different approaches with different assumptions about available labels perform. 
+Assuming that we have for a certain amount of frames / depth slices the correct superpixel labels \footnote{$y_i = 1$, if more than 50\% of the pixels contained in a superpixel are positive in the ground truth}, we again optimized a standard exponential loss with a gradient boosting algorithm using decision tree stumps as weak learners. 
+We evaluated how well the classifier generalized to the remaining frames, on a pixelwise basis; that is, we classify whole superpixels, but at the end we are interested in the pixelwise segmentation result and compute Receiver Operator Characteristics (ROC) and Precision-Recall values on a pixelwise basis (Figure \ref{fig:reference-known-labels}). This strategy allows us to compare the results to the real pixelwise ground truth instead of a ``constructed'' ground truth of e.g.\ declaring a superpixel as positive, if it contains more than 30\% or 50\% positive ground truth pixels.
+Especially if superpixels contain positive and negative ground truth regions, these scores might look a bit odd due to ambiguities in sorting of the resulting scores (all pixels of one superpixel get the same score), but they still give a good idea about the actual performance of the different methods. 
 
 \begin{figure}[ht]
 	\centering
@@ -131,7 +135,7 @@ Especially if superpixels contain positive and negative ground truth regions, th
 	\label{fig:reference-known-labels}
 \end{figure}
 
-\subsection{Positive labels inferred from ground truth}
+\subsection{Labels inferred from ground truth}
 In our setting, the best we can hope for is one true positive superpixel in every frame. Choosing one true positive superpixel at random from the observed frames\footnote{the frames where the key was pressed in one of the gaze position observations}, and setting the others to negative / unlabeled, we can see in Figure \ref{fig:one-random-tp-per-frame} that our loss function leads to comparable results to a standard gradient boosting classifier, if we find a reasonable way to estimate the probabilities \todo{explain how this was done} of unlabeled superpixels being positive or negative. 
 However, the standard classifier will strictly try to separate observed from non-observed superpixels, which is only the correct behaviour if the assumptions discussed in Chapter \ref{chap:background} are fulfilled -- if they are not fulfilled, it means that the learned classifier holds a bias (this has been discussed e.g.\ in \todoRef{give reference}). 
 That this is truly happening in this case can, for example, be seen from the heat maps in Figure \ref{fig:bias-in-heatmaps}: Using our constructed PU-loss function, 0 becomes a reasonable threshold to distinguish between positive and negative samples, whereas for the other classifiers we would have to find a threshold below zero to get any positive labels in the output.
@@ -188,7 +192,7 @@ That this is truly happening in this case can, for example, be seen from the hea
 	\label{fig:bias-in-heatmaps}
 \end{figure}
 
-\subsection{Using only gaze observations}
+\subsection{Labels inferred from gaze observations}
 The difference between this best case to our actual situation lies in the distribution of the positive labels -- they are not, as assumed until now, randomly taken from all the positives, but instead they might often over-represent certain positives and under-represent others due to e.g.\ the fact that it is easier to fixate an edge than a smooth region in an image. 
 In this case, the naive approach performs clearly worse than ours because ... \todo{... stronger emphasis on whatever samples?} Experiments already done:
 \begin{itemize}
