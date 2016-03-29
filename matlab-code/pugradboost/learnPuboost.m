@@ -46,9 +46,9 @@ for m = 1:nbRounds
     R_vec(Uindex) = -gamma*(labels(Uindex).*prob(Uindex).*exp(-labels(Uindex).*F_vec(Uindex))...
                     - labels(Uindex).*(1-prob(Uindex)).*exp(labels(Uindex).*F_vec(Uindex)));                    
 
-%     double hinge loss (unlabeled) and composite loss (positives)
-%     R_vec(Lindex) = -labels(Lindex);
-%     R_vec(Uindex) = -labels(Uindex).*((labels(Uindex).*F_vec(Uindex))<-1)-0.5*labels(Uindex).*(abs(labels(Uindex).*F_vec(Uindex))<=1);
+    double hinge loss (unlabeled) and composite loss (positives)
+    R_vec(Lindex) = -labels(Lindex);
+    R_vec(Uindex) = -labels(Uindex).*((labels(Uindex).*F_vec(Uindex))<-1)-0.5*labels(Uindex).*(abs(labels(Uindex).*F_vec(Uindex))<=1);
                      
 %     dispData(R_vec,data);
     classifier{m}.wl     = getBestWeakLearner(data,R_vec',sorted_attr_values);

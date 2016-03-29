@@ -51,7 +51,6 @@ elseif strcmp(classifier,'grad_boost')
     model = SQBMatrixTrain( single(train_data), train_labels, uint32(5000), options);
 elseif strcmp(classifier,'pu_grad_boost')
     
-%     addpath('../pugradboost/');
     
     s_distances = sqrt(sum((training_set.gaze_position - training_set.median_superpixel_pos).^2,2));
     
@@ -66,13 +65,13 @@ elseif strcmp(classifier,'pu_grad_boost')
     f_distances = median(pdist2(training_set.data,positives,'cosine'),2);
     
     % minimum of distances
-    f_distances = min(pdist2(training_set.data,positives,'cosine'),[],2);
+    min_f_distances = min(pdist2(training_set.data,positives,'cosine'),[],2);
     
 %     prob = exp(-f_distances/0.15) .* exp(-s_distances/400); % dataset 2
 %     prob = exp(-(f_distances)/0.35) .* exp(-s_distances/5); % dataset 7
-    prob = exp(-(f_distances/max(f_distances(:)))/3).*exp(-s_distances/40); % dataset 8
+    prob = exp(-(min_f_distances/max(min_f_distances(:)))/3).*exp(-s_distances/40); % dataset 8
 
-    train_labels(train_labels == -1) = 0;
+%     train_labels(train_labels == -1) = 0;
 %     train_labels(s_distances<30) = 1;
 
     [model,info] = learnPuboost(train_data,train_labels, prob,500);

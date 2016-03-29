@@ -5,7 +5,7 @@ addpath(genpath(pwd));
 %%
 run prepareData
 %%
-dataset = 8;
+dataset = 2;
 %%
 %assembleTrainingDataSuperpixels(dataset,'trainingAutoencodedSuperpixels.mat');
 
@@ -23,7 +23,7 @@ assembleReferenceTrainingDataSuperpixels(dataset,'trainingSmallSuperpixelsCOOCCn
 assembleTrainingDataPatches(dataset,'trainingPatches1.mat');
 %%
 classifier = 'pu_grad_boost';
-model = trainClassifier(dataset, classifier, 'trainingSmallSuperpixelsCOOCCnew_onePositivePerFrame-0_5');
+model = trainClassifier(dataset, classifier, 'trainingSuperpixelsColorReference-0_5');
 
 %%
 testSuperpixelClassifier(model, dataset, [139:10:229], classifier,'small-superpixels-coocc-descriptors_new/'); %find(~key_pressed)'
