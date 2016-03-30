@@ -80,8 +80,6 @@ Our loss-function outperforms the reference approach using the true training lab
 This can be explained with the fact that our loss function actually takes into account the confidence about the chosen pseudo-labels and adjusts the penalties accordingly. 
 Optimizing the double hinge loss and its composite as suggested in \cite{plessis2015convex} yielded better results than separating observed from unobserved data points, but could not outperform our loss-function. 
 
-\todoWriteMore{put somewhere: Du Plessis et al. showed in \cite{plessis2014PUanalysis} that solving the PU-problem corresponds to minimizing a non-convex loss function, and recently they presented a convex formulation by using different loss functions for the positive and the unlabeled data samples in \cite{plessis2015convex}. As discussed in Chapter \ref{chap:background}, gradient boosting gives us a general way to minimize a loss function, and we also tried their suggested double hinge loss $l(z) = \max(-z,\max(0,0.5 - 0.5 z))$ (for unlabeled samples) and its composite $\tilde l(z) = l(z) - l(-z) = -z$ (for positive samples). Whereas du Plessis et al.\ construct an empirical version of the objective function that can be optimized using quadratic programming, we tried to solve the problem using gradient boosting techniques -- in this setup, what is usually done is an estimation of the labels for the unlabeled set and then, based on this, a supervised learning process. 
-There have been suggestions to adaptively set the labels for the unlabeled data (ref: SSMBoost [d'Alch\`e-Buc et al., 2002], SemiBoost [Mallapragada et al., 2009]). }
 \begin{figure}[ht]
 	\centering
 	\begin{subfigure}[h]{0.49\textwidth}
@@ -114,10 +112,12 @@ There have been suggestions to adaptively set the labels for the unlabeled data 
 
 
 \section{On the real data}
-\subsection{labels inferred from ground truth}
-Using ground truth data for the three datasets ``instrument'', ``eye tumor'' and ``cochlea,'' we checked on real data how well the different approaches with different assumptions about available labels perform. 
+\subsection{Labels inferred from ground truth}
+Using ground truth data for the three datasets ``instrument'', ``eye tumor'' and ``cochlea,'' we checked how well the different approaches with different assumptions about available labels perform. 
 Assuming that we have for a certain amount of frames / depth slices the correct superpixel labels \footnote{$y_i = 1$, if more than 50\% of the pixels contained in a superpixel are positive in the ground truth}, we again optimized a standard exponential loss with a gradient boosting algorithm using decision tree stumps as weak learners. 
-We evaluated how well the classifier generalized to the remaining frames, on a pixelwise basis; that is, we classify whole superpixels, but at the end we are interested in the pixelwise segmentation result and compute Receiver Operator Characteristics (ROC) and Precision-Recall values on a pixelwise basis (Figure \ref{fig:reference-known-labels}). This strategy allows us to compare the results to the real pixelwise ground truth instead of a ``constructed'' ground truth of e.g.\ declaring a superpixel as positive, if it contains more than 30\% or 50\% positive ground truth pixels.
+This serves as a reference for our experiments.
+We evaluated how well the classifier generalized to the remaining frames on a pixelwise basis; that is, we classify whole superpixels, but at the end we are interested in the pixelwise segmentation result and compute Receiver Operator Characteristics (ROC) and Precision-Recall values on a pixelwise basis (see Figure \ref{fig:reference-known-labels}). 
+This strategy allows us to compare the results to the real pixelwise ground truth instead of a ``constructed'' ground truth of e.g.\ declaring a superpixel as positive, if it contains more than 30\% or 50\% positive ground truth pixels.
 Especially if superpixels contain positive and negative ground truth regions, these scores might look a bit odd due to ambiguities in sorting of the resulting scores (all pixels of one superpixel get the same score), but they still give a good idea about the actual performance of the different methods. 
 
 \begin{figure}[ht]
@@ -135,22 +135,48 @@ Especially if superpixels contain positive and negative ground truth regions, th
 	\label{fig:reference-known-labels}
 \end{figure}
 
-\subsection{Labels inferred from ground truth}
-In our setting, the best we can hope for is one true positive superpixel in every frame. Choosing one true positive superpixel at random from the observed frames\footnote{the frames where the key was pressed in one of the gaze position observations}, and setting the others to negative / unlabeled, we can see in Figure \ref{fig:one-random-tp-per-frame} that our loss function leads to comparable results to a standard gradient boosting classifier, if we find a reasonable way to estimate the probabilities \todo{explain how this was done} of unlabeled superpixels being positive or negative. 
+In our setting, the best we can hope for is one true positive superpixel in every frame. 
+Choosing one true positive superpixel at random from the observed frames\footnote{the frames where the key was pressed in one of the gaze position observations}, and setting the others to negative / unlabeled, we can see in Figure \ref{fig:one-random-tp-per-frame} that the differences between our PU-loss and a standard exponential loss separating ``observed'' from ``unobserved'' superpixels is not very big, if we find a reasonable way to estimate the probabilities \todo{explain how this was done} of unlabeled superpixels being positive or negative. 
 However, the standard classifier will strictly try to separate observed from non-observed superpixels, which is only the correct behaviour if the assumptions discussed in Chapter \ref{chap:background} are fulfilled -- if they are not fulfilled, it means that the learned classifier holds a bias (this has been discussed e.g.\ in \todoRef{give reference}). 
-That this is truly happening in this case can, for example, be seen from the heat maps in Figure \ref{fig:bias-in-heatmaps}: Using our constructed PU-loss function, 0 becomes a reasonable threshold to distinguish between positive and negative samples, whereas for the other classifiers we would have to find a threshold below zero to get any positive labels in the output.
+That this is truly happening in this case can, for example, be seen from the heat maps in Figure \ref{fig:bias-in-heatmaps}: Using our constructed PU-loss function, 0 becomes a reasonable threshold to distinguish between positive and negative samples, whereas for the other classifiers we would have to find a threshold below zero to get any positive labels in the output. 
+For the eye tumor MRI, one issue with the evaluation was that there are only a few slices containing true positive information, and usually the user pressed the key during most of these frames. 
+Therefore, evaluating only the generalization to the remaining frames is not a reasonable approach and, unlike in the instrument dataset, it will not tell us enough about the potential of segmenting the eye tumor. 
+Instead, the evaluation has been done for a big part of the whole volume, including already seen superpixels during training. 
+If we are later using only gaze observations, we will have to evaluate as well every superpixel of every frame.
 
 \begin{figure}[ht]
 	\centering
 	\begin{subfigure}[h]{0.45\textwidth}
-	\includegraphics[width=\textwidth]{roc-one_random_tp_per_frame.pdf}	
-		\caption*{ROC curves}
+	\includegraphics[width=\textwidth]{d2-one_random_tp_per_frame-roc.pdf}	
+		\caption*{instrument}
 	\end{subfigure}
 	~
 	\begin{subfigure}[h]{0.45\textwidth}
-	\includegraphics[width=\textwidth]{pr-one_random_tp_per_frame.pdf}	
-		\caption*{PR curves}
+	\includegraphics[width=\textwidth]{d2-one_random_tp_per_frame-pr.pdf}	
+		\caption*{instrument}
 	\end{subfigure}
+	
+	\vspace{3mm}
+	\begin{subfigure}[h]{0.45\textwidth}
+	\includegraphics[width=\textwidth]{d7-one_random_tp_per_frame-roc.pdf}	
+		\caption*{eye tumor}
+	\end{subfigure}
+	~
+	\begin{subfigure}[h]{0.45\textwidth}
+	\includegraphics[width=\textwidth]{d7-one_random_tp_per_frame-pr.pdf}	
+		\caption*{eye tumor (tested frames: [12:80])}
+	\end{subfigure}	
+	
+	\vspace{3mm}
+	\begin{subfigure}[h]{0.45\textwidth}
+	\includegraphics[width=\textwidth]{d8-one_random_tp_per_frame-roc.pdf}	
+		\caption*{cochlea}
+	\end{subfigure}
+	~
+	\begin{subfigure}[h]{0.45\textwidth}
+	\includegraphics[width=\textwidth]{d8-one_random_tp_per_frame-pr.pdf}	
+		\caption*{cochlea (tested frames: [70:250])}
+	\end{subfigure}		
 	\caption{Randomly chosen true positive for each frame that was observed (i.e.\ where the user pressed the key) in one of the gaze observations.}
 	\label{fig:one-random-tp-per-frame}
 \end{figure}
@@ -193,57 +219,46 @@ That this is truly happening in this case can, for example, be seen from the hea
 \end{figure}
 
 \subsection{Labels inferred from gaze observations}
-The difference between this best case to our actual situation lies in the distribution of the positive labels -- they are not, as assumed until now, randomly taken from all the positives, but instead they might often over-represent certain positives and under-represent others due to e.g.\ the fact that it is easier to fixate an edge than a smooth region in an image. 
-In this case, the naive approach performs clearly worse than ours because ... \todo{... stronger emphasis on whatever samples?} Experiments already done:
-\begin{itemize}
-\item dataset 2
-  \begin{itemize}
-  \item standard gradient boost with superpixels (color features) (\path{results/Dataset2/grad_boost_color_gaze2/})
-  \item standard gradient boost with patches (preprocessed values as in V. et al.) (\path{results/Dataset2/grad_boost_patches_gaze2/})
-  \item pu-gradient boost with superpixels (color features) (\path{results/Dataset2/pu_grad_boost_color_gaze2/})
-  \item svm with superpixels (color features) (\path{results/Dataset2/svm_color_gaze2})
-  \end{itemize}
-\item dataset 7
-  \begin{itemize}
-  \item ?
-  \end{itemize}
-\item dataset 8
-  \begin{itemize}
-  \item ?
-  \end{itemize}
-
-
-\end{itemize}
+The difference between the above case of having one true positive per frame to our actual situation lies mainly in the distribution of the positive labels -- they are not, as assumed until now, randomly taken from all the positives of the observed frames, but instead they might often over-represent certain positives and under-represent others due to e.g.\ the fact that it is easier to fixate an edge than a smooth region in an image. 
+Another issue that makes the problem harder is the present noise in the gaze observations: As discussed in Chapter \ref{chap:characterizing-gaze}, it is not true that each gaze positions indicates a true positive position in the image.
+The naive approach performs clearly worse than ours because it does not distinguish between ... \todo{... stronger emphasis on whatever samples?} Experiments already done:
 
 
 \begin{figure}[ht]
 	\centering
 	\begin{subfigure}[h]{0.45\textwidth}
-	\includegraphics[width=\textwidth]{d2-gaze2-ROCresults-different-loss-functions.pdf}	
-		\caption*{ROC curves}
+	\includegraphics[width=\textwidth]{d2-gaze2-results-roc.pdf}	
+		\caption*{instrument}
 	\end{subfigure}
 	~
 	\begin{subfigure}[h]{0.45\textwidth}
-	\includegraphics[width=\textwidth]{d2-gaze2-PRresults-different-loss-functions.pdf}	
-		\caption*{PR curves}
+	\includegraphics[width=\textwidth]{d2-gaze2-results-pr.pdf}	
+		\caption*{instrument}
 	\end{subfigure}
-	\caption{Results for instrument dataset.}
-	\label{fig:d2-results-curves}
-\end{figure}
-
-\begin{figure}[ht]
-	\centering
+	
+	\vspace{3mm}
 	\begin{subfigure}[h]{0.45\textwidth}
-	\includegraphics[width=\textwidth]{d7-gaze4-ROCresults-different-loss-functions.pdf}	
-		\caption*{ROC curves}
+	\includegraphics[width=\textwidth]{d7-gaze4-results-roc.pdf}	
+		\caption*{eye tumor}
 	\end{subfigure}
 	~
 	\begin{subfigure}[h]{0.45\textwidth}
-	\includegraphics[width=\textwidth]{d7-gaze4-PRresults-different-loss-functions.pdf}	
-		\caption*{PR curves}
+	\includegraphics[width=\textwidth]{d7-gaze4-results-pr.pdf}	
+		\caption*{eye tumor (tested frames: [12:80])}
+	\end{subfigure}	
+	
+	\vspace{3mm}
+	\begin{subfigure}[h]{0.45\textwidth}
+	\includegraphics[width=\textwidth]{d8-gaze2-results-roc.pdf}	
+		\caption*{cochlea}
 	\end{subfigure}
-	\caption{Results for eye tumor dataset.}
-	\label{fig:d7-results-curves}
+	~
+	\begin{subfigure}[h]{0.45\textwidth}
+	\includegraphics[width=\textwidth]{d8-gaze2-results-pr.pdf}	
+		\caption*{cochlea (tested frames: [70:250])}
+	\end{subfigure}		
+	\caption{Results using only actual gaze observations.}
+	\label{fig:results-curves}
 \end{figure}
 
 
@@ -253,7 +268,6 @@ In this case, the naive approach performs clearly worse than ours because ... \t
 
 
 
-\todoWriteMore{show results with ``normal'' plus/minus 1 labeled data as in Vilari\~no et al., consider patches and also superpixels (good features!)}
 \todoWriteMore{contrast to what they did in 1st paper. Training labels according to real ground truth vs. training labels according to gaze position as suggested by Vilari\~no et al.:
 ...}
 
