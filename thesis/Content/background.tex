@@ -234,9 +234,9 @@ In the cochlea example it would be enough for the observer to focus on the lower
 	\label{fig:nonValidAssumptionD78}
 \end{figure}
 
-The basic problem is therefore that we can observe only one position at a time, and if there happen to be other positive parts in this very frame, we are forced to ignore it. 
+The basic problem is therefore that we can observe only one position at a time, and if there happen to be other positive parts in this very frame, we have no way so far to consider this. 
 It could be argued that whatever part is not focused in one frame might be focused in a later one. 
-Yet, in this case we would already have included this part (although perhaps slightly different looking as in a different frame) in the negative set in the previous frame, possibly multiple times. 
+Yet, in this case we might already have included this part in the negative set in the previous frames, possibly multiple times. 
 This means that our ``negative'' training set is actually a mixture of positives and negatives.
 A natural step is therefore to formulate the problem in a different way, namely not as ``separate observed (positive) from unobserved (negative) samples'', but instead as ``given some positive samples, figure out whether or not the other, unlabeled samples, belong to the positive or to the negative class.'' This is the so-called PU-learning problem.
 
@@ -256,7 +256,7 @@ Using gaze observations we try to obtain piecewise continuous user strokes in th
 	\label{fig:boykovbones}
 \end{figure}
 
-\subsection{PU-learning, Semi-supervised learning}
+\subsection{PU-learning}
 The PU-learning problem recently got attention and applications in document classification (\cite{li2003learning}), time series classification (\cite{nguyen2011positive}) and bioinformatics (\cite{elkan2008learning}, \cite{yang2012positive}, \cite{yang2014ensemble}, \cite{yousef2015novel}). 
 Most of these methods proceed in two steps: 
 \begin{enumerate}
@@ -264,15 +264,12 @@ Most of these methods proceed in two steps:
  \item Use a standard classifier to separate positives and negatives.
 \end{enumerate}
 
-Our approach is in that sense different that we will not only include reliable negative samples from the unlabeled set (possibly more and more by applying the above steps iteratively), but instead we include also samples with uncertain labels, using a notion of confidence / certainty. 
-We designed an according loss function that can be used in a standard gradient boosting framework, as further discussed in Chapter \ref{chap:learning-with-unlabeled-data}.
+This corresponds to the steps that are iteratively done in previous proposed semi-supervised setups for boosting methods like ASSEMBLE \cite{bennett2002exploiting} or SemiBoost \cite{mallapragada2009semiboost} where they iteratively assign labels to the unlabeled data using the original labeled data and labeled from previous iteration, if available. 
+Given only positive labels from the beginning, we face again the problem of finding representative negative labels (step 1 above) for the initialization. Our approach is in that sense different that we will not only include reliable negative samples from the unlabeled set, but instead we include also samples about whose label we are uncertain by including a notion of certainty in our optimization problem. We designed an according loss function that can be used in a standard gradient boosting framework.
 
-Du Plessis et al. showed in \cite{plessis2014PUanalysis} that solving the PU-problem corresponds to minimizing a non-convex loss function, and recently they presented a convex formulation by using different loss functions for the positive and the unlabeled data samples in \cite{plessis2015convex}. Whereas they construct an empirical version of the objective function that can be optimized using quadratic programming, we tried to solve the problem using standard gradient boosting techniques. 
-In a semi-supervised gradient boosting setup, what is usually done is an estimation of the labels for the unlabeled set and then, based on this, a supervised learning process. 
+Du Plessis et al.\ showed in \cite{plessis2014PUanalysis} that solving the PU-problem corresponds to minimizing a non-convex loss function, and recently they presented a convex formulation by using different loss functions for the positive and the unlabeled data samples in \cite{plessis2015convex}. The PU-learning problem can also be considered a supervised learning problem with label noise, and within this context, Ghosh et al.\ found in \cite{ghosh2015making} the same sufficient symmetry conditions for the loss function that Du Plessis et al.\ to solve the PU-learning problem in an unbiased way. The estimator used by Du Plessis et al. was previously proposed by Natarajan et al.\ \cite{natarajan2013learning} in a more general work about learning with possible noise in negative and positive training labels, where the PU-learning problem is considered a special case of having only noise in the negative set.
 
-Gradient boosting gives us a general way to minimize a loss function, and therefore we could easily also try their suggested double hinge loss $l(z) = \max(-z,\max(0,0.5 - 0.5 z))$ (for unlabeled samples) and its composite $\tilde l(z) = l(z) - l(-z) = -z$ (for positive samples). 
-
-
-Whereas there have been suggestions to adaptively set the labels for the unlabeled data (ref: SSMBoost [d'Alch\`e-Buc et al., 2002], SemiBoost [Mallapragada et al., 2009]).
-\todoWriteMore{gradient boost with noise, pu-problem as special case, maybe semi-supervised grad boost,
-maybe plessis et al.}
+Considering this interpretation of the PU-learning problem, it is worth to mention that AdaBoost is very sensitive to noise. Several adjustments to handle noise have been suggested: MadaBoost \cite{domingo2000madaboost} is a boosting variant that gives an upper bound to the weights in the iterative updates. This helps avoiding that noisy labels are over-emphasized. 
+After some earlier suggestions, Freund found in 2009 a boosting algorithm \cite{freund2009more} that pushes the classification margin to be large but ignores samples that are hard to classify. A thorough overview about these and more suggested noise tolerant boosting algorithms can be found in \cite{zhou2012ensemble}.
+\todoRef{add SLIC reference somewhere!}
+%Gradient boosting gives us a general way to minimize a loss function, and therefore we could easily also try their suggested double hinge loss $l(z) = \max(-z,\max(0,0.5 - 0.5 z))$ (for unlabeled samples) and its composite $\tilde l(z) = l(z) - l(-z) = -z$ (for positive samples). 
