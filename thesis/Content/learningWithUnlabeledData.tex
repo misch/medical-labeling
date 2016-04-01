@@ -122,7 +122,7 @@ Optimizing the double hinge loss and its composite as suggested in \cite{plessis
 \section{On the real data}
 \subsection{Labels inferred from ground truth}
 Using ground truth data for the three datasets ``instrument'', ``eye tumor'' and ``cochlea,'' we checked how well the different approaches with different assumptions about available labels perform. 
-Assuming that we have for a certain amount of frames / depth slices the correct superpixel labels \footnote{$y_i = 1$, if more than 50\% of the pixels contained in a superpixel are positive in the ground truth}, we again optimized a standard exponential loss with a gradient boosting algorithm using decision tree stumps as weak learners. 
+Assuming that we have for a certain amount of frames / depth slices the correct superpixel labels\footnote{$y_i = 1$, if more than 50\% of the pixels contained in a superpixel are positive in the ground truth}, we again optimized a standard exponential loss with a gradient boosting algorithm using decision tree stumps as weak learners. 
 This serves as a reference for our experiments.
 We evaluate how well the classifier generalizes to the remaining frames on a pixelwise basis; that is, we classify whole superpixels, but at the end we are interested in the pixelwise segmentation result and compute Receiver Operator Characteristics (ROC) and Precision-Recall values on a pixelwise basis (see Figure \ref{fig:reference-known-labels}). 
 This strategy allows us to compare the results to the real pixelwise ground truth instead of a ``constructed'' ground truth of e.g.\ declaring a superpixel as positive, if it contains more than 30\% or 50\% positive ground truth pixels.

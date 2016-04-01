@@ -1,10 +1,10 @@
 \chapter{Characterizing gaze}
 \label{chap:characterizing-gaze}
-This chapter will discuss the used setup and the quality of extracted positive labels gained from the observed gaze positions. The important question to answer is, how reliable our data is with respect to the assumption that gaze observation can naturally provide us with positive labels for the data. 
+This chapter will discuss the used setup and the quality of extracted positive labels gained from the observed gaze positions. The important question to answer is, how reliable our data are with respect to the assumption that gaze observation can naturally provide us with positive labels for the data. 
 
 \section{Setup}
 We used an affordable eye-tracking device called ``The Eye Tribe''. 
-According to the producer's website (\url{http://dev.theeyetribe.com/general/}), the device has an accuracy of at least 1 degree visual angle. We placed the device on a tripod below a 32.4cm $\times$ 51.8cm screen and observed the screen from a distance of approximately 60cm.
+According to the producer's website (\url{http://dev.theeyetribe.com/general/}), the device has an accuracy of at least 1 degree visual angle. We placed the device on a tripod below a 32.4cm\,$\times$\,51.8cm screen and observed the screen from a distance of approximately 60cm (an illustration of the setup can be seen in Figure \ref{fig:theeyetribe}).
 
 \begin{figure}[ht]
 	\centering
@@ -17,7 +17,7 @@ According to the producer's website (\url{http://dev.theeyetribe.com/general/}),
 The video sequences were played on full screen at 30 frames per second. 
 The 3D scans were converted to a video and played at 10 frames per second. 
 In this setup, the minimum accuracy of 1 degree corresponds to an on-screen error of approximately 1cm. 
-Figure \ref{fig:onedegreecircle} gives an idea of how much this error might mean in terms of our used datasets.
+Figure \ref{fig:onedegreecircle} gives an idea of how much this error might mean in terms of our used datasets. 
 The instrument dataset is less sensitive to this than e.g.\ the cochlea CT scan that has fine structures to be recognized.
 
 \begin{figure}[ht]
@@ -74,133 +74,117 @@ The distance to the actual center of the image is on average between 5 and 7 pix
 
 
 \begin{figure}[ht]
-	  \includegraphics[width=0.5\textwidth]{closestPositiveDataset2vid2.pdf}
-	  \includegraphics[width=0.5\textwidth]{closestPositiveDataset2vid5.pdf}
-	  \includegraphics[width=0.5\textwidth]{closestPositiveDataset2vid4.pdf}
-	  \includegraphics[width=0.5\textwidth]{closestPositiveDataset2vid3.pdf}
+	  \includegraphics[width=\textwidth]{closestPositiveDataset2vid2.eps}
+	  \includegraphics[width=\textwidth]{closestPositiveDataset2vid5.eps}
+	  \includegraphics[width=\textwidth]{closestPositiveDataset2vid4.eps}
+	  
+	  \vspace{3mm}
+	  \includegraphics[width=\textwidth]{size_instrument.eps}
 	  \caption{instrument: As expected, many values are exactly zero which means that hitting the object is rather easy in this dataset. Where the gaze is not on the object, the typically big outlier values in the distance indicate that this is not due to a measurement error, but instead the eye was really not on the object.}
 	\label{fig:distanceToClosestPositiveD2}
 \end{figure}
 
 \begin{figure}[ht]
-	  \includegraphics[width=0.5\textwidth]{closestPositiveDataset7vid1.pdf}
-	  \includegraphics[width=0.5\textwidth]{closestPositiveDataset7vid4.pdf}
-	  \includegraphics[width=0.5\textwidth]{closestPositiveDataset7vid6.pdf}
-	  \includegraphics[width=0.5\textwidth]{closestPositiveDataset7vid7.pdf}
-	  \caption{eye tumor: The little amount of available values means that, in general, the structure of interest (tumor) is small in size (not available values mean that there are no positive values in the ground truth frame). Between frames 40 and 50 the tumor seems to be well visible and big enough in size to be rather reliably hit by the gaze.}
+	  \includegraphics[width=\textwidth]{closestPositiveDataset7vid1.eps}
+	  \includegraphics[width=\textwidth]{closestPositiveDataset7vid4.eps}
+	  \includegraphics[width=\textwidth]{closestPositiveDataset7vid6.eps}
+	  
+	  \vspace{3mm}
+	  \includegraphics[width=\textwidth]{size_eyetumor.eps}	  
+	  \caption{eye tumor: The little amount of available values means that, in general, the structure of interest (tumor) is small in size (not available values mean that there are no positive values in the ground truth frame). Between frames 40 and 50 the tumor seems to be well visible and big enough in size to be rather reliably hit by the gaze. Note that in frames 50 -- 54 the size of the tumor is still considerably big, but the gaze positions are getting off the object already from frame 50 on. This indicates the not only the actual size but also the change rate of size has an effect on the quality of the gaze positions.}
 	\label{fig:distanceToClosestPositiveD7}
 \end{figure}
 
 \begin{figure}[ht]
-	  \includegraphics[width=0.5\textwidth]{closestPositiveDataset8vid3.pdf}
-	  \includegraphics[width=0.5\textwidth]{closestPositiveDataset8vid6.pdf}
-	  \includegraphics[width=0.5\textwidth]{closestPositiveDataset8vid7.pdf}
-	  \includegraphics[width=0.5\textwidth]{closestPositiveDataset8vid1.pdf}
-	  \caption{cochlea: In this dataset, it is rather rare that the object of interest (cochlea) is actually hit by the measured gaze positions; only in few cases the distance is exactly zero. The high variation in distance to the object indicates that it is hard to follow the fine structures with the eyes, and probably only a small part of the error might be caused by inaccuracy in the measurements.}
+	  \includegraphics[width=\textwidth]{closestPositiveDataset8vid3.eps}
+	  \includegraphics[width=\textwidth]{closestPositiveDataset8vid6.eps}
+	  \includegraphics[width=\textwidth]{closestPositiveDataset8vid7.eps}
+	  
+	  \vspace{3mm}
+	  \includegraphics[width=\textwidth]{size_cochlea.eps}	  
+	  \caption{cochlea: In this dataset, it is rather rare that the object of interest (cochlea) is actually hit by the measured gaze positions; only in few cases the distance is exactly zero. The high variation in distance to the object indicates that it is hard to follow the fine structures with the eyes, and probably only a small part of the error might be caused by inaccuracy in the measurements. Note that as in Figure \ref{fig:distanceToClosestPositiveD7}, we can observe that the rate of change in object size is related to the distance of gaze positions to true positive pixels. Especially the part between frame 150 and 200 is interesting. Even the little period (frames 173-187) of size fluctuations before the peak at frame 192 seems to cause considerable increases in the distance plots above.}
 	\label{fig:distanceToClosestPositiveD8}
 \end{figure}
 
+Therefore, giving a tolerance of 0.4 degrees seems to be a necessary step to account for the inaccuracy of the eye-tracking device. The top three plots of Figures \ref{fig:distanceToClosestPositiveD2}, \ref{fig:distanceToClosestPositiveD7} and \ref{fig:distanceToClosestPositiveD8} show for each dataset the distances to the closest true positive pixel for three different recorded gaze sequences. 
+The instrument dataset (Figure \ref{fig:distanceToClosestPositiveD2}) shows rather promising results: 
+In the three recorded gaze sequences, the majority of the values are exactly zero, indicating that the gaze hits the actual object. 
+Measurement errors do not seem to influence the potential accuracy of our method here, as the cases where the gaze is not on the object are clear human-caused outliers with a distance of more than 1 degree visual angle.
+A similar conclusion holds for the eye tumor dataset (Figure \ref{fig:distanceToClosestPositiveD7}). 
+The gaze observations show that between frames 40 and 50, when the tumor is big in size, it is well hit by the gaze. 
+The rather big distances to any positive pixels before and after this interval might reflect the fact that the size of the structure of interest decreases rapidly in these frames (see the last plot in Figure \ref{fig:distanceToClosestPositiveD7}). 
+The recordings from the cochlea dataset (Figure \ref{fig:distanceToClosestPositiveD8}) show that it is actually a rather rare event in this dataset that the gaze really hits the object. However, the distance to the true positives stays mostly below 1 degree visual angle. This suggests that in this case, the inaccuracy of the device might be a problem.
+Yet, considering the previously discussed measurements, it is more likely that the errors are due to the very fine structures to detect in this dataset: Like in the previous case of the eye tumor, the gaze accuracy decreases when the size of the object decreases. 
+It seems that not only the object size is of importance when trying to fixate positive points, but also the change rate of the size: In all the three datasets, but best visible for the eye tumor and cochlea, it can be seen that the gaze tends to drift away from the object whenever the size of the object decreases, whereas an increasing size seems to attract the attention of the observer and make it much easier to focus the object. \todo{maybe play the video backwards?}
+The discussed plots show that the cochlea dataset can clearly be considered the most challenging one used during this project because it is the one where the gaze sequences are the least focused on the object. 
+The rate of change in size, but also the absolute size seem to be critical when trying to focus an object throughout a sequence of images. Figure \ref{fig:relativeobjectsize} and Table \ref{tab:avgobjectsize} illustrate comparisons of the object sizes among the different datasets. Considering the relative sizes\footnote{The relative object size was calculated with respect to the resolution of the used images.}, it is very obvious that dataset 2 will be less prone to little errors in the gaze than the other two datasets because the likelihood to randomly find a positive pixel in dataset 2 is much higher.
 
 \begin{figure}[ht]
-	  \includegraphics[width=0.5\textwidth]{fractionsDataset2vid2.pdf}
-	  \includegraphics[width=0.5\textwidth]{fractionsDataset2vid5.pdf}
-	  \includegraphics[width=0.5\textwidth]{fractionsDataset2vid4.pdf}
-	  \includegraphics[width=0.5\textwidth]{fractionsDataset2vid3.pdf}
+	\centering
+	  \includegraphics[width=\textwidth]{size_relative.png}
+	\caption{1)\,--\,3) Object areas in \#pixels for the three available datasets. Note that the eye tumor and cochlea are visible only for a rather short number of frames and for both of them the size decreases very rapidly towards the end. 4) Object areas relative to the resolution of the image frames. The small relative area of the eye tumor and the cochlea in the scans may explain the difficulties to hit the object with the gaze.}
+	\label{fig:relativeobjectsize}
+\end{figure}
+
+\begin{table}[ht]
+	\centering
+	  \caption{A listing of the sizes of the structures of interest, averaged over all the frames of a dataset that contain positive information.}
+	  \label{tab:avgobjectsize}
+	\begin{tabular}{ | c  c  c  c | }
+	\hline
+				& instrument 	& eye tumor & cochlea \\ \hline
+	  resolution  		& $576 \times 720$ & $380 \times 384$ & $526 \times 429$ \\ 
+	  average area [px]	& $39378$ 	& $981.12$ 	 & $605.86$ \\
+	  average rel. area [\%]& $9.5$ 		& $0.67$ 		 & $0.2685$ \\ \hline
+	\end{tabular}
+\end{table}
+
+Having considered possible causes for the gaze positions not being focused on the object, we will now briefly focus on the effects of that problem with respect to our later task of using the gaze positions to generate positive training samples. 
+To check how much true positive / false positive information we are actually using for our work, we visualized the amount of positive information in the following way: 
+For each frame where the user pressed a key, we extracted the superpixel that contains the corresponding gaze position. 
+Each of the extracted superpixels contains many pixels and we calculated the relative amount of true positive pixels among them. 
+A reason for those superpixels containing less than 100\% true positive pixels is that some of the extracted superpixel describes a region that does not contain the object at all. 
+This would lead to a fraction of 0\% true positives. 
+The other reason is that the gaze actually hits the object, but the corresponding superpixel contains other information than just the object. 
+For the same three gaze sequences than before, the relative amount of positive information in each extracted superpixel is shown in Figures \ref{fig:positiveFractionD2}, \ref{fig:positiveFractionD7} and \ref{fig:positiveFractionD8}. 
+We can see in Figure \ref{fig:positiveFractionD2} that even a small distance to the actual object can cause considerable noise in the extracted superpixels. 
+For example for the first sequence, there are some extracted superpixels containing less than 50\% positive information around frame 400, even though we saw in Figure \ref{fig:distanceToClosestPositiveD2} that the distance between the gaze and the actual object was greater than zero during only 5 frames and not bigger than 2.5 pixels. 
+This is not a very surprising observation, as the used SLIC superpixels respect edges. 
+Therefore, the superpixel containing a position that is not exactly on the object will typically not contain any positive information. Furthermore, this does not necessarily change with the superpixel size, as the examples in Figure \ref{fig:gazeOffSuperpixelSize} show. On the other hand, the effects of a similar case in the second sequence around frame 320 are not so dramatic and clearly, the extracted superpixels contain more true positive than false positive information, which is a promising precondition for our later task. 
+For the eye tumor and the cochlea data, the situation is more critical. Figures \ref{fig:positiveFractionD7} and \ref{fig:positiveFractionD8} show that we will effectively have to deali with a large amount of wrong information. In fact, more of the extracted ``positive'' superpixels contain less than 50\% of true positive information, and even more severely, for both datasets, quite some superpixels contain only negative information that we wrongly assume to be positive.
+
+\begin{figure}[ht]
+	  \includegraphics[width=\textwidth]{fractionsDataset2vid2.eps}
+	  \includegraphics[width=\textwidth]{fractionsDataset2vid5.eps}	  
+	  \includegraphics[width=\textwidth]{fractionsDataset2vid4.eps}
 	  
 	  \centering
-	  \includegraphics[width=0.5\textwidth]{fraction-legend}
-	  \caption{instrument: using SLIC superpixels}
-	\label{fig:positiveFractionD6}
+	  \includegraphics[width=\textwidth]{fraction-legend.eps}
+	  \caption{instrument: fraction of positive information within superpixels }
+	\label{fig:positiveFractionD2}
 \end{figure}
 
 \begin{figure}[ht]
-	  \includegraphics[width=0.5\textwidth]{fractionsDataset7vid1.pdf}
-	  \includegraphics[width=0.5\textwidth]{fractionsDataset7vid4.pdf}
-	  \includegraphics[width=0.5\textwidth]{fractionsDataset7vid6.pdf}
-	  \includegraphics[width=0.5\textwidth]{fractionsDataset7vid7.pdf}
+	  \includegraphics[width=\textwidth]{fractionsDataset7vid1.eps}
+	  \includegraphics[width=\textwidth]{fractionsDataset7vid4.eps}
+	  \includegraphics[width=\textwidth]{fractionsDataset7vid6.eps}
 	  
 	  \centering
-	  \includegraphics[width=0.5\textwidth]{fraction-legend}
+	  \includegraphics[width=\textwidth]{fraction-legend.eps}
 	  \caption{eye tumor: using SLIC superpixels}
 	\label{fig:positiveFractionD7}
 \end{figure}
 
 \begin{figure}[ht]
-	  \includegraphics[width=0.5\textwidth]{fractionsDataset8vid3.pdf}
-	  \includegraphics[width=0.5\textwidth]{fractionsDataset8vid6.pdf}
-	  \includegraphics[width=0.5\textwidth]{fractionsDataset8vid7.pdf}
-	  \includegraphics[width=0.5\textwidth]{fractionsDataset8vid1.pdf}
+	  \includegraphics[width=\textwidth]{fractionsDataset8vid3.eps}
+	  \includegraphics[width=\textwidth]{fractionsDataset8vid6.eps}
+	  \includegraphics[width=\textwidth]{fractionsDataset8vid7.eps}
 	  
 	  \centering
-	  \includegraphics[width=0.5\textwidth]{fraction-legend}
+	  \includegraphics[width=\textwidth]{fraction-legend.eps}
 	  \caption{cochlea: using SLIC superpixels}
 	\label{fig:positiveFractionD8}
 \end{figure}
-
-Therefore, giving a tolerance of 0.4 degrees seems to be a necessary step to account for the inaccuracy of the eye-tracking device. 
-Figures \ref{fig:distanceToClosestPositiveD2}, \ref{fig:distanceToClosestPositiveD7} and \ref{fig:distanceToClosestPositiveD8} show for each dataset the distance to the closes true positive pixel for four different recorded gaze sequences. 
-The instrument dataset (Figure \ref{fig:distanceToClosestPositiveD2}) shows rather promising results: 
-In the four recorded gaze sequences, the majority of the values are exactly zero, indicating that the gaze hits the actual object. 
-Measurement errors do not seem to influence the potential accuracy of our method here, as the cases where the gaze is not on the object are clear human-caused outliers with a distance of more than 1 degree visual angle.
-A similar conclusion holds for the eye tumor dataset (Figure \ref{fig:distanceToClosestPositiveD7}). 
-The gaze observations show that between frames 40 and 50, when the tumor is big in size, it is well hit by the gaze. 
-%There are, best visible in the top left figure, some positions that are slightly off the object before frame 47. 
-%This might be a measurement error, but more likely, it is because the gaze has not yet settled at the correct position. 
-The rather big distances to any positive pixels before and after this interval might reflect the fact that the size of the structure of interest decreases rapidly in these frames (see Figure \ref{fig:objectsizeplot}). 
-The recordings from the cochlea dataset shown in Figure \ref{fig:distanceToClosestPositiveD8} show that it is actually a rather rare event in this dataset that the gaze really hits the object. However, the distance to the true positives stays mostly below 1 degree visual angle. This suggests that some positive information could be gained by using additional nearby points of the recorded gaze position.
-Considering the previously discussed measurements, it is more likely that the errors are due to the very fine structures to detect in this dataset.
-The cochlea dataset can clearly be considered the most challenging one used during this project.
-In this dataset, considering that the data within a 1 degree visual angle is positive, would clearly increase the probability to assign real positive data to the actual gaze observations. 
-However, the total area ot the positives is in most of the frames very small (see Table \ref{tab:avgobjectsize}). 
-Therefore we pay the high price of including a lot of noise into the positive training set, in some cases maybe more noise than actual positive data.
-
-
-\begin{figure}[ht]
-	\centering
-	\begin{subfigure}[h]{\textwidth}
-	  \includegraphics[width=\textwidth]{size_instrument.png}
-	\end{subfigure}
-	
-	\vspace{5mm}
-	\begin{subfigure}[h]{\textwidth}
-	  \includegraphics[width=\textwidth]{size_eyetumor.png}
-	\end{subfigure}
-	
-	\vspace{5mm}
-	\begin{subfigure}[h]{\textwidth}
-	  \includegraphics[width=\textwidth]{size_cochlea.png}
-	\end{subfigure}
-	
-	\vspace{5mm}
-	\begin{subfigure}[h]{\textwidth}
-	  \includegraphics[width=\textwidth]{size_relative.png}
-	\end{subfigure}	
-	\caption{1)\,--\,3) Object areas in \#pixels for the three available datasets. Note that the eye tumor and cochlea are visible only for a rather short number of frames and for both of them the size decreases very rapidly towards the end. 4) Object areas relative to the resolution of the image frames. The small relative area of the eye tumor and the cochlea in the scans may explain the difficulties to hit the object with the gaze.}
-	\label{fig:objectsizeplot}
-\end{figure}
-
-
-\begin{table}[ht]
-	\centering
-	\begin{tabular}{ | c || c | c | c | }
-	\hline
-				& instrument 	& eye tumor & cochlea \\ \hline \hline
-	  resolution  		& $576 \times 720$ & $380 \times 384$ & $526 \times 429$ \\ 
-	  average area [px]	& $39378$ 	& $981.12$ 	 & $605.86$ \\
-	  average rel. area [\%]& $9.5$ 		& $0.67$ 		 & $0.2685$ \\ \hline
-	\end{tabular}
-		\caption{A listing of the sizes of the structures of interest, averaged over all the frames of a dataset that contain positive information.}
-		\label{tab:avgobjectsize}
-\end{table}
-
-
-\section{Include a certain tolerance}
-\todo{\"uberleitung fehlt... maybe consider the following as ``ways to give this tolerance''}Even when staring exactly on the object, not all of the superpixel's content is necessarily positive. 
-This can e.g.\ be seen in the Figures \ref{fig:positiveFractionD7} and \ref{fig:positiveFractionD8} where the structures are sometimes so small that well-regularized SLIC-superpixels cannot capture them. 
-In this case, reducing the size of the superpixels would help to overcome the issue. 
-However, if the gaze drifts away from the object only by a few pixels, then the positive content of the superpixels dramatically decreases. 
-This issue could be overcome by considering more of the surrounding superpixels to be positive (and therefore find the ``correct'' one but also introduce noise to the positively labeled data), i.e.\ giving a certain tolerance. 
-Increasing the size of the superpixels is another possibility that will help, but it is paid with accuracy at the object boundaries and, because SLIC still aims at respecting the edges in the image, the true positive superpixels will typically first extend towards the direction that will not include the wrong gaze position, assuming that this lies on the other side of a strong image edge (see Figure \ref{fig:gazeOffSuperpixelSize}).
 
 \begin{figure}[ht]
 	\centering
@@ -235,9 +219,7 @@ Increasing the size of the superpixels is another possibility that will help, bu
 	\caption{Extending the superpixel size does not necessarily help to overcome the wrong or inaccurate gaze positions, as the superpixels naturally tend to respect edges and the gaze is in this case usually on the wrong side of the edge. Yellow: gaze position that is slightly off from the object}
 	\label{fig:gazeOffSuperpixelSize}
 \end{figure}
-[kinda conclusion:]
+
+
 Clearly, the simple assumption that all the user-indicated positive labels are true positives, is not valid. 
-Even the rather simple case of the surgical instrument leads to noise in the acquired positive labels. The finer the structures of interest, the less reliably the gaze positions indicate true positive information. 
-The problems could be overcome by [list different ways of given tolerances (e.g.\ gaussian prob. of being positive / a fixed radius within which the data are considered positive / superpixel size]. 
-\todoWriteMore{if have time: try some things with smoothed gaze!}
-\todoWriteMore{maybe add tolerance plots?}
+For the instrument data, we could show that we still gain more true than false positive information from the gaze information. However, the finer the structures of interest, the less reliably the gaze positions indicate true positives, as was clearly visible in Figures \ref{fig:positiveFractionD7} and \ref{fig:positiveFractionD8}.
