@@ -1,9 +1,9 @@
-\chapter{Learning with unlabeled data}
+\chapter{Learning with Unlabeled Data}
 \label{chap:learning-with-unlabeled-data}
 In this chapter, we will discuss the inherently noisy labels in the setup of Vilari\~no et al. and how to overcome the issues. 
 The underlying conceptual problem to solve is the following: Assuming we have only true positive gaze positions (see Chapter \ref{chap:characterizing-gaze} for a discussion about this assumption), we can still not infer any reliable information about the negative labels. Instead, we are facing the so-called PU-Learning Problem that will be explained in the following.
 
-\section{Problem formulation}
+\section{Problem Formulation}
 The problem of learning a classifier from positive and unlabeled data is aimed at assigning labels to the unlabeled dataset. 
 It can be considered a semi-supervised learning setup: Instead of having a positive and a negative set of examples, we are given an incomplete set of positives and a set of unlabeled examples. 
 The unlabeled data contains positive and negative examples which we aim to assign to either the positive or negative class. 
@@ -54,7 +54,7 @@ The derivative of the loss function with respect to the classifier's scores is t
 Clearly, the key of this method is the usage of the probability $p_i$ for each sample $x_i$ to be a positive sample. 
 It naturally gives us a way to tune the algorithm not to concentrate the same way on all wrongly classified samples, but instead embrace the fact that there is not always a 100\% certainty that we are working with the correct labels.
 
-\section{Synthetic data}
+\section{Synthetic Data}
 We conducted some basic experiments on synthetic data. 
 The total size of our synthetic training set contained 160 samples, 80 of which were positive and 80 negative. 
 The positive training samples were equally generated from normal distributions $\mathcal{N}(\mu_1,\Sigma_1)$ and $\mathcal{N}(\mu_2, \Sigma_2)$ with 
@@ -119,7 +119,9 @@ Optimizing the double hinge loss and its composite as suggested in \cite{plessis
 \end{figure}
 
 
-\section{On the real data}
+\section{On the Real Data}
+\label{sec:real-data}
+\subsection*{Features}
 Our real datasets consist of multiple images each that we pre-segmented using the SLIC algorithm. 
 We decided to use some simple descriptors for the superpixels: For the color videos (airplane from Figure \ref{fig:airplaneSLIC} and instrument dataset), we used three-dimensional features
 \begin{equation*}
@@ -134,7 +136,36 @@ For the eye tumor and the cochlea datasets we used the following values to descr
  \item and the co-occurrence matrix (\cite{haralick1973textural}) of the image when masked to see only the superpixel.
 \end{itemize}
 
-\subsection{Labels inferred from ground truth}
+\subsection*{Probabilities}
+Using synthetic data, we could profit from knowing the underlying distribution and directly use this knowledge by feeding the true probabilities to our algorithm. 
+However, in a real case we will not know these probabilities and have to come up with a way to estimate them. 
+The results presented in this thesis were optained with the following experimentally found values:
+Given the observed positive superpixels $x_1,\dots,x_m$ from a gaze sequence, we calculated distance vector $(d_1,\dots,d_m)$ for every unlabeled sample $\tilde x$ with $d_i = d(\tilde x, x_i), \quad i = 1,\dots,m.$
+Here, $d$ is a general distance metric. We used euclidean and cosine metrics as indicated in Table \ref{tab:probabilities}. 
+The distance vector was then aggregated to one value $d_{\text{f}}$ by taking the median or minimum value. 
+Further, we calculated the spatial (euclidean) distance of every unlabeled superpixel and the gaze position in the corresponding frame 
+$$d_\text{s} = d\left(\begin{bmatrix} \text{gaze}_x \\ \text{gaze}_y \end{bmatrix}, \begin{bmatrix} x \\ y \end{bmatrix}\right),$$
+where $\begin{bmatrix} x \\ y \end{bmatrix}$ is the median position of all the pixels contained in the unlabeled superpixel.
+The probabilities were then calculated as indicated in Table \ref{tab:probabilities}.
+There is always a spatial term and a feature term involved. The feature term is based on the distance $d_{\text{f}}$ and therefore includes information about all the positives that were collected using the gaze information. The exact parameters and the usage of different metrics was determined experimentally and there is no guarantee that they are the optimal ones.
+\begin{table}[ht]
+	\centering
+	  \caption{A listing of the formulas used for the different datasets to calculate approximate probability values for the unknown labels to be positive.}
+	  \label{tab:probabilities}
+	\begin{tabular}{ | c  c  p{7cm} | }
+	\hline
+	  dataset	& formula 								& $d_{\text{f}}$  \\ \hline
+			& & \\
+	  instrument  	& $p_{\tilde x} = e^{-d_{\text{f}}/0.15} \cdot e^{-d_{\text{s}}/400}$ 	& $d_{\text{f}} = $ median of euclidean distances  \\ 
+	  & & \\
+	  eye tumor	& $p_{\tilde x} = e^{-d_{\text{f}}/0.15} \cdot e^{-d_{\text{s}}/400}$ 	& $d_{\text{f}} = $ median of cosine distances 	  \\ 
+	  & & \\
+	  cochlea 	& $p_{\tilde x} = e^{-d_{\text{f}}/0.15k} \cdot e^{-d_{\text{s}}/40}$ 	& $d_{\text{f}} = $ miminum of cosine distances; $k = \max(d_\text{f})$ is a normalization constant used because the minimum cosine distances are small numbers\\ \hline
+	\end{tabular}
+\end{table}
+
+\subsection{Results}
+\subsubsection*{Labels inferred from ground truth}
 Using ground truth data for the three datasets ``instrument'', ``eye tumor'' and ``cochlea,'' we checked how well the different approaches with different assumptions about available labels perform. 
 Assuming that we have for a certain amount of frames / depth slices the correct superpixel labels\footnote{$y_i = 1$, if more than 50\% of the pixels contained in a superpixel are positive in the ground truth}, we again optimized a standard exponential loss with a gradient boosting algorithm using decision tree stumps as weak learners. 
 This serves as a reference for our experiments.
@@ -202,30 +233,26 @@ That this is truly happening in this case can, for example, be seen from the hea
 	\end{subfigure}
 	
 	\vspace{3mm}
-	\begin{subfigure}[h]{0.495\textwidth}
-	  \includegraphics[height=4.4cm]{d2-frame_00455-gradboost-heatmap}
-	  \includegraphics[height=4.4cm]{d2-frame_00455-gradboost-colorbar}
-	  \caption*{exponential loss \\ (gradient boosting)}
-	  % shrinkage = 0.1, 5000 iterations, max tree depth = 2
+	\begin{subfigure}[h]{0.48\textwidth}
+	  \includegraphics[width=\textwidth]{d2-frame_00455-reference-heatmap.eps}
+	  \caption*{reference: gradient boosting with all the correct positive and negative labels inferred from ground truth}	
 	\end{subfigure}
-	
-	\vspace{3mm}
-	\begin{subfigure}[h]{0.495\textwidth}
-	  \includegraphics[height=4.4cm]{d2-frame_00455-svm-heatmap}
-	  \includegraphics[height=4.4cm]{d2-frame_00455-svm-colorbar}
-	  \caption*{SVM classifier \\ (rbf kernel with $\gamma = 0.0625$, $c = 10$)\\}
+	~
+	\begin{subfigure}[h]{0.48\textwidth}
+	  \includegraphics[width=\textwidth]{d2-frame_00455-gradboost-heatmap.eps}
+	  \caption*{exponential loss \newline}
 	\end{subfigure}	
-	\begin{subfigure}[h]{0.495\textwidth}
-	  \includegraphics[height=4.4cm]{d2-frame_00455-pugradboost-heatmap}
-	  \includegraphics[height=4.4cm]{d2-frame_00455-pugradboost-colorbar}
-		  \caption*{PU-losss \\ (gradient boosting)}
+	~
+	\begin{subfigure}[h]{0.48\textwidth}
+	  \includegraphics[width=\textwidth]{d2-frame_00455-pugradboost-heatmap.eps}
+		  \caption*{PU-loss \\ }
 		  % 500 iterations, shrinkage = 0.1, stumps
 	\end{subfigure}		
-	\caption{}
+	\caption{Resulting scores for one frame using as input random true positives inferred from the ground truth. Whereas both, the standard exponential loss and our PU-loss yield higher scores for regions containing the object, our approach leads to the threshold separating positives from negatives being closer to 0.}
 	\label{fig:bias-in-heatmaps}
 \end{figure}
 
-\subsection{Labels inferred from gaze observations}
+\subsubsection{Labels inferred from gaze observations}
 The difference between the above case to our actual situation lies mainly in the distribution of the positive labels -- they are not, as assumed in the previous section, randomly taken from all the positives of the observed frames, but instead they might often over-represent certain positives and under-represent others due to e.g.\ the fact that it is easier to fixate an edge than a smooth region in an image. 
 In this setting it becomes more important that not all the unlabeled samples are considered negatives. 
 The red curves in Figure \ref{fig:results-curves} show a rather low performance for this approach in each dataset. 
@@ -270,6 +297,197 @@ The performance plots of our method (yellow curves in Figure \ref{fig:results-cu
 	\end{subfigure}		
 	\caption{Results using only actual gaze observations.}
 	\label{fig:results-curves}
+\end{figure}
+
+Some resulting scores are shown for each dataset in Figures \ref{fig:results-d2-gaze2}, \ref{fig:results-d7-gaze4} and \ref{fig:results-d8-gaze2}. 
+
+The heat maps in Figure \ref{fig:results-d2-gaze2} show that our approach gives e.g.\ higher scores to the tip of the instrument whereas the standard approach is for example in frame 738 very bad at accounting for the fact that, even if not observed very often, the tip of the tool could be a part of the object. 
+In frame 29, both approaches fail to recognize one part of the tip of the instrument, most likely due to the pre-segmentation that does not respect this particular edge in the image and therefore actually contains more negative (background) than positive (instrument) information.
+In the eye tumor dataset (Figure \ref{fig:results-d7-gaze4}), we see that more superpixels get higher scores whereas the standard exponential loss leads mostly to only one or two positives (the one that was hit by the gaze) and the others have rather low scores. 
+Our approach yields as well the same positives, but shows more uncertainty about the (wrong) negative predictions at the locations of the other true positives. 
+The same holds for the example of the cochlea in Figure \ref{fig:results-d8-gaze2}. 
+However, we can here as well see that our approach is at this point heavily dependent on the gaze-positions. 
+The locations of the gaze are considered positives and only for the other, unlabeled ones the labels are estimated. 
+As elaborated in chapter \ref{chap:characterizing-gaze}, the gaze sequences for the latter two datasets contain clearly less true positive information than for the first dataset, and therefore the final segmentation results for those cases are not satisfying at this stage.
+
+\begin{figure}[ht]
+	\centering
+	\begin{subfigure}[h]{0.32\textwidth}
+	\includegraphics[width=\textwidth]{d2-frame_00121-input-segmented}	
+		\caption*{frame 121}
+	\end{subfigure}
+	~
+	\begin{subfigure}[h]{0.32\textwidth}
+	\includegraphics[width=\textwidth]{d2-frame_00738-input-segmented}	
+		\caption*{frame 738}
+	\end{subfigure}
+	~
+	\begin{subfigure}[h]{0.32\textwidth}
+	\includegraphics[width=\textwidth]{d2-frame_00029-input-segmented}	
+		\caption*{frame 29}
+	\end{subfigure}
+	
+	\vspace{3mm}
+	\begin{subfigure}[h]{0.32\textwidth}
+	\includegraphics[width=\textwidth]{d2-frame_00121-groundtruth}	
+	\end{subfigure}
+	~
+	\begin{subfigure}[h]{0.32\textwidth}
+	\includegraphics[width=\textwidth]{d2-frame_00738-groundtruth}	
+	\end{subfigure}
+	~
+	\begin{subfigure}[h]{0.32\textwidth}
+	\includegraphics[width=\textwidth]{d2-frame_00029-groundtruth}	
+	\end{subfigure}
+	
+	\vspace{3mm}
+	\begin{subfigure}[h]{0.32\textwidth}
+	\includegraphics[width=\textwidth]{d2-frame_00121-gaze2-gradboost-heatmap.eps}	
+	\end{subfigure}
+	~
+	\begin{subfigure}[h]{0.32\textwidth}
+	\includegraphics[width=\textwidth]{d2-frame_00738-gaze2-gradboost-heatmap.eps}
+	\end{subfigure}
+	~	
+	\begin{subfigure}[h]{0.32\textwidth}
+	\includegraphics[width=\textwidth]{d2-frame_00029-gaze2-gradboost-heatmap.eps}	
+	\end{subfigure}
+	
+	\vspace{3mm}
+	\begin{subfigure}[h]{0.32\textwidth}
+	\includegraphics[width=\textwidth]{d2-frame_00121-gaze2-pugradboost-heatmap.eps}	
+	\end{subfigure}
+	~
+	\begin{subfigure}[h]{0.32\textwidth}
+	\includegraphics[width=\textwidth]{d2-frame_00738-gaze2-pugradboost-heatmap.eps}	
+	\end{subfigure}
+	~	
+	\begin{subfigure}[h]{0.32\textwidth}
+	\includegraphics[width=\textwidth]{d2-frame_00029-gaze2-pugradboost-heatmap.eps}	
+	\end{subfigure}	
+	
+	\caption{Heat maps showing resulting scores using only actual gaze observations. Top row: Input superpixels. Second row: Ground truth. Third row: resulting scores using standard exponential loss. Bottom row: resulting scores using the PU-loss.}
+	\label{fig:results-d2-gaze2}
+\end{figure}
+
+\begin{figure}[ht]
+	\centering
+	\begin{subfigure}[h]{0.32\textwidth}
+	\includegraphics[width=\textwidth]{d7-frame_00043-input-segmented}	
+		\caption*{frame 43}
+	\end{subfigure}
+	~
+	\begin{subfigure}[h]{0.32\textwidth}
+	\includegraphics[width=\textwidth]{d7-frame_00046-input-segmented}	
+		\caption*{frame 46}
+	\end{subfigure}
+	~
+	\begin{subfigure}[h]{0.32\textwidth}
+	\includegraphics[width=\textwidth]{d7-frame_00048-input-segmented}	
+		\caption*{frame 48}
+	\end{subfigure}
+	
+	\vspace{3mm}
+	\begin{subfigure}[h]{0.32\textwidth}
+	\includegraphics[width=\textwidth]{d7-frame_00043-groundtruth}	
+	\end{subfigure}
+	~
+	\begin{subfigure}[h]{0.32\textwidth}
+	\includegraphics[width=\textwidth]{d7-frame_00046-groundtruth}	
+	\end{subfigure}
+	~
+	\begin{subfigure}[h]{0.32\textwidth}
+	\includegraphics[width=\textwidth]{d7-frame_00048-groundtruth}	
+	\end{subfigure}
+	
+	\vspace{3mm}
+	\begin{subfigure}[h]{0.32\textwidth}
+	\includegraphics[width=\textwidth]{d7-frame_00043-gaze4-gradboost-heatmap.eps}	
+	\end{subfigure}
+	~
+	\begin{subfigure}[h]{0.32\textwidth}
+	\includegraphics[width=\textwidth]{d7-frame_00046-gaze4-gradboost-heatmap.eps}
+	\end{subfigure}
+	~	
+	\begin{subfigure}[h]{0.32\textwidth}
+	\includegraphics[width=\textwidth]{d7-frame_00048-gaze4-gradboost-heatmap.eps}	
+	\end{subfigure}
+	
+	\vspace{3mm}
+	\begin{subfigure}[h]{0.32\textwidth}
+	\includegraphics[width=\textwidth]{d7-frame_00043-gaze4-pugradboost-heatmap.eps}	
+	\end{subfigure}
+	~
+	\begin{subfigure}[h]{0.32\textwidth}
+	\includegraphics[width=\textwidth]{d7-frame_00046-gaze4-pugradboost-heatmap.eps}	
+	\end{subfigure}
+	~	
+	\begin{subfigure}[h]{0.32\textwidth}
+	\includegraphics[width=\textwidth]{d7-frame_00048-gaze4-pugradboost-heatmap.eps}	
+	\end{subfigure}	
+	
+	\caption{Heat maps showing resulting scores using only actual gaze observations. Top row: Input superpixels. Second row: Ground truth. Third row: resulting scores using standard exponential loss. Bottom row: resulting scores using the PU-loss.}
+	\label{fig:results-d7-gaze4}
+\end{figure}
+
+\begin{figure}[ht]
+	\centering
+	\begin{subfigure}[h]{0.32\textwidth}
+	\includegraphics[width=\textwidth]{d8-frame_00170-input-segmented}	
+		\caption*{frame 170}
+	\end{subfigure}
+	~
+	\begin{subfigure}[h]{0.32\textwidth}
+	\includegraphics[width=\textwidth]{d8-frame_00193-input-segmented}	
+		\caption*{frame 193}
+	\end{subfigure}
+	~
+	\begin{subfigure}[h]{0.32\textwidth}
+	\includegraphics[width=\textwidth]{d8-frame_00197-input-segmented}	
+		\caption*{frame 197}
+	\end{subfigure}
+
+	\vspace{3mm}
+	\begin{subfigure}[h]{0.32\textwidth}
+	\includegraphics[width=\textwidth]{d8-frame_00170-groundtruth}	
+	\end{subfigure}
+	~
+	\begin{subfigure}[h]{0.32\textwidth}
+	\includegraphics[width=\textwidth]{d8-frame_00193-groundtruth}	
+	\end{subfigure}
+	~
+	\begin{subfigure}[h]{0.32\textwidth}
+	\includegraphics[width=\textwidth]{d8-frame_00197-groundtruth}	
+	\end{subfigure}		
+	
+	\vspace{3mm}
+	\begin{subfigure}[h]{0.32\textwidth}
+	\includegraphics[width=\textwidth]{d8-frame_00170-gaze2-gradboost-heatmap.eps}	
+	\end{subfigure}
+	~
+	\begin{subfigure}[h]{0.32\textwidth}
+	\includegraphics[width=\textwidth]{d8-frame_00193-gaze2-gradboost-heatmap.eps}
+	\end{subfigure}
+	~	
+	\begin{subfigure}[h]{0.32\textwidth}
+	\includegraphics[width=\textwidth]{d8-frame_00197-gaze2-gradboost-heatmap.eps}	
+	\end{subfigure}
+	
+	\vspace{3mm}
+	\begin{subfigure}[h]{0.32\textwidth}
+	\includegraphics[width=\textwidth]{d8-frame_00170-gaze2-pugradboost-heatmap.eps}	
+	\end{subfigure}
+	~
+	\begin{subfigure}[h]{0.32\textwidth}
+	\includegraphics[width=\textwidth]{d8-frame_00193-gaze2-pugradboost-heatmap.eps}	
+	\end{subfigure}
+	~	
+	\begin{subfigure}[h]{0.32\textwidth}
+	\includegraphics[width=\textwidth]{d8-frame_00197-gaze2-pugradboost-heatmap.eps}	
+	\end{subfigure}	
+	
+	\caption{Heat maps showing resulting scores using only actual gaze observations. Top row: Input superpixels. Second row: Ground truth. Third row: resulting scores using standard exponential loss. Bottom row: resulting scores using the PU-loss.}
+	\label{fig:results-d8-gaze2}
 \end{figure}
 
 

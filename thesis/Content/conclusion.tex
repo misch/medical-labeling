@@ -1,8 +1,18 @@
 \chapter{Conclusion}
 \label{chap:conclusion}
-\section{Discussion}
-\todoWriteMore{Noise in positive labels, especially when structures in the volume / video are small (shown in chapter ``characterizing gaze''), inherent noise in negative labels, explained in chapter about pu learning.}
-\todoWriteMore{A drawback of our approach is that giving the correct probabilities as inputs is not a trivial task. 
-For many datasets, it is not easy to infer, from a few given gaze positions, how likely it is for other samples to be positive or negative. Datasets ``airplane'' and ``instrument'' were okay... terms dependent on spatial distance from gaze, feature-space distance from ``positive'' gaze-feature,... other datasets much more difficult...}
 \section{Conclusion}
+Gaining positive labels using eye-tracking is a realistic idea and it can be used to segment images by interpreting the problem as a semi-supervised problem with only positive and unlabeled training samples. The smaller the structures in the volume / video, the more difficult it is to get reliable positive data. \todo{Mention also rate of change instead of only size} We showed that the previous approach of Vilari\~no et al.\ is not directly applicable to general data and reformulated the underlying problem to overcome the restrictions. For synthetic as well as for real data, our interpretation as a PU-learning problem improves the classification results. The suggested loss function can be used within a standard gradient boosting framework. 
+A drawback of our approach is that providing the correct probabilities to define the loss function is not necessarily a trivial task. We used a combination of distances in spatial and feature domain combining information of the current frame and the whole video sequences. 
+
+
 \section{Future work}
+
+\subsection{Feature Learning}
+The features we used for this work were basic hand-engineered ones. 
+A strategy that might lead to better descriptors might be to learn features in an unsupervised way. 
+For example \cite{ng2011sparse} describes nicely how to use sparse autoencoders to learn features from unlabeled data. This strategy was shown to be helpful in training deep neural networks without getting stuck in local minima \cite{bengio2007greedy}.
+
+\subsection{Use Consistency}
+The data we are dealing with in this application are usually smoothly changing over time.
+While we did consider information from the whole sequences / volumes by including it in our probabilities (section \ref{sec:real-data}), smoothness constraints could possibly be used to identify gaze positions that are unlikely to indicate true positive data. 
+Considering supervoxels instead of superpixels could further improve in using the consistencies along the third dimension. Supervoxels have previously been used for video segmentation for example by Corso et al.\ \cite{CoShDuTMI2008} and Grundmann et al.\ \cite{grundmann2010efficient}.

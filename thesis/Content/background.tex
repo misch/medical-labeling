@@ -39,7 +39,7 @@ However, in our setting, the therefore needed gradients are defined only on the 
 A way to get a predictive model (i.e.\ a model that generalizes to previously unseen data, which is the ultimate goal) is, to induce a basic classifier (decision tree) at each iteration that is fit to the calculated gradients. This ``modification'' of a steepest decent method leads to the so-called gradient boosting algorithm that allows optimizing arbitrary convex loss functions.
 For more detailed explanations of this algorithm, refer to \cite[Chapter~10]{friedman2009elements}.
 
-\section{Build a classifier using gaze-tracking}
+\section{Build a Classifier Using Gaze-Tracking}
 In 2007, Vilari\~no et al. published a method that used gaze-tracking for polyp detection (\cite{vilarino2007automatic}). 
 The core idea of this paper was to train a classifier using expert's gaze positions to automatically generate training samples, instead of manually labeled training data. 
 They chose a very simple approach to achieve this and assumed for each video frame that the gaze position indicates a true positive image region and therefore declared a $128\times128$-pixels image patch as their positive sample. All the other non-overlapping regions of the frames were declared as negative samples.
@@ -240,8 +240,8 @@ Yet, in this case we might already have included this part in the negative set i
 This means that our ``negative'' training set is actually a mixture of positives and negatives.
 A natural step is therefore to formulate the problem in a different way, namely not as ``separate observed (positive) from unobserved (negative) samples'', but instead as ``given some positive samples, figure out whether or not the other, unlabeled samples, belong to the positive or to the negative class.'' This is the so-called PU-learning problem.
 
-\section{Previous work}
-\subsection{Interactive image segmentation}
+\section{Previous Work}
+\subsection{Interactive Image Segmentation}
 Boykov et al.\ published in 2006 a very important work about interactive image segmentation which comes fairly close to the problem we have to solve (\cite{boykov2006graph}). 
 The approach needs as input an image and user strokes indicating background as well as foreground regions. 
 A segmentation is achieved by optimizing a function based on estimated conditional probabilities from the user-provided seeds. 
@@ -256,7 +256,7 @@ Using gaze observations we try to obtain piecewise continuous user strokes in th
 	\label{fig:boykovbones}
 \end{figure}
 
-\subsection{PU-learning}
+\subsection{PU-Learning Problem}
 The PU-learning problem recently got attention and applications in document classification (\cite{li2003learning}), time series classification (\cite{nguyen2011positive}) and bioinformatics (\cite{elkan2008learning}, \cite{yang2012positive}, \cite{yang2014ensemble}, \cite{yousef2015novel}). 
 Most of these methods proceed in two steps: 
 \begin{enumerate}

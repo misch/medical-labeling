@@ -1,23 +1,21 @@
-\chapter{Characterizing gaze}
+\chapter{Characterizing Gaze}
 \label{chap:characterizing-gaze}
-This chapter will discuss the used setup and the quality of extracted positive labels gained from the observed gaze positions. The important question to answer is, how reliable our data are with respect to the assumption that gaze observation can naturally provide us with positive labels for the data. 
+In this chapter we will discuss the used setup and the quality of extracted positive labels gained from the observed gaze positions. How reliable are our data with respect to the assumption that gaze observation can naturally provide us with positive labels for identifying a structure of interest in a three-dimensional setting?
 
 \section{Setup}
 We used an affordable eye-tracking device called ``The Eye Tribe''. 
-According to the producer's website (\url{http://dev.theeyetribe.com/general/}), the device has an accuracy of at least 1 degree visual angle. We placed the device on a tripod below a 32.4cm\,$\times$\,51.8cm screen and observed the screen from a distance of approximately 60cm (an illustration of the setup can be seen in Figure \ref{fig:theeyetribe}).
+According to the producer's website (\url{http://dev.theeyetribe.com/general/}) the device has an accuracy of at least 1 degree visual angle. We placed the eye-tracker on a tripod below a 32.4 cm\,$\times$\,51.8 cm screen and observed the screen from a distance of approximately 60 cm (Figure \ref{fig:theeyetribe} illustrates the physical setup).
 
 \begin{figure}[ht]
 	\centering
-
 	\includegraphics[width=\textwidth]{theeyetribe}	
 	\caption{user in front of ``The Eye Tribe'' (image taken from \url{http://dev.theeyetribe.com/general/})}
 	\label{fig:theeyetribe}
 \end{figure}
 
-The video sequences were played on full screen at 30 frames per second. 
-The 3D scans were converted to a video and played at 10 frames per second. 
-In this setup, the minimum accuracy of 1 degree corresponds to an on-screen error of approximately 1cm. 
-Figure \ref{fig:onedegreecircle} gives an idea of how much this error might mean in terms of our used datasets. 
+The recorded video sequences were played on full screen at 30 frames per second, and the 3D scans were played as a video at 10 frames per second. 
+In this setup, the minimum accuracy of 1 degree corresponds to an on-screen error of approximately 1 cm. 
+Figure \ref{fig:onedegreecircle} gives an idea of how much big error is compared to the structures in our datasets. 
 The instrument dataset is less sensitive to this than e.g.\ the cochlea CT scan that has fine structures to be recognized.
 
 \begin{figure}[ht]
@@ -40,16 +38,13 @@ The instrument dataset is less sensitive to this than e.g.\ the cochlea CT scan 
 	\label{fig:onedegreecircle}
 \end{figure}
 
-Vilari\~no et al. suggested to explore the analysis of gaze fixation patterns and voice labeling in future studies. 
-In this project we want to focus on the other issues of their approach described in Chapter \ref{chap:background}. 
-Therefore, we stick with their appoach and asked the user to press a key when an important structure / object is appearing in the video and to focus on the actual important object. 
+Like Vilari\~no et al.\, we asked the user to press and hold a key to select video sequences containing a structure of interest, and to keep their focus on the actual object. 
 Note that therefore, what is presented in this work, is an active application of eye-tracking with the potential to become passive in the future.
 
-\section{Reliability of gaze observations}
-Given some ground truth data (datasets ``instrument'', ``cochlea'', ``eye tumor''), we evaluated if the assumption of Vilari\~no et al.\ is valid, that only ``positive positions'' are hit by the gaze whenever the observer indicates (by pressing a key) that he sees a structure of interest. 
+\section{Reliability of Gaze Observations}
+Given some ground truth data (datasets ``instrument'', ``cochlea'', ``eye tumor''), we evaluated if the assumption of Vilari\~no et al.\ is valid, that only ``positive positions'' are hit by the gaze whenever the observer indicates (by pressing a key) that he sees a structure of interest. A ``positive position'' is in this context simply a pixel on the screen that contains the object of interest.
 As the user had the task to focus on the object in the video, we expected that the majority of recorded gaze positions are located at true positives, or that at least some true positive points can be found within a 1 degree visual angle of the recorded gaze position. 
-\todo{move to end: Clearly, the smaller the structures, the less likely it was that a true positive was hit.}
-We tried here to separate the human from the measurement error by investigating, for each dataset, the actual distance between the gaze position and the closest true positive point. 
+We tried to separate the human from the measurement error by investigating, for each dataset, the actual distance between the gaze position and the closest true positive point. 
 Values above 1 degree visual angle clearly mean human error whereas values below could mean human error or measurement error. 
 To get a first idea of the actual measurement error, the gaze positions were measured and evaluated on a very simple dataset; a video of a non-moving black point on white background in the middle of the screen. 
 Two measurements were taken. Figure \ref{fig:gazeMeasurementAccuracy} shows that for the task of staring at this black dot, the errors remain well below 1 degree, except in the case of blinking. 
