@@ -1,18 +1,23 @@
 \chapter{Conclusion}
 \label{chap:conclusion}
 \section{Conclusion}
-Gaining positive labels using eye-tracking is a realistic idea and it can be used to segment images by interpreting the problem as a semi-supervised problem with only positive and unlabeled training samples. The smaller the structures in the volume / video, the more difficult it is to get reliable positive data. \todo{Mention also rate of change instead of only size} We showed that the previous approach of Vilari\~no et al.\ is not directly applicable to general data and reformulated the underlying problem to overcome the restrictions. For synthetic as well as for real data, our interpretation as a PU-learning problem improves the classification results. The suggested loss function can be used within a standard gradient boosting framework. 
-A drawback of our approach is that providing the correct probabilities to define the loss function is not necessarily a trivial task. We used a combination of distances in spatial and feature domain combining information of the current frame and the whole video sequences. 
+Gaining positive labels using eye-tracking is a realistic idea and it can be used to segment images by interpreting the problem as a semi-supervised learning problem with only positive and unlabeled training samples. The simple assumption that all the user-indicated positive labels are true positives, is not valid. For the instrument data, we gained more true than false positive information from the gaze sequences. However, the finer the structures of interest are, the less reliably the gaze positions indicate true positives, as became evident in Figures \ref{fig:positiveFractionD7} and \ref{fig:positiveFractionD8}. Further, we realized that not only the absolut size, but also the rate of change influences the ability of the user to fixate the object in the video. This observation suggests that the reliability can be improved, for example by giving the user control about the playback mode of the video sequences.
 
+We demonstrated that the previous approach of Vilari\~no et al.\ \cite{vilarino2007automatic} is not directly applicable to arbitrary data and reformulated the underlying problem to overcome the restrictions. 
+The suggested loss function can be used within a standard gradient boosting framework. 
+A drawback of our approach is that providing the correct probabilities to define the loss function is not a trivial task. Yet, they are the key to our method and allow us to include arbitrary information about the whole dataset into our standard loss function; we used a combination of distances in spatial and feature domain combining information of the current frame and the whole video sequences. For synthetic as well as for real data, our approach improves the classification / segmentation results.
 
 \section{Future work}
 
 \subsection{Feature Learning}
 The features we used for this work were basic hand-engineered ones. 
-A strategy that might lead to better descriptors might be to learn features in an unsupervised way. 
+A strategy that could lead to better descriptors might be to learn features in an unsupervised way. 
 For example \cite{ng2011sparse} describes nicely how to use sparse autoencoders to learn features from unlabeled data. This strategy was shown to be helpful in training deep neural networks without getting stuck in local minima \cite{bengio2007greedy}.
 
 \subsection{Use Consistency}
 The data we are dealing with in this application are usually smoothly changing over time.
-While we did consider information from the whole sequences / volumes by including it in our probabilities (section \ref{sec:real-data}), smoothness constraints could possibly be used to identify gaze positions that are unlikely to indicate true positive data. 
-Considering supervoxels instead of superpixels could further improve in using the consistencies along the third dimension. Supervoxels have previously been used for video segmentation for example by Corso et al.\ \cite{CoShDuTMI2008} and Grundmann et al.\ \cite{grundmann2010efficient}.
+While we did consider information from the whole sequences / volumes by including it in our probabilities (section \ref{sec:real-data}), smoothness constraints could possibly be used to identify gaze positions that are unlikely to indicate true positive data. Also, label smoothing as a post-processing step (see for example \cite{zhou2004learning}) could be considered as a way to enforce smoothness.
+Considering supervoxels instead of superpixels could further ensure consistency along the third dimension. Supervoxels have successfully been used for video segmentation for example by Corso et al.\ \cite{CoShDuTMI2008} and Grundmann et al.\ \cite{grundmann2010efficient}.
+
+\subsection{Reliability of Gaze Sequences}
+Building an interface that allows the user to control the playback mode of the video while the gaze is observed could significantly improve the reliability of the gaze sequences. 

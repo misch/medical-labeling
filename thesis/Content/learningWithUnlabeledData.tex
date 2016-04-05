@@ -1,14 +1,14 @@
 \chapter{Learning with Unlabeled Data}
 \label{chap:learning-with-unlabeled-data}
-In this chapter, we will discuss the inherently noisy labels in the setup of Vilari\~no et al. and how to overcome the issues. 
-The underlying conceptual problem to solve is the following: Assuming we have only true positive gaze positions (see Chapter \ref{chap:characterizing-gaze} for a discussion about this assumption), we can still not infer any reliable information about the negative labels. Instead, we are facing the so-called PU-Learning Problem that will be explained in the following.
+In this chapter, we will discuss the inherently noisy labels in the negative training set and how to overcome the issues. 
+The underlying problem to solve is the following: Assuming we have only true positive samples gained from gaze positions (see Chapter \ref{chap:characterizing-gaze} for a discussion about this assumption), how can we separate positive from negative samples? We formally define the problem and suggest a way to learn from only positive training samples using gradient boosting. Results on synthetic and real data can be found towards the end of the chapter.
 
 \section{Problem Formulation}
-The problem of learning a classifier from positive and unlabeled data is aimed at assigning labels to the unlabeled dataset. 
+The problem of learning a classifier from positive and unlabeled data is to assign labels to the unlabeled dataset \cite{elkan2008learning}. 
 It can be considered a semi-supervised learning setup: Instead of having a positive and a negative set of examples, we are given an incomplete set of positives and a set of unlabeled examples. 
-The unlabeled data contains positive and negative examples which we aim to assign to either the positive or negative class. 
+The unlabeled data contains positive and negative examples which we want to assign to either the positive or negative class. 
 Usually, gradient boosting is used to minimize a loss function $L(y,f(x))$, where $y \in \{-1,1\}^m$ is a vector of labels and $x \in \mathbb{R}^{m\times n}$ is a matrix containing $n$-dimensional features. In our case of the PU-learning problem, however, not all the labels $y_i, i \in \{1,\dots,m\}$ are given. 
-Instead we have only an incomplete set of positive labels ($+1$) and the rest is unknown. In order to handle this problem within the gradient boosting framework, we need some pseudo labels (see ???). Our pseudo-labels are based on the probability $p_i$ of an unlabeled training sample $x_i$ to be positive:
+Instead we have only an incomplete set of positive labels ($+1$) and the rest is unknown. In order to handle this problem within a gradient boosting framework, we need some pseudo-labels (see e.g.\ \cite{bennett2002exploiting}, \cite{mallapragada2009semiboost}). We define the pseudo-labels to depend on the probability $p_i$ of an unlabeled training sample $x_i$ to be positive:
 \begin{equation*}
  y_i = 
     \begin{cases}
@@ -29,11 +29,11 @@ The loss function is then defined as
 \begin{equation*}
 L(y,f(x)) = \underbrace{\sum_{\{i :~ y_i = 1\}} e^{-y_i f(x_i)}}_{P} \quad + \quad \gamma\underbrace{\sum_{\{i:~ y_i \text{unknown}\}} \left( \tilde p_i e^{-y_i f(x_i)} + (1-\tilde p_i) e^{y_i f(x_i)}\right)}_{U}, 
 \end{equation*}
-where $y_i$ denotes the (pseudo-)label\footnote{The notation does not distinguish between real labels and pseudo-labels. For the part of the sum with unknown labels, $y_i$ denotes the pseudo-labels.} of sample $x_i$, $\tilde p_i$ is the confidence that the pseudo-label $y_i$ is correct,$f(x_i)$ is the predicted score of the classifier and $\gamma$ is a weight for the U-term that we set to be the relative amount of unlabeled samples in the dataset, $\gamma = \frac{n_{\text{unlabeled}}}{n_{\text{total}}}$ for our experiments. 
-Note that if we consider the fully supervised case, the U-term will be 0 and a standard exponential loss function will be optimized. 
-For unlabeled data samples, the U-term of the loss function will heavily penalize negative margins, if we are very confident about our pseudo-label being correct ($\tilde p_i \approx 1$) and it will penalize positive margins, if the pseudo-label is very unlikely to be correct ($\tilde p_i \approx 0$). 
+where $y_i$ denotes the (pseudo-)label\footnote{The notation does not distinguish between real labels and pseudo-labels. For the part of the sum with unknown labels, $y_i$ denotes the pseudo-labels.} of sample $x_i$, $\tilde p_i$ is the confidence that the pseudo-label $y_i$ is correct, $f(x_i)$ is the predicted score of the classifier and $\gamma$ is a weight for the U-term that we set to be the relative amount of unlabeled samples in the dataset, $\gamma = n_{\text{unlabeled}}/n_{\text{total}}$ for our experiments. 
+In a fully supervised case, the U-term is zero and a standard exponential loss function is optimized. 
+For unlabeled data samples, the U-term of the loss function heavily penalizes negative margins, if we are very confident about our pseudo-label ($\tilde p_i \approx 1$) and it will penalize positive margins, if the pseudo-label is very unlikely to be correct ($\tilde p_i \approx 0$). 
 Note that this extreme case can by definition of $y_i$ and $\tilde p_i$ not occur and is therefore just of explanatory value. 
-If we do not know whether or not our label is correct or incorrect ($\tilde p_i = 0.5$), then what will be penalized are negative as well as positive margins, as this would mean a confident decision towards one direction based on a randomly chosen pseudo-label (in our case $y_i = 1$, if $\tilde p_i=0.5$). Figure \ref{fig:ourlossfunctionplot} shows the U-term of the loss function for different values of the probability $\tilde p_i$.
+The minimum of the loss functions varies and gets closer to zero with a decreasing confidence $\tilde p_i$. If we do not know whether or not the pseudo-label is correct or incorrect ($\tilde p_i = 0.5$), then the minimum is at a margin of exactyl zero and what will be penalized are negative as well as positive margins. For such samples, no decision can be made, as this would mean a decision towards one direction based on a randomly chosen pseudo-label (in our case $y_i = 1$, if $\tilde p_i=0.5$). Figure \ref{fig:ourlossfunctionplot} shows the U-term of the loss function for different values of the probability $\tilde p_i$.
 
 \begin{figure}[ht]
   \centering
@@ -51,8 +51,9 @@ The derivative of the loss function with respect to the classifier's scores is t
 	-\gamma \cdot \left(y_i \tilde p_i e^{-y_i f(x_i)} - y_i (1 - \tilde p_i) e^{y_i f(x_i)} \right), & \text{if $y_i$ unknown.}
       \end{cases}
 \end{equation*}
-Clearly, the key of this method is the usage of the probability $p_i$ for each sample $x_i$ to be a positive sample. 
-It naturally gives us a way to tune the algorithm not to concentrate the same way on all wrongly classified samples, but instead embrace the fact that there is not always a 100\% certainty that we are working with the correct labels.
+
+The key of this method is the usage of the probability $p_i$ for each sample $x_i$ to be a positive sample. 
+It gives a natural way to tune the algorithm not to concentrate the same way on all wrongly classified samples, but to instead embrace the fact that there is not always a 100\% certainty that we are working with the correct labels.
 
 \section{Synthetic Data}
 We conducted some basic experiments on synthetic data. 
@@ -71,37 +72,36 @@ as visualized in Figure \ref{fig:synthetic_train_data}. The test set consists of
 	\begin{subfigure}[h]{0.45\textwidth}
 	\includegraphics[width=\textwidth]{synthetic-gaussians-surf.pdf}	
 	\end{subfigure}
-	\caption{The used distributions}
+	\caption{The used distributions to generate the training and test data used for the synthetic experiments. The positive samples were distributed according to the distributions with the means at the top and on the right side in the left Figure, and the negative samples were distributed according to the contours at the lower left.}
 	\label{fig:synthetic-gaussians}
 \end{figure}
 
-As a reference, we optimized a standard exponential loss using all the labels from the training set with a gradient boosting method with decision tree stumps as weak learners and a shrinkage factor of $0.1.$ 
+As a reference (blue curves in Figure \ref{fig:synthetic_results}, we optimized a standard exponential loss using all the labels from the training set with a gradient boosting method with decision tree stumps as weak learners and a shrinkage factor of $0.1.$ 
 The other experiments were done with the same algorithm, but different assumptions about the available input labels. 
-First, we simulated the case of separating ``observed'' from ``unobserved'' samples, i.e.\ we tried to separate a few positive samples from all the other samples. 
-In the real setting, this corresponds to the naive approach of separating the image regions that were hit by the user's gaze from all the other regions. 
-As expected, there is a considerable performance loss when using this approach (see the red curve Figure \ref{fig:synthetic_results}). 
-Our second experiment shows the performance achieved with the standard exponential loss using 5 known positives and some pseudo-labels for the other samples. 
+First, we simulated the case of separating observed from unobserved samples, i.e.\ we tried to separate a few positive samples from all the other samples. 
+In the real setting, this corresponds to the naive approach used by Vilari\~no et al.\ \cite{vilarino2007automatic} of separating the image regions that were hit by the user's gaze from all the other regions. 
+As expected, there is a considerable performance loss when using this approach (see the red curve in Figure \ref{fig:synthetic_results}). 
+Our second experiment (yellow curves in Figure \ref{fig:synthetic_results}) shows the performance achieved with the standard exponential loss using 5 known positives and some pseudo-labels for the other samples. 
 The pseudo-labels were assigned according to the probabilities of the known underlying distributions (see Figure \ref{subfig:pu_train}). 
-To test the performance of our PU-loss function, we used the same 5 known positives and the probabilities for the unknown labels were given as they were used before to find the pseudo-labels. 
-Finally, we followed the suggestion of Du Plessis et al.\ (\cite{plessis2015convex}) and used the double hinge loss and its composite as shortly described in chapter \ref{chap:background} with the same 5 known positives and the same way of assigning pseudo-labels.
+To test the performance of our PU-loss function, we used the same 5 known positives and probabilities. 
 Our loss-function outperforms the reference approach using the true training labels as well as the standard exponential loss with the ``correct'' pseudo-labels (that is, the pseudo-labels according to the underlying distributions). 
 This can be explained with the fact that our loss function actually takes into account the confidence about the chosen pseudo-labels and adjusts the penalties accordingly. 
-Optimizing the double hinge loss and its composite as suggested in \cite{plessis2015convex} yielded better results than separating observed from unobserved data points, but could not outperform our loss-function. 
+Optimizing the double hinge loss and its composite as suggested in \cite{plessis2015convex} (green curve) yielded better results than separating observed from unobserved data points, but could not outperform our loss-function. 
 
 \begin{figure}[ht]
 	\centering
 	\begin{subfigure}[h]{0.49\textwidth}
 	\includegraphics[width=\textwidth]{synthetic_train_data.pdf}	
-		\caption{training data (160 samples generated from the described distributions)\newline}
+		\caption{Training data (160 samples generated from the distributions illustrated in Figure \ref{fig:synthetic-gaussians})\newline}
 		\label{subfig:ref_train}
 	\end{subfigure}
 	~
 	\begin{subfigure}[h]{0.49\textwidth}
 	\includegraphics[width=\textwidth]{synthetic_pu_train_data.pdf}	
-		\caption{input for the PU-loss: 5 known positives (blue), pseudo-labels (red = -1 / green = +1), probability weights $\tilde p_i$ that pseudo-labels are correct (circle radius)}
+		\caption{Input for the PU-loss: 5 known positives (blue), pseudo-labels (red = -1 / green = +1), probability weights $\tilde p_i$ that pseudo-labels are correct (circle radius)}
 		\label{subfig:pu_train}
 	\end{subfigure}
-	\caption{\subref{subfig:ref_train}) training data for the standard approach \subref{subfig:pu_train}) known positives, pseudo-labels and weights used with the standard exploss and the pu-loss, respectively}
+	\caption{\subref{subfig:ref_train}) Training data for the standard exponential loss. \subref{subfig:pu_train}) Known positives, pseudo-labels and weights used with the standard exponential loss and the PU-loss, respectively.}
 	\label{fig:synthetic_train_data}
 \end{figure}
 
@@ -121,13 +121,28 @@ Optimizing the double hinge loss and its composite as suggested in \cite{plessis
 
 \section{On the Real Data}
 \label{sec:real-data}
-\subsection*{Features}
-Our real datasets consist of multiple images each that we pre-segmented using the SLIC algorithm. 
-We decided to use some simple descriptors for the superpixels: For the color videos (airplane from Figure \ref{fig:airplaneSLIC} and instrument dataset), we used three-dimensional features
+\subsection{Features}
+Each of our real datasets consist of multiple images that we pre-segmented using the SLIC algorithm (\cite{achanta2010slic}, \cite{vedaldi08vlfeat}) with parameters as indicated in Table \ref{tab:slic-params}. 
+
+\begin{table}[ht]
+	\centering
+	  \caption{Chosen parameters to pre-segment the input images into SLIC superpixels. The color images from the instrument dataset were converted to CIELAB color space before SLIC was applied.}
+	  \label{tab:slic-params}
+	\begin{tabular}{ | c  c  c | }
+	\hline
+	  dataset	& region size & regularizer \\ \hline
+	  instrument  	& 35 & 300 \\
+	  eye tumor  	& 23 & 0.05 \\ 
+	  cochlea	& 22 & 0.02 \\ 
+	  airplane 	& 29 & 40 \\ \hline
+	\end{tabular}
+\end{table}
+
+We decided to use simple descriptors for the superpixels; for the color videos (airplane from Figure \ref{fig:airplaneSLIC} and instrument dataset), we used three-dimensional features
 \begin{equation*}
  x = \left( \frac{\bar r}{\bar g + \bar r + 10^{-5}}, \quad \frac{\bar r }{\bar b +\bar r + 10^{-5}}, \quad \frac{\bar g}{ \bar b + \bar g + 10^{-5}}\right),
 \end{equation*}
-$\bar r, \bar g$ and $\bar b$ being the average of red, green and blue values within one superpixel, respectively. 
+$\bar r, \bar g$ and $\bar b$ being the average of red, green and blue values within the superpixel, respectively. 
 For the eye tumor and the cochlea datasets we used the following values to describe a superpixel:
 \begin{itemize}
  \item an intensity histogram (10 bins),
@@ -136,14 +151,13 @@ For the eye tumor and the cochlea datasets we used the following values to descr
  \item and the co-occurrence matrix (\cite{haralick1973textural}) of the image when masked to see only the superpixel.
 \end{itemize}
 
-\subsection*{Probabilities}
+\subsection{Probabilities}
 Using synthetic data, we could profit from knowing the underlying distribution and directly use this knowledge by feeding the true probabilities to our algorithm. 
-However, in a real case we will not know these probabilities and have to come up with a way to estimate them. 
-The results presented in this thesis were optained with the following experimentally found values:
-Given the observed positive superpixels $x_1,\dots,x_m$ from a gaze sequence, we calculated distance vector $(d_1,\dots,d_m)$ for every unlabeled sample $\tilde x$ with $d_i = d(\tilde x, x_i), \quad i = 1,\dots,m.$
+However, in reality these probabilities are unknown and we have to come up with a way to estimate them. 
+The results presented in this thesis were obtained with experimentally found values; given the observed positive superpixels $x_1,\dots,x_m$ from a gaze sequence, we calculated a distance vector $(d_1,\dots,d_m)$ for every unlabeled sample $\tilde x$ with $d_i = d(\tilde x, x_i), i = 1,\dots,m.$
 Here, $d$ is a general distance metric. We used euclidean and cosine metrics as indicated in Table \ref{tab:probabilities}. 
 The distance vector was then aggregated to one value $d_{\text{f}}$ by taking the median or minimum value. 
-Further, we calculated the spatial (euclidean) distance of every unlabeled superpixel and the gaze position in the corresponding frame 
+Further, we calculated the spatial (euclidean) distance between every unlabeled superpixel and the gaze position in the corresponding frame 
 $$d_\text{s} = d\left(\begin{bmatrix} \text{gaze}_x \\ \text{gaze}_y \end{bmatrix}, \begin{bmatrix} x \\ y \end{bmatrix}\right),$$
 where $\begin{bmatrix} x \\ y \end{bmatrix}$ is the median position of all the pixels contained in the unlabeled superpixel.
 The probabilities were then calculated as indicated in Table \ref{tab:probabilities}.
@@ -166,21 +180,19 @@ There is always a spatial term and a feature term involved. The feature term is 
 
 \subsection{Results}
 \subsubsection*{Labels inferred from ground truth}
-Using ground truth data for the three datasets ``instrument'', ``eye tumor'' and ``cochlea,'' we checked how well the different approaches with different assumptions about available labels perform. 
-Assuming that we have for a certain amount of frames / depth slices the correct superpixel labels\footnote{$y_i = 1$, if more than 50\% of the pixels contained in a superpixel are positive in the ground truth}, we again optimized a standard exponential loss with a gradient boosting algorithm using decision tree stumps as weak learners. 
+Using manually labeled ground truth data for the three datasets instrument, eye tumor and cochlea, we explored how well the standard exponential loss and our suggested PU-loss perform with different assumptions about available labels. 
+Assuming that we have for a certain amount of frames / depth slices the correct superpixel labels\footnote{$y_i = 1$, if more than 50\% of the pixels contained in a superpixel are positive in the ground truth}, we optimized a standard exponential loss with a gradient boosting algorithm using decision tree stumps as weak learners. 
 This serves as a reference for our experiments.
 We evaluate how well the classifier generalizes to the remaining frames on a pixelwise basis; that is, we classify whole superpixels, but at the end we are interested in the pixelwise segmentation result and compute Receiver Operator Characteristics (ROC) and Precision-Recall values on a pixelwise basis. 
-For the eye tumor MRI and the cochlea CT scan, one issue with the evaluation was that there are only a few slices containing true positive information, and usually the user pressed the key during most of these frames. 
-Therefore, evaluating only the generalization to the remaining frames is not a reasonable approach and, unlike in the instrument dataset, it will not tell us enough about the potential of separating the interesting structure from the rest. 
-Instead, in these datasets the evaluation has been done for a big part of the whole volume, including already seen superpixels during training. 
-If we are later using only gaze observations, we will have to evaluate as well every superpixel of every frame.
-This strategy allows us to compare the results to the real pixelwise ground truth instead of a ``constructed'' ground truth of e.g.\ declaring a superpixel as positive, if it contains more than 30\% or 50\% positive ground truth pixels.
-Especially if superpixels contain positive and negative ground truth regions, the resulting curves might look a bit odd due to ambiguities in sorting of the resulting scores (all pixels of one superpixel get the same score), but they still give a good idea about the actual performance of the different methods. 
+This strategy allows us to compare the results to the real pixelwise ground truth instead of a constructed ground truth like e.g.\ declaring a superpixel as positive, if it contains more than 30\% or 50\% positive ground truth pixels.
+For the eye tumor and the cochlea data there are only a few slices containing true positive information, and usually the user presses and holds the key during most of these frames. 
+Therefore, evaluating only the generalization to the remaining frames is not informative and, unlike in the instrument dataset, will not tell us enough about the potential of separating the interesting structure from the rest. 
+Instead, in these datasets the evaluation has been done for a the whole volume, including already seen superpixels during training. 
+When we are later using only gaze observations, we will not exclude the already seen superpixels either. As our ultimate goal is to achieve a full segmentation we have to evaluate every superpixel of every frame.
 
 In our setting, the best we can hope for is one true positive superpixel in every frame. 
-Choosing one true positive superpixel at random from some frames\footnote{the frames where the key was pressed in one of the gaze position observations}, and setting the others to negative / unlabeled, we can see in Figure \ref{fig:one-random-tp-per-frame} that our PU-loss function could gain a small performance gain with respect to the measured AUC for all the datasets. \todo{is there a connection to the paper that showed it's only about thresholding???}
-However, the standard classifier will strictly try to separate observed from non-observed superpixels, which is only the correct behaviour if the assumptions discussed in Chapter \ref{chap:background} are fulfilled -- if they are not fulfilled, it means that the learned classifier holds a bias (this has been discussed e.g.\ in \todoRef{give reference}). 
-That this is truly happening in this case can, for example, be seen from the heat maps in Figure \ref{fig:bias-in-heatmaps}: Using our constructed PU-loss function, 0 becomes a reasonable threshold to distinguish between positive and negative samples, whereas for the other classifiers we would have to find a threshold below zero to get any positive labels in the output. 
+To simulate this case with the ground truth data, we choose one true positive superpixel at random from some frames\footnote{The frames were chosen according to be the ones where the user pressed the key during one of the recorded gaze sequences.}, and set the others to negative / unlabeled. We can see in Figure \ref{fig:one-random-tp-per-frame} that our PU-loss function brings a small performance gain compared to the standard exponential loss (red line) with respect to the measured AUC for all the datasets. 
+The standard classifier tries to separate observed from non-observed superpixels. In all our datasets, this is not the correct behaviour and it means that the learned classifier holds a bias (this has been discussed e.g.\ by Du Plessis et al.\ (\cite{plessis2014PUanalysis}) and Figure \ref{fig:bias-in-heatmaps} shows that with the standard exponential loss, we have to find a threshold below zero to get any positive labels in the output. 
 
 \begin{figure}[ht]
 	\centering
@@ -252,15 +264,12 @@ That this is truly happening in this case can, for example, be seen from the hea
 	\label{fig:bias-in-heatmaps}
 \end{figure}
 
-\subsubsection{Labels inferred from gaze observations}
+\subsubsection*{Labels inferred from gaze observations}
 The difference between the above case to our actual situation lies mainly in the distribution of the positive labels -- they are not, as assumed in the previous section, randomly taken from all the positives of the observed frames, but instead they might often over-represent certain positives and under-represent others due to e.g.\ the fact that it is easier to fixate an edge than a smooth region in an image. 
 In this setting it becomes more important that not all the unlabeled samples are considered negatives. 
 The red curves in Figure \ref{fig:results-curves} show a rather low performance for this approach in each dataset. 
 Our loss function on the otherhand enabled us to condsider other superpixels likely to be positive, even if they were never directly observed by the user. 
-The performance plots of our method (yellow curves in Figure \ref{fig:results-curves}) show that we clearly outperform the previously presented idea of Vilari\~no et al.\ to consider only one true positive per frame.
-%Another issue that makes the problem harder is the present noise in the gaze observations: As discussed in Chapter \ref{chap:characterizing-gaze}, it is not true that each gaze positions indicates a true positive position in the image.
-%The naive approach performs clearly worse than ours because it does not distinguish between ... \todo{... stronger emphasis on whatever samples?} Experiments already done:
-
+The performance plots of our method (yellow curves in Figure \ref{fig:results-curves}) show that we outperform the previously presented idea of Vilari\~no et al.\ to consider only one true positive per frame.
 
 \begin{figure}[ht]
 	\centering
@@ -300,15 +309,12 @@ The performance plots of our method (yellow curves in Figure \ref{fig:results-cu
 \end{figure}
 
 Some resulting scores are shown for each dataset in Figures \ref{fig:results-d2-gaze2}, \ref{fig:results-d7-gaze4} and \ref{fig:results-d8-gaze2}. 
-
-The heat maps in Figure \ref{fig:results-d2-gaze2} show that our approach gives e.g.\ higher scores to the tip of the instrument whereas the standard approach is for example in frame 738 very bad at accounting for the fact that, even if not observed very often, the tip of the tool could be a part of the object. 
-In frame 29, both approaches fail to recognize one part of the tip of the instrument, most likely due to the pre-segmentation that does not respect this particular edge in the image and therefore actually contains more negative (background) than positive (instrument) information.
-In the eye tumor dataset (Figure \ref{fig:results-d7-gaze4}), we see that more superpixels get higher scores whereas the standard exponential loss leads mostly to only one or two positives (the one that was hit by the gaze) and the others have rather low scores. 
+The heat maps in Figure \ref{fig:results-d2-gaze2} show that our approach gives e.g.\ higher scores to the tip of the instrument (best visible in frame 738). 
+In frame 29, both approaches fail to recognize one part of the tip of the instrument, most likely due to the pre-segmentation that does not respect this particular edge in the image and therefore superpixel contains more negative (background) than positive (instrument) information. Even though the shaft of the instrument did not get positive scores in the optimized PU-loss, it is separated from the surrounding regions, whereas the standard exponential yields non-uniform and rather scores for those superpixels (best visible in frame 29).
+In the eye tumor dataset (Figure \ref{fig:results-d7-gaze4}), we see that more superpixels get higher scores whereas the standard exponential loss leads mostly to only one positive per frame (the one that was hit by the gaze) and the others have rather low scores. 
 Our approach yields as well the same positives, but shows more uncertainty about the (wrong) negative predictions at the locations of the other true positives. 
 The same holds for the example of the cochlea in Figure \ref{fig:results-d8-gaze2}. 
-However, we can here as well see that our approach is at this point heavily dependent on the gaze-positions. 
-The locations of the gaze are considered positives and only for the other, unlabeled ones the labels are estimated. 
-As elaborated in chapter \ref{chap:characterizing-gaze}, the gaze sequences for the latter two datasets contain clearly less true positive information than for the first dataset, and therefore the final segmentation results for those cases are not satisfying at this stage.
+However, we can here as well see that our approach is heavily dependent on the gaze-positions. As elaborated in chapter \ref{chap:characterizing-gaze}, the gaze sequences for the latter two datasets contain less true positive information than for the first dataset. However, in our problem formulation, we assumed that the given extracted superpixels are true positives. For the unlabeled superpixels, the pseudo-labels were estimated based on very noisy information from the extracted positives of the whole sequence. Therefore the final segmentation results for those cases are not satisfying at this stage.
 
 \begin{figure}[ht]
 	\centering

@@ -12,8 +12,9 @@
 Clinical decisions are nowadays often based on medical imaging and the desire for automated systems to support clinicians is high. 
 Yet, using supervised learning techniques requires a vast amount of pre-annotated training data.
 Producing annotations in medical images is a time-consuming task that requires experienced experts and is a critical bottleneck in medical image analysis. 
-We elaborate a previous attempt to use eye-tracking to produce ground truth data and show the difficulties that come with this great potential for time cost reduction. 
-\todoWriteMore{finish this...}
+We discuss a previous attempt to use eye-tracking to produce ground truth data and we show the difficulties that come with this great potential for time cost reduction. 
+We overcome the limitations by reformulating the underlying problem as a PU-learning problem and suggest an intuitive PU-loss function that can be optimized using gradient boosting.
+Our approach outperforms the other discussed approach on real and synthetic data and brings us a step towards automated segmentation using eye-tracking.
 
 Prof.\ Dr.\ Paolo Favaro, Computer Vision Group, Institut f\"ur Informatik, Universit\"at Bern, Supervisor
 
@@ -28,13 +29,13 @@ Dr. Raphael Sznitman, Ophthalmic Technology Laboratory, ARTORG Center for Biomed
 
 
 % Chapter 1
-%\input{Content/introduction}
+\input{Content/introduction}
 
 % Chapter 2
-%\input{Content/background}
+\input{Content/background}
 %
 % Chapter 3
-%\input{Content/characterizingGaze}
+\input{Content/characterizingGaze}
 
 % Chapter 4
 \input{Content/learningWithUnlabeledData}
