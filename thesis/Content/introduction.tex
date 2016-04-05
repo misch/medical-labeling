@@ -3,20 +3,18 @@
 
 \section{Motivation}
       Medical imaging is a set of techniques to produce visual representations of the interior of a body. 
-      Such images are used for clinical analysis and medical intervention, e.g.\ to diagnose and treat disease. 
+      Such images are used for clinical analysis and medical intervention, e.g.\ to detect, diagnose and treat disease, to support surgeries, or to build implants. 
       Techniques like Computed Tomography (CT) or Magnetic Resonance Imaging (MRI) reveal internal structures hidden by skin and bones. 
       Clinical decisions are nowadays often based on these data, and the desire for automated systems to support data analysis is high. 
-      Therefore, creating automated systems to support clinicians in their everyday work, that is e.g.\ for diagnosis or treatment purposes, has been an important topic in biomedical engineering research for a few decades. \todo{put references}
-      However, building such systems using supervised learning methods requires a large amount of annotated training data. 
-      Whereas we have in general data available, gathering annotations in those data for later usage in supervised learning settings is a bottleneck. 
-      Following up on an idea of Vilari\~no et al.\ \cite{vilarino2007automatic}, we apply eye-tracking to get expert knowledge about the data and therefore allow clinicians to annotate data in their everyday life, without losing a tremendous amount of time and doing the tedious and unrewarding work of annotating data manually.
+      However, building such reliable systems using Machine Learning techniques, especially supervised learning methods, requires a vast amount of annotated training data. 
+      Whereas there are a lot of data available, gathering annotations in those data for later usage in supervised learning settings is a time consuming task that requires experienced experts. Having only a small amount of example data is a critical bottleneck for making supervised learning methods accurate enough to be suitable for medical applications.
+      Following up on an idea of Vilari\~no et al.\ \cite{vilarino2007automatic}, we apply eye-tracking to get expert knowledge about the data and allow clinicians to annotate data in their everyday life, without losing a tremendous amount of time and doing the tedious and unrewarding work of annotating data manually.
   
 \section{Goal}
 The ultimate goal of this research project is to produce reliable ground truth annotations / segmentations at low time costs for future supervised training. 
-This thesis elaborates advantages and disadvantages of using eye tracking to create training data and provides insights about potential fallacies from the previous approach \cite{vilarino2007automatic}. 
-We discussed critical points that arose when we tried to generalize it to other than colonoscopy video data, and suggest a way to overcome the main issues of their approach.
+This thesis elaborates advantages and disadvantages of using eye-tracking to create training data and provides insights about problems that prevent the previous approach \cite{vilarino2007automatic} from being applicable to arbitrary medical images. We want to overcome the found limitations and provide a way to use gaze observations for producing ground truth data for all kinds of videos or volumetric scans.
 
 \section{Overview}
-Chapter \ref{chap:background} gives a short overview about general notions considering classification in Machine Learning, segmentation approaches in medical imaging and also, the approach and implicit assumptions of Vilari\~no et al.\ will be briefly elaborated. In Chapter \ref{chap:characterizing-gaze} it is discussed how well the gaze positions acquired with a low-cost device can be used to gain information about the positive class. Chapter \ref{chap:learning-with-unlabeled-data} further elaborates the problem that the used data acquisition method leads to a limited amount of labels -- namely we are dealing with having only positive labels and no further information about negative ones which is a so-called PU-learning problem. 
+Chapter \ref{chap:background} gives a short overview about general notions considering classification in Machine Learning, segmentation approaches in medical imaging and also, the approach and implicit assumptions of Vilari\~no et al.\ will be briefly elaborated. In Chapter \ref{chap:characterizing-gaze} it is discussed how well the gaze positions acquired with a low-cost device can be used to gain information about the positive class. Chapter \ref{chap:learning-with-unlabeled-data} further elaborates the problem that the used data acquisition method leads to a limited amount of labels, namely only positive but no reliable negative labels. 
 Chapter \ref{chap:conclusion} summarizes the key conclusions of this work and gives an outlook of what will be investigated in future work.
 

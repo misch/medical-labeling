@@ -1,22 +1,19 @@
 \chapter{Characterizing Gaze}
 \label{chap:characterizing-gaze}
-In this chapter we will discuss the used setup and the quality of extracted positive labels gained from the observed gaze positions. How reliable are our data with respect to the assumption that gaze observation can naturally provide us with positive labels for identifying a structure of interest in a three-dimensional setting?
+In this chapter we describe the used setup to get the gaze observations and assess the quality of extracted positive labels gained from the observed gaze positions. Of special interest is the question how reliable our data are with respect to the assumption that gaze observation naturally provide us with positive labels for identifying a structure of interest.
 
 \section{Setup}
 We used an affordable eye-tracking device called ``The Eye Tribe''. 
 According to the producer's website (\url{http://dev.theeyetribe.com/general/}) the device has an accuracy of at least 1 degree visual angle. We placed the eye-tracker on a tripod below a 32.4 cm\,$\times$\,51.8 cm screen and observed the screen from a distance of approximately 60 cm (Figure \ref{fig:theeyetribe} illustrates the physical setup).
-
 \begin{figure}[ht]
 	\centering
 	\includegraphics[width=\textwidth]{theeyetribe}	
-	\caption{user in front of ``The Eye Tribe'' (image taken from \url{http://dev.theeyetribe.com/general/})}
+	\caption{A user in front of The Eye Tribe. The eye-tracker is placed on a tripod below the screen and observed from a distance of $\approx$60 cm. The image is taken from \url{http://dev.theeyetribe.com/general/}).}
 	\label{fig:theeyetribe}
 \end{figure}
-
-The recorded video sequences were played on full screen at 30 frames per second, and the 3D scans were played as a video at 10 frames per second. 
 In this setup, the minimum accuracy of 1 degree corresponds to an on-screen error of approximately 1 cm. 
-Figure \ref{fig:onedegreecircle} gives an idea of how much big error is compared to the structures in our datasets. 
-The instrument dataset is less sensitive to this than e.g.\ the cochlea CT scan that has fine structures to be recognized.
+Figure \ref{fig:onedegreecircle} gives an idea of how big this error is compared to the structures in our datasets. 
+The instrument dataset is, compared to the cochlea CT scan much bigger in size and therefore the error is less likely to draw the measurement off the object, if the true gaze position is focused on the object.
 
 \begin{figure}[ht]
 	\centering
@@ -41,14 +38,32 @@ The instrument dataset is less sensitive to this than e.g.\ the cochlea CT scan 
 Like Vilari\~no et al.\ \cite{vilarino2007automatic}, we asked the user to press and hold a key to select video sequences containing a structure of interest, and to keep their focus on the actual object. 
 Therefore, what is presented in this work, is an active application of eye-tracking with the potential to become passive in the future.
 
-\section{Reliability of Gaze Observations}
-Given some manually labeled ground truth data (datasets ``instrument'', ``cochlea'', ``eye tumor''), we evaluated if the assumption of Vilari\~no et al.\ is valid, that only true positive image regions are hit by the gaze whenever the observer indicates (by pressing a key) that he sees a structure of interest. A ``positive image region'' is in this context simply a pixel on the screen that contains the object of interest.
-As the user had the task to focus on the object in the video, it is expected that the majority of recorded gaze positions are located at true positives, or that at least some true positive points can be found within a 1 degree visual angle of the recorded gaze position. 
-To separate the human error from the measurement error we investigated for each dataset the actual distance between the gaze position and the closest true positive point. 
-Values above 1 degree visual angle clearly mean human error whereas values below could mean human error or measurement error. 
-To get a first idea of the actual measurement error, the gaze positions were measured and evaluated on a very simple dataset; a video of a non-moving black point on white background in the middle of the screen. 
-Two measurements were taken. Figure \ref{fig:gazeMeasurementAccuracy} shows that for the task of staring at this black dot, the errors remain well below 1 degree, except in the case of blinking. 
-The distance to the actual center of the image is on average between 5 and 7 pixels in this test video; this corresponds to a visual angle of approximately 0.25 to 0.4 degrees.
+\section{Reliability of Extracted Positives}
+In this section, we evaluate whether the assumption of Vilari\~no et al.\ is valid that the observer always indicates true positive image regions by pressing a key. 
+A ``positive image region'' is in this context simply a pixel on the screen that contains the object of interest.
+We did an experiment with a simple image that should be free from distractions and where it should be easy for the user to focus on the target. 
+Then we continued the evaluation on 3 real datasets for which we have manually segmented ground truth data:
+\begin{itemize}
+ \item Dataset ``instrument'': A video sequence of a surgical instrument during an endoscopy.
+ \item Dataset ``eye tumor'': A 3D MRI volume of an eye tumor.
+ \item Dataset ``cochlea'': A 3D CT volume of the cochlea (inner ear).
+\end{itemize}
+
+\noindent The video sequences were played on full screen at 30 frames per second, and the 3D scans were played as a video at 10 frames per second. 
+
+As the user had the task to focus on the object in the videos, it is expected that the majority of recorded gaze positions are located at true positives, or that at least some true positive points can be found within a 1 degree visual angle of the recorded gaze position. 
+To separate the human error from the measurement error we investigated for each of the real datasets the actual distance between the gaze position and the closest true positive point. 
+Values above 1 degree visual angle mean human error whereas values below could mean both, human error or measurement error. 
+
+\subsection{Fixating a Simple Shape}
+To get a first idea of the actual measurement error, the gaze positions were measured and evaluated for a very simple case. 
+A video of a non-moving black point on white background in the middle of the screen should be free from distractions and give us a first hint about the measurement error. 
+Two measurements were taken. 
+Figure \ref{fig:gazeMeasurementAccuracy} shows the eye movements in 2-dimesional space (left Figure) as well as it shows the distance to the black dot over time (right Figure). 
+The errors remain well below 1 degree, except in the case of blinking. 
+The distance to the center of the image (black dot) is on average between 5 and 7 pixels. 
+This corresponds to a visual angle of approximately 0.25 to 0.4 degrees. 
+Therefore, giving a tolerance of 0.4 degrees seems to be a necessary step to account for the inaccuracy of the eye-tracking device.
 
 \begin{figure}[ht]
 	\centering
@@ -63,11 +78,32 @@ The distance to the actual center of the image is on average between 5 and 7 pix
 		\includegraphics[width=\textwidth]{gazeMeasurementAccuracy1D.pdf}	
 		%\caption{}
 	\end{subfigure}
-	\caption{For the task of staring at the black dot in the middle of the screen, the errors remain well below 1 degree. Blinking causes considerable outliers. The mean distance to the actual center of the image (dotted blue and green lines) is between 5 and 7 pixels in this test video; this corresponds to a visual angle of approximately 0.25 to 0.4 degrees.}
+	\caption{For the task of staring at the black dot in the middle of the screen, the errors remain well below 1 degree. Blinking causes considerable outliers. The mean distance to the actual center of the image (dotted blue and green lines) is between 5 and 7 pixels in this test video. This corresponds to a visual angle of approximately 0.25 to 0.4 degrees.}
 	\label{fig:gazeMeasurementAccuracy}
 \end{figure}
 
+\subsection{Fixating Real Objects}
+To test the gaze observation on real data, we used the above described three datasets. 
+The top three plots of Figures \ref{fig:distanceToClosestPositiveD2}, \ref{fig:distanceToClosestPositiveD7} and \ref{fig:distanceToClosestPositiveD8} show for each dataset the distances to the closest true positive pixel for three different recorded gaze sequences. The fourth plot of those Figures shows the object size in each frame.
+The instrument dataset (Figure \ref{fig:distanceToClosestPositiveD2}) shows promising results: 
+In the three recorded gaze sequences, the majority of the values are exactly zero, indicating that the gaze hits the actual object. 
+Measurement errors do not seem to influence the potential accuracy of our method here, as the cases where the gaze is not on the object are clear human-caused outliers with a distance of more than 1 degree visual angle.
+A similar conclusion holds for the eye tumor dataset (Figure \ref{fig:distanceToClosestPositiveD7}). 
+The gaze observations show that between frames 40 and 50, when the tumor is big in size, it is well hit by the gaze. 
+The rather big distances to any positive pixels before and after this interval might reflect the fact that the size of the structure of interest decreases rapidly in these frames (see the last plot in Figure \ref{fig:distanceToClosestPositiveD7}). 
+The recordings from the cochlea dataset (Figure \ref{fig:distanceToClosestPositiveD8}) show that it is a rather rare event in this dataset that the gaze really hits the object. 
+However, the distance to the true positives stays mostly below 1 degree visual angle. This suggests that in this case, the inaccuracy of the device might be a problem.
+Yet, considering the previously discussed measurements of the non-moving black dot, it is more likely that the errors are due to the very fine structures to detect in this dataset. Like in the previous case of the eye tumor, the gaze accuracy decreases when the size of the object decreases. 
+It seems that not only the object size is of importance when trying to fixate positive points, but also the change rate of the size. 
+In all the three datasets, but best visible for the eye tumor and cochlea, the gaze tends to drift away from the object whenever the size of the object decreases, whereas an increasing size seems to attract the attention of the observer and make it easier to fixate the object. 
+This suggests that the reliability of the collected gaze sequences could be improved by playing the video backwards or giving the user full control of the playback mode.
 
+The discussed plots show that the cochlea dataset can be considered the most challenging one used during this project. 
+It is the one where the gaze sequences are the least focused on the object. 
+
+The rate of change in size, and also the absolute size seem to be critical when trying to focus an object throughout a sequence of images. 
+Figure \ref{fig:relativeobjectsize} and Table \ref{tab:avgobjectsize} show comparisons of the object sizes. 
+Because the relative size\footnote{The relative object size was calculated with respect to the resolution of the used images.}, of the instrument is much bigger than the size of the eye tumor or cochlea, the likelihood to randomly find a positive pixel is higher for the instrument dataset than for the other two. Therefore, it is likely that for the instrument dataset the final results will be less prone to little errors in the gaze than for the other two. 
 \begin{figure}[ht]
 	  \includegraphics[width=\textwidth]{closestPositiveDataset2vid2.eps}
 	  \includegraphics[width=\textwidth]{closestPositiveDataset2vid5.eps}
@@ -75,7 +111,7 @@ The distance to the actual center of the image is on average between 5 and 7 pix
 	  
 	  \vspace{3mm}
 	  \includegraphics[width=\textwidth]{size_instrument.eps}
-	  \caption{Instrument dataset: As expected, many values are exactly zero which means that hitting the object is rather easy in this dataset. Where the gaze is not on the object, the typically big outlier values in the distance indicate that this is not due to a measurement error, but instead the eye was really not on the object.}
+	  \caption{Instrument dataset. Top three plots: distances to the closest true positive pixel for three different recorded gaze sequences. Fourth plot: object size. As expected, many values are exactly zero which means that hitting the object is rather easy in this dataset. Where the gaze is not on the object, the typically big outlier values in the distance indicate that this is not due to a measurement error, but instead the eye was really not on the object.}
 	\label{fig:distanceToClosestPositiveD2}
 \end{figure}
 
@@ -86,7 +122,7 @@ The distance to the actual center of the image is on average between 5 and 7 pix
 	  
 	  \vspace{3mm}
 	  \includegraphics[width=\textwidth]{size_eyetumor.eps}	  
-	  \caption{Eye tumor dataset: The small number of available values means that, in general, the structure of interest (tumor) is small in size (not available values mean that there are no positive values in the ground truth frame). Between frames 40 and 50 the tumor seems to be well visible and big enough in size to be rather reliably hit by the gaze. Note that in frames 50 -- 54 the size of the tumor is still considerably big, but the gaze positions are getting off the object already from frame 50 on. This indicates that not only the actual size but also the change rate of size has an effect on the quality of the gaze positions.}
+	  \caption{Eye tumor dataset. Top three plots: distances to the closest true positive pixel for three different recorded gaze sequences. Fourth plot: object size. The small number of available values means that, in general, the structure of interest (tumor) is small in size (not available values mean that there are no positive values in the ground truth frame). Between frames 40 and 50 the tumor seems to be well visible and big enough in size to be rather reliably hit by the gaze. Note that in frames 50 -- 54 the size of the tumor is still considerably big, but the gaze positions are getting off the object already from frame 50 on. This indicates that not only the actual size but also the change rate of size has an effect on the quality of the gaze positions.}
 	\label{fig:distanceToClosestPositiveD7}
 \end{figure}
 
@@ -97,22 +133,9 @@ The distance to the actual center of the image is on average between 5 and 7 pix
 	  
 	  \vspace{3mm}
 	  \includegraphics[width=\textwidth]{size_cochlea.eps}	  
-	  \caption{Cochlea dataset: In this dataset, it is rather rare that the object of interest (cochlea) is actually hit by the measured gaze positions; only in few cases the distance is exactly zero. The high variation in distance to the object indicates that it is hard to follow the fine structures with the eyes, and probably only a small part of the error might be caused by inaccuracy in the measurements. Note that as in Figure \ref{fig:distanceToClosestPositiveD7}, we can observe that the rate of change in object size is related to the distance of gaze positions to true positive pixels. Especially the part between frame 150 and 200 is interesting. Even the little period (frames 173-187) of size fluctuations before the peak at frame 192 seems to cause considerable increases in the distance plots above.}
+	  \caption{Cochlea dataset. Top three plots: distances to the closest true positive pixel for three different recorded gaze sequences. Fourth plot: object size. In this dataset, it is rather rare that the object of interest (cochlea) is actually hit by the measured gaze positions; only in few cases the distance is exactly zero. The high variation in distance to the object indicates that it is hard to follow the fine structures with the eyes, and probably only a small part of the error might be caused by inaccuracy in the measurements. Note that as in Figure \ref{fig:distanceToClosestPositiveD7}, we can observe that the rate of change in object size is related to the distance of gaze positions to true positive pixels. Especially the part between frame 150 and 200 is interesting. Even the little period (frames 173-187) of size fluctuations before the peak at frame 192 seems to cause considerable increases (but still below 1 degree) in the distance plots above.}
 	\label{fig:distanceToClosestPositiveD8}
 \end{figure}
-
-Therefore, giving a tolerance of 0.4 degrees seems to be a necessary step to account for the inaccuracy of the eye-tracking device. The top three plots of Figures \ref{fig:distanceToClosestPositiveD2}, \ref{fig:distanceToClosestPositiveD7} and \ref{fig:distanceToClosestPositiveD8} show for each dataset the distances to the closest true positive pixel for three different recorded gaze sequences. 
-The instrument dataset (Figure \ref{fig:distanceToClosestPositiveD2}) shows rather promising results: 
-In the three recorded gaze sequences, the majority of the values are exactly zero, indicating that the gaze hits the actual object. 
-Measurement errors do not seem to influence the potential accuracy of our method here, as the cases where the gaze is not on the object are clear human-caused outliers with a distance of more than 1 degree visual angle.
-A similar conclusion holds for the eye tumor dataset (Figure \ref{fig:distanceToClosestPositiveD7}). 
-The gaze observations show that between frames 40 and 50, when the tumor is big in size, it is well hit by the gaze. 
-The rather big distances to any positive pixels before and after this interval might reflect the fact that the size of the structure of interest decreases rapidly in these frames (see the last plot in Figure \ref{fig:distanceToClosestPositiveD7}). 
-The recordings from the cochlea dataset (Figure \ref{fig:distanceToClosestPositiveD8}) show that it is actually a rather rare event in this dataset that the gaze really hits the object. However, the distance to the true positives stays mostly below 1 degree visual angle. This suggests that in this case, the inaccuracy of the device might be a problem.
-Yet, considering the previously discussed measurements, it is more likely that the errors are due to the very fine structures to detect in this dataset: Like in the previous case of the eye tumor, the gaze accuracy decreases when the size of the object decreases. 
-It seems that not only the object size is of importance when trying to fixate positive points, but also the change rate of the size. In all the three datasets, but best visible for the eye tumor and cochlea, the gaze tends to drift away from the object whenever the size of the object decreases, whereas an increasing size seems to attract the attention of the observer and make it easier to fixate the object. 
-The discussed plots show that the cochlea dataset can clearly be considered the most challenging one used during this project because it is the one where the gaze sequences are the least focused on the object. 
-The rate of change in size, but also the absolute size seem to be critical when trying to focus an object throughout a sequence of images. Figure \ref{fig:relativeobjectsize} and Table \ref{tab:avgobjectsize} illustrate comparisons of the object sizes among the different datasets. Considering the relative sizes\footnote{The relative object size was calculated with respect to the resolution of the used images.}, the likelihood to randomly find a positive pixel is much higher for the instrument dataset than for the eye tumor and the cochlea datasets. Therefore, it is likely that for the instrument dataset the final results will be less prone to little errors in the gaze than for the other two. 
 
 \begin{figure}[ht]
 	\centering
@@ -134,20 +157,23 @@ The rate of change in size, but also the absolute size seem to be critical when 
 	\end{tabular}
 \end{table}
 
-Having considered possible causes for the gaze positions not being on the object, we will now briefly focus on the effects of that problem with respect to our later task of using the gaze positions to generate positive training samples. 
+\subsection{Quality of Extracted Superpixels}
+So far we have considered possible causes for the gaze positions not to be focused on the object. 
+We will now briefly focus on the effects of that problem with respect to our later task of using the gaze positions to generate positive training samples. 
 To check how much true positive / false positive information we are actually using for our work, we visualized the amount of positive information in the following way: 
 For each frame where the user pressed a key, we extracted the superpixel that contains the corresponding gaze position. 
 Each of the extracted superpixels contains many pixels and we calculated the relative amount of true positive pixels among them. 
-A reason for those superpixels containing less than 100\% true positive pixels is that some of the extracted superpixel describes a region that does not contain the object at all. 
+A reason for those superpixels containing less than 100\% true positive pixels is that some of the extracted superpixels describe a region that does not contain the object at all. 
 This would lead to a fraction of 0\% true positives. 
-The other reason is that the gaze actually hits the object, but the corresponding superpixel contains other information than just the object. 
+The other reason is that the gaze actually hits the object, but the corresponding superpixel contains other information than just the object, or that the gaze does not hit the object, but the superpixel includes parts of it. 
 For the same three gaze sequences than before, the relative amount of positive information in each extracted superpixel is shown in Figures \ref{fig:positiveFractionD2}, \ref{fig:positiveFractionD7} and \ref{fig:positiveFractionD8}. 
 We can see in Figure \ref{fig:positiveFractionD2} that even a small distance to the actual object can cause considerable noise in the extracted superpixels. 
-For example for the first sequence (top row in Figure \ref{fig:positiveFractionD2}, there are some extracted superpixels containing less than 50\% positive information around frame 400, even though Figure \ref{fig:distanceToClosestPositiveD2} shows that the distance between the gaze and the actual object was greater than zero during only 5 frames and never greater than 2.5 pixels. 
-It is not a surprising observation that the amount of positive information in these cases is low. As the used SLIC superpixels respect edges, the superpixel containing a position that is only slightly off the object will typically not contain any positive information. Furthermore, this does not necessarily change with the superpixel size, as the examples in Figure \ref{fig:gazeOffSuperpixelSize} show. On the other hand, the effect of a similar case in the second sequence around frame 320 is not so dramatic and in total, the extracted superpixels contain more true positive than false positive information, which is a promising precondition because we aim at using them as reliable positive training samples. 
-For the eye tumor and the cochlea data, the situation is more critical. Figures \ref{fig:positiveFractionD7} and \ref{fig:positiveFractionD8} show that there is a large amount of wrong information in the extracted positive superpixels. In fact, many of the extracted superpixels contain less than 50\% of true positive information. For both datasets, even quite some superpixels contain only negative information that we wrongly assume to be positive. 
-However, the observation that the gaze hits even the smaller objects when they are growing in size suggests that the reliability of the collected gaze sequences could be improved by playing the video backwards or giving the user full control about the playback mode.
+For example for the first sequence (top row in Figure \ref{fig:positiveFractionD2}, there are some extracted superpixels containing less than 50\% positive information around frame 400, even though Figure \ref{fig:distanceToClosestPositiveD2} shows that the distance between the gaze and the actual object was greater than zero during only 5 frames and never greater than 2.5 pixels. On the other hand, the effect of a similar case in the second sequence around frame 320 is not so dramatic and in total, the extracted superpixels contain more true positive than false positive information, which is a promising precondition because we aim at using them as reliable positive training samples. 
 
+For the eye tumor and the cochlea data, the situation is more critical. Figures \ref{fig:positiveFractionD7} and \ref{fig:positiveFractionD8} show that there is a large amount of wrong information in the extracted positive superpixels. In fact, many of the extracted superpixels contain less than 50\% of true positive information. For both datasets, even quite some superpixels contain $0\%$ true positive information.
+
+It is not a surprising observation that the amount of positive information is low when the gaze is slightly off the object. As the used SLIC superpixels respect edges, the superpixel containing a position that is only slightly off the object will typically not contain any positive information. We considered that increasing the superpixel size might help to avoid this problem, but found that this is not true. The amount of positive information for slightly off gaze positions does not necessarily change with the superpixel size, as the examples in Figure \ref{fig:gazeOffSuperpixelSize} show. 
+ 
 
 \begin{figure}[ht]
 	  \includegraphics[width=\textwidth]{fractionsDataset2vid2.eps}
@@ -156,7 +182,7 @@ However, the observation that the gaze hits even the smaller objects when they a
 	  
 	  \centering
 	  \includegraphics[width=\textwidth]{fraction-legend.eps}
-	  \caption{Instrument dataset: The extracted superpixels contain in total more true positive (fraction > 50\%) than false positive (fraction < 50\%) information, which is good because we want to use them as reliable positive training samples. In average, the extracted superpixels contain $\approx$ 80\% true positive information (blue dotted lines).}
+	  \caption{Instrument dataset: The extracted superpixels contain in total more true positive (fraction $> 50\%$) than false positive (fraction $< 50\%$) information, which is good because we want to use them as reliable positive training samples. In average, the extracted superpixels contain $\approx 80\%$ true positive information (blue dotted lines).}
 	\label{fig:positiveFractionD2}
 \end{figure}
 
@@ -167,7 +193,7 @@ However, the observation that the gaze hits even the smaller objects when they a
 	  
 	  \centering
 	  \includegraphics[width=\textwidth]{fraction-legend.eps}
-	  \caption{Eye tumor dataset: The superpixels that were extracted using recorded gaze positions contain between 28 and 35\% true positive information in average (blue dotted lines).}
+	  \caption{Eye tumor dataset: There is a large amount of wrong information in the extracted positive superpixels. Many of the extracted superpixels contain less than 50\% of true positive information. The superpixels that were extracted using recorded gaze positions contain between 28 and 35\% true positive information in average (blue dotted lines).}
 	\label{fig:positiveFractionD7}
 \end{figure}
 
@@ -178,7 +204,7 @@ However, the observation that the gaze hits even the smaller objects when they a
 	  
 	  \centering
 	  \includegraphics[width=\textwidth]{fraction-legend.eps}
-	  \caption{Cochlea dataset: The superpixels that were extracted using recorded gaze positions contain between 16 and 29\% true positive information in average (blue dotted lines).}
+	  \caption{Cochlea dataset: As in Figure \ref{fig:positiveFractionD7}, there is a large amount of wrong information in the extracted positive superpixels. Many of the extracted superpixels contain  $0\%$ true positive pixels. They contain only between 16 and 29\% true positive information in average (blue dotted lines).}
 	\label{fig:positiveFractionD8}
 \end{figure}
 
@@ -212,7 +238,10 @@ However, the observation that the gaze hits even the smaller objects when they a
 		\includegraphics[width=\textwidth]{superpixelSize3eye_100px}	
 		%\caption{}
 	\end{subfigure}	
-	\caption{Extending the superpixel size does not help to overcome inaccurate gaze positions, as the superpixels naturally tend to respect edges and the gaze is in this case usually on the wrong side of the edge. The yellow dots indicate the gaze position.}
+	\caption{Extending the superpixel size does not help to overcome inaccurate gaze positions, as the superpixels naturally tend to respect edges and the gaze is in this case usually on the wrong side of the edge. Therefore we did not consider to make our choice of the superpixel size depending on the gaze accuracy. The yellow dots indicate the gaze position.}
 	\label{fig:gazeOffSuperpixelSize}
 \end{figure}
 
+Certainly, the simple assumption that all the user-indicated positive labels are true positives, is not valid. 
+For the instrument data, we gained more true than false positive information from the gaze sequences. 
+However, the finer the structures of interest, the less reliably the gaze positions indicate true positives.
