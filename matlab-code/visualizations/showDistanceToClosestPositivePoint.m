@@ -45,14 +45,14 @@ notpressed_vals = and(~key_pressed,~isnan(plot_vals));
 
 %%
 h = figure;
-plot(find(pressed_vals),plot_vals(pressed_vals),'.','Color',[0 0 0.6],'MarkerSize',18); axis([1 length(plot_vals) 0 210]); hold on; 
-plot(find(notpressed_vals),plot_vals(notpressed_vals),'.','MarkerSize',18,'Color',[0 0.6 0]);
+plot(find(pressed_vals),plot_vals(pressed_vals),'.','Color',[0 0 0.6],'MarkerSize',20); axis([1 length(plot_vals) 0 160]); hold on; 
+plot(find(notpressed_vals),plot_vals(notpressed_vals),'.','MarkerSize',20,'Color',[0 0.6 0]);
 
 hold on; plot(1:length(plot_vals),pixel_radius_on_image*ones(1,length(plot_vals)),'-r','LineWidth',2);
-hold on; plot(1:length(plot_vals),mean(plot_vals(pressed_vals))*ones(1,length(plot_vals)),'--','Color',[0 0 0.6]);
-hold on; plot(1:length(plot_vals),mean(plot_vals(notpressed_vals))*ones(1,length(plot_vals)),'--','Color',[0 0.6 0]);
-le = legend('key pressed','key not pressed','1 degree visual angle'); le.FontSize = 14;
-xlabel('time (frame)','FontSize',14);
-ylabel('distance to closest true positive','FontSize',14);
+hold on; plot(1:length(plot_vals),mean(plot_vals(pressed_vals))*ones(1,length(plot_vals)),'--','Color',[0 0 0.6],'LineWidth',1.5);
+hold on; plot(1:length(plot_vals),mean(plot_vals(notpressed_vals))*ones(1,length(plot_vals)),'--','Color',[0 0.6 0],'LineWidth',1.5);
+le = legend('key pressed','key not pressed','1 degree visual angle'); le.FontSize = 18;
+xlabel('frame','FontSize',18,'FontWeight','bold');
+ylabel('d(gaze,closest true positive)','FontSize',18,'FontWeight','bold');
 
-saveToPDFWithoutMargins(h,'closestPositiveDataset7vid6.pdf');
+saveToPDFWithoutMargins(h,'test.pdf');

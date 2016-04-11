@@ -111,12 +111,13 @@ set(gca, 'XTick', 1:3, 'XTickLabel', Labels);
 %% get the fraction of gaze positions that actually were positive superpixels...
 f(1) = figure;
 [keypressed_frames,pos_fract] = getFractionOfPositiveAndNegativeSuperpixels(superpixel_dir, ground_truth_dir, framePositions);
-plot(keypressed_frames,pos_fract,'*'); 
+plot(keypressed_frames,pos_fract,'*','Color',[0 0 0.6],'MarkerSize',8,'LineWidth',2); 
 
 axis([1 num_frames -0.1, 1.1]);
-posline = refline(0,0.5); posline.Color = 'r'; posline.LineStyle = '--';
-xlabel('observed frame [key pressed by user]','FontSize',14);
-ylabel('positive pixels (%) in stared-at superpixels','FontSize',14);
+posline = refline(0,0.5); posline.Color = 'r'; posline.LineStyle = '--'; posline.LineWidth = 2;
+meanline = refline(0,mean(pos_fract)); meanline.Color = [0 0 0.6]; meanline.LineStyle = '--'; meanline.LineWidth = 2;
+xlabel('frame','FontSize',18,'FontWeight','bold');
+ylabel('true pos/superpixel','FontSize',18,'FontWeight','bold');
 % legend('fraction of positive pixels','fraction > 0.5 means: staring at a true positive superpixel', 'Location','northoutside');
 % title('Fraction of positive pixels in the observed superpixels');
 % saveToPDFWithoutMargins(f(1),['fractions','Dataset',num2str(dataset),video_name(1:end-4),'.pdf']);
