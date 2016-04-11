@@ -3,7 +3,7 @@ clear;
 %%
 %rng('default');
 
-nbTrainSamples = 40;
+nbTrainSamples = 80;
 nbRounds       = 50;
 
 mu1a = [2 3];   Sigma1a = [.7 .2; .2 .5];
@@ -21,30 +21,37 @@ pN         = mvnpdf(trainData,mu2,Sigma2);
 ProbWeight = pP ./ (pP + pN);
 
 rnP        = randperm(nbTrainSamples);
-PIndex     = rnP(1:nbTrainSamples-38);
-trainLabel = [zeros(nbTrainSamples,1) ; zeros(nbTrainSamples,1) ];
-trainLabel(PIndex) = 1;
+PIndex     = rnP(1:nbTrainSamples-79);
+
+true_trainLabel = [ones(nbTrainSamples,1) ; -ones(nbTrainSamples,1)];
+
+% Compute PU-labels: only a few are positive, everything else unlabeled
+pu_trainLabel = [zeros(nbTrainSamples,1) ; zeros(nbTrainSamples,1) ];
+pu_trainLabel(PIndex) = 1;
 
 % Compute labels if we were to assume Prob value.
-Uindex         = find(trainLabel==0);
-trainLabel2    = trainLabel;
-trainLabel2(Uindex) = 2*(ProbWeight(Uindex) > 0.5)-1; % set labels for U set.
+Uindex         = find(pu_trainLabel==0);
+prob_trainLabel    = pu_trainLabel;
+prob_trainLabel(Uindex) = 2*(ProbWeight(Uindex) > 0.5)-1; % set labels for U set.
+
+% Compute labels as few positives and everything else negative
+observed_vs_unobserved_trainLabel = pu_trainLabel;
+observed_vs_unobserved_trainLabel(observed_vs_unobserved_trainLabel == 0) = -1;
 
 %%
 
-figure(1);
 subplot(3,1,1);
 plot(r1(:,1),r1(:,2),'o','MarkerSize',12);
 hold on;
 plot(r2(:,1),r2(:,2),'r+','MarkerSize',12);
 axis([0,6,0,4.5]);
-xlabel('Patch Intensity Average','FontSize',16,'FontWeight','bold');
-ylabel('Patch Intensity variance','FontSize',16,'FontWeight','bold');
+xlabel('feature1','FontSize',18,'FontWeight','bold');
+ylabel('feature2','FontSize',18,'FontWeight','bold');
 title('Train Data','FontSize',16,'FontWeight','bold');
 grid on;
 hold off;
 set(gcf,'color','w');
-
+%%
 subplot(3,1,2);
 plot(r1(PIndex,1),r1(PIndex,2),'o','MarkerSize',12,'MarkerFaceColor','b');
 grid on;
@@ -58,13 +65,15 @@ for vv=1:nbTrainSamples*2
     end
 end
 title('Probability Weights', 'FontSize',16,'FontWeight','bold');
+xlabel('feature1','FontSize',18,'FontWeight','bold');
+ylabel('feature2','FontSize',18,'FontWeight','bold');
 hold off;
 
 %%
-[classif,sInfo]= learnPuboost(trainData,trainLabel,ProbWeight,nbRounds);
+[classif,sInfo]= learnPuboost(trainData,pu_trainLabel,ProbWeight,nbRounds);
 
 %%
-[classif_Trad,sInfo_Trad]= learnPuboost(trainData,trainLabel2,ProbWeight,nbRounds);
+[classif_Trad,sInfo_Trad]= learnPuboost(trainData,prob_trainLabel,ProbWeight,nbRounds);
 
 %%
 
@@ -77,7 +86,7 @@ end
 if 1
 nbTestSamples = 500;
 
-figure(3);
+figure(2);
 mu1 = [2 3]; Sigma1 = [.7 .2; .2 .5];
 r1a = mvnrnd(mu1, Sigma1, nbTestSamples/2);
 mu1 = [4.5 2]; Sigma1 = [.2 0; 0 .2];
@@ -85,11 +94,11 @@ r1b = mvnrnd(mu1, Sigma1, nbTestSamples/2);
 r1  = [r1a;r1b];
 plot(r1(:,1),r1(:,2),'o','MarkerSize',12);
 hold on;
-mu2 = [2.5 1.5]; Sigma2 = [.6 .1; .1 .7];
+mu2 = [2 1.5]; Sigma2 = [.6 .1; .1 .7];
 r2 = mvnrnd(mu2, Sigma2, nbTestSamples);
 plot(r2(:,1),r2(:,2),'r+','MarkerSize',12);
-xlabel('Patch Intensity Average','FontSize',16,'FontWeight','bold');
-ylabel('Patch Intensity variance','FontSize',16,'FontWeight','bold');
+xlabel('feature1','FontSize',18,'FontWeight','bold');
+ylabel('feature2','FontSize',18,'FontWeight','bold');
 title('Test Data','FontSize',16,'FontWeight','bold');
 grid on;
 hold off;
@@ -110,7 +119,7 @@ for nbR = 1:length(nbRoundsTest)
     nbRS = nbRoundsTest(nbR);
     for m=1:nbRS
         scores1(:,nbR)  = scores1(:,nbR) + classif{m}.alpha.*evalWL(classif{m}.wl,testData);
-        scores2(:,nbR)  = scores2(:,nbR) + classif{m}.alpha.*evalWL(classif_Trad{m}.wl,testData);
+        scores2(:,nbR)  = scores2(:,nbR) + classif_Trad{m}.alpha.*evalWL(classif_Trad{m}.wl,testData);
     end
     
     [X1{nbR},Y1{nbR},T1,AUC1{nbR}] = perfcurve(testLabel, scores1(:,nbR),1);
@@ -122,21 +131,44 @@ end
 
 thetaIX      = round([.25 .5 .75].*length(T1));
 thetas       = T1(thetaIX);
-%plot(X{1},Y{1},X{2},Y{2},X{3},Y{3},X{4},Y{4},'LineWidth',2);
-plot(X1{1},Y1{1},'LineWidth',2);hold on;
-%plot(X1{1}(thetaIX),Y1{1}(thetaIX),'ko','MarkerSize',15);
+
+hold on; plot(X1{1},Y1{1},'LineWidth',2);
+% plot(X1{1}(thetaIX),Y1{1}(thetaIX),'ko','MarkerSize',15);
 plot(X2{1},Y2{1},'r','LineWidth',2);
-%plot(X2{1}(thetaIX),Y2{1}(thetaIX),'ro','MarkerSize',15);
+% plot(X2{1}(thetaIX),Y2{1}(thetaIX),'ro','MarkerSize',15);
 legend(stc);
 grid on;
 hold off;
 legend(sprintf('P-U Expected Exponential Loss = %f',AUC1{nbR}),...
        sprintf('Exponential Loss = %f',AUC2{nbR}),'Location','Southeast');
-xlabel('False Positive Rate','FontSize',16,'FontWeight','bold');
-ylabel('True Positive Rate','FontSize',16,'FontWeight','bold');
-title(sprintf('ROC Curve - AUC = %f',AUC1{nbR}),'FontSize',16,'FontWeight','bold');
+
+xlabel('False Positive Rate','FontSize',18,'FontWeight','bold');
+ylabel('True Positive Rate','FontSize',18,'FontWeight','bold');
+title('ROC curve','FontSize',18,'FontWeight','bold');
 set(gcf,'color','w');
 %export_fig('figs/ROC.pdf',gcf);
+
+
+Ntest = size(scores1(:,nbR),1);
+[~,idx] = sort(scores1(:,nbR),'descend');
+sorted_test_labels = testLabel(idx);
+positives = sorted_test_labels == 1;
+
+% Precision-Recall-curve (PR)
+% Precision: TP / (TP + FP) = TP/#{all predicted positives}
+% What fraction of the predicted positives are actually positive?
+precision = cumsum(positives)./(1:Ntest)'; % is less than 1 if the number of (actual) positives are found (hopefully, recall is 1 then)
+
+% Recall = TPR (true positive rate) = TP / (TP + FN) = TP/#{positives} 
+% How many of the positive test labels are actually found?
+recall = cumsum(positives)/sum(positives); % is less than 1 if not yet all points are considered (hopefully, precision is 1 then)
+
+figure(4);
+plot(recall,precision,'LineWidth',2);
+axis( [0 1 0 1] );
+title('PR curve','FontSize',18,'FontWeight','bold');
+xlabel('Recall','FontSize',18,'FontWeight','bold');
+ylabel('Precision','FontSize',18,'FontWeight','bold');
 
 %%
 
