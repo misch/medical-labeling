@@ -1,6 +1,14 @@
 function [smoothedLabels] = smoothFrameLabels (data, labels, mu)
-% This function performs label propagation ("smoothing") according to Zhou
-% et al.
+% This function performs the regularized version of label ("smoothing") according to Zhou
+% et al. (http://papers.nips.cc/paper/2506-learning-with-local-and-global-consistency.pdf)
+%
+% input:
+% data: a MxN matrix containing M N-dimensional samples
+% labels: binary labels for the input samples
+% mu: regularization parameter
+%
+% can be used for example in testSuperpixelClassifier to smooth the obtained resulting labels: 
+%   smoothed_labels = smoothFrameLabels(classifier_results.input, classifier_results.scores>0,0.56);
 
 n = size(data,1);
 c = size(data,2);

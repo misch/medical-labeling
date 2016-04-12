@@ -1,6 +1,7 @@
 function [model] = trainClassifier(dataset, classifier, training_file)
+% TRAINCLASSIFIER train a classifier
 % dataset: a number that indicates what dataset should be considered
-% classifier: 'svm' or 'grad_boost'
+% classifier: string (possible values: 'svm', 'grad_boost', 'pu_grad_boost'
 
 [dataset_folder] = getDatasetDetails(dataset);
 

@@ -1,5 +1,12 @@
 function [data, labels] = getFiftyFiftySamples(train_data, train_labels)
-
+% GETFIFTYFIFTYSAMPLES get an equal amount of positive and negative training
+% 
+% Given many negatives and only a few positives, this function returns all
+% the positives and an equal amount of random negatives.
+%
+% The function would be used mostly for cross-validation, as otherwise a
+% high cross-validation accuracy might not be meaningful (assigning only
+% negative labels yields the highest accuracy)
     positive_train_data = train_data(train_labels==1,:);
     negative_train_data = train_data(train_labels==-1,:);
 

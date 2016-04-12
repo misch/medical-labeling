@@ -1,4 +1,10 @@
 function [projected_scores, test_labels] = projectToPixels(classifier_results)
+% PROJECTTOPIXELS projects superpixel-wise scores back onto the pixels of an
+% image and shows plots
+%
+% the function is used in "testSuperpixelClassifier"
+%
+% classifier_results: a struct containing results of a tested classifier, as created in the function "testSuperpixelClassifier"
     projected_scores = [];
     test_labels = [];
     for current_frame = unique(classifier_results.frame_idx)'

@@ -1,19 +1,20 @@
 function testSuperpixelClassifier(model, dataset, test_frames, classifier,descriptor_dir)
-% model: a trained classifier model
-% test_frames: a Nx1 array containing the frames for which the pixels
-% should be classified
-% classifier: either 'svm' or 'grad_boost'
-% descriptor_dir: the directory where the descriptors are stored
-        
+% TESTSUPERPIXELCLASSIFIER test a trained model on some particular
+% test-frames with image patches.
 
+% input:
+%   model: a trained classifier model
+%   test_frames: a Nx1 array containing the frames for which the pixels should be classified
+%   classifier: string (possible values: 'svm', 'grad_boost' or
+%   'pu_grad_boost'
+%   descriptor_dir: the directory where the descriptors are stored
+        
 %% Test Classifier
 disp('Test Classifier...');
 
 [dataset_folder] = getDatasetDetails(dataset);
 ground_truth_dir = [dataset_folder,'ground_truth-frames/'];
 
-projected_scores = [];
-test_labels = [];
 classifier_results = struct('scores',[],'frame_idx',[],'input',[],'classifier',classifier,'dataset',dataset,'descriptor_dir',[dataset_folder,descriptor_dir],'ground_truth_dir',ground_truth_dir);
 
 for frame = test_frames
@@ -26,7 +27,6 @@ for frame = test_frames
 
     if strcmp(classifier,'svm')
         [~,~, scores] = libsvmpredict(ones(size(test_data,1),1), test_data, model);
-%         [~,scores] = predict(model,test_data);
     elseif strcmp(classifier,'grad_boost')
         scores = SQBMatrixPredict(model, single(test_data)); 
     elseif strcmp(classifier,'pu_grad_boost')

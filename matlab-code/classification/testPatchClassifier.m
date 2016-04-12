@@ -1,8 +1,11 @@
-function testSuperpixelClassifier(model, dataset, test_frames, classifier)
-% model: a trained classifier model
-% test_frames: a Nx1 array containing the frames for which the pixels
-% should be classified
-% classifier: either 'svm' or 'grad_boost'
+function testPatchClassifier(model, dataset, test_frames, classifier)
+% TESTPATCHCLASSIFIER test a trained model on some particular
+% test-frames with image patches. 
+
+% input:
+%   model: a trained classifier model
+%   test_frames: a Nx1 array containing the frame numbers (int values) for which the pixels should be classified
+%   classifier: a string (possible vlaues: 'svm', 'grad_boost', 'pu_grad_boost'
         
 
 %% Test Classifier
