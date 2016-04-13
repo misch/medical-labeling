@@ -1,5 +1,6 @@
-
-gt_dir = uigetdir('../../data')
+% This script visualizes a 3D point cloud from a stack of images where
+% parts have been labeled positive.
+gt_dir = uigetdir('../../data') % e.g. choose Dataset8/ground_truth-frames/
 
 files = dir([gt_dir,'/*.png']);
 
@@ -21,7 +22,6 @@ end
 
 
 [r,c,v] = ind2sub(size(volume),find(volume > 0));
-% [r, c, v] = ind2sub(size(grad_vol),find(grad_vol > 0));
 
-skip = 1;
-scatter3(r(1:skip:end),c(1:skip:end),v(1:skip:end),5,c(1:skip:end),'filled');
+step = 2;
+scatter3(r(1:step:end),c(1:step:end),v(1:step:end),5,c(1:step:end),'filled');

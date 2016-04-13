@@ -1,4 +1,10 @@
-% 1st, load ROC.mat and PR.mat
+% Plot performance curves from the collected values when a classifier was
+% tested on some frames.
+
+% 1) load ROC.mat and PR.mat into workspace
+% 2) execute script
+
+%% Calculate AUC
 auc = sum(recall)/length(recall);
 
 %% Plot PR curve

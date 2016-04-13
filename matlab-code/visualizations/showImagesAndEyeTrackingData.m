@@ -1,8 +1,12 @@
 function showImagesAndEyeTrackingData(video_filename, framePositions)
-% Parameters:
-%   video_filename: a string with the filename of the video
-%   framePositions: a #frames x 2 matrix containing [X,Y] positions for
-%   each frame.
+% SHOWIMAGESANDEYETRACKINGDATA shows the images of a video together with
+% recorded gaze positions
+%
+% input:
+%   video_filename: the absolute path of the video
+%   framePositions: a #frames x 3 matrix containing [X,Y] positions for
+%   each frame and binary key_pressed-values. Usually read from a csv-file
+%   that has been created while recording the gaze data.
 matlab_version = version('-release');
 if str2num(matlab_version(1:4)) <= 2010
     % install VideoUtils Toolbox

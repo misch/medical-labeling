@@ -1,4 +1,5 @@
-% This script puts a 1° radius on an image that has been shown on full
+% This script puts a circle on an image of radius corresponding to 1 degree
+% visual when the image was shown on full screen
 % screen
 % img = im2double(imread('../../data/Dataset8/input-frames/frame_00195.png'));
 % img = im2double(imread('../../data/Dataset2/input-frames/frame_00206.png'));

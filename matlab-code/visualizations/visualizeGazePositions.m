@@ -1,3 +1,7 @@
+% Show how much positive information could be gained by giving a certain
+% tolerance. If many possible tolerances want to be seen, a simple plot
+% over tolerances is outputted - if only one tolerance value is examined,
+% then it can be seen more detailed, where the information was wrong or correct.
 dataset = 8;
 [dataset_folder, frames_dir, ~, frame_height, frame_width] = getDatasetDetails(dataset);
 ground_truth_dir = [dataset_folder,'ground_truth-frames/'];

@@ -1,3 +1,4 @@
+% Plots different versions of the U-term of the suggeted PU-loss function
 [Z,P] = meshgrid(-2:0.1:2, 0:0.1:1);
 L = P .* exp(-Z) + (1-P).*exp(Z);
 

@@ -1,10 +1,11 @@
-% From a frame, get the positive and some negative patches, display them.
+%% From a frame, display the positive and some negative patches
+
 [dataset_folder, frames_dir, file_names, frame_height, frame_width, num_frames] = getDatasetDetails(2);
 
-i = 900;
-image = im2double(imread([frames_dir,file_names(i).name]));
+frame_no = 200;
+image = im2double(imread([frames_dir,file_names(frame_no).name]));
 
-filename = [dataset_folder, 'framePositions.csv'];
+filename = [dataset_folder, 'gaze-measurements/video1.csv'];
 framePositions = readCSVFile(filename);
 framePositions(:,1) = framePositions(:,1) * frame_width;
 framePositions(:,2) = framePositions(:,2) * frame_height;
@@ -12,14 +13,13 @@ framePositions(:,2) = framePositions(:,2) * frame_height;
 figure;
 imshow(image);
 hold on;
-plot(framePositions(i,1),framePositions(i,2),'Marker','.','Color', [1, 0, 0], 'MarkerSize',30);
+plot(framePositions(frame_no,1),framePositions(frame_no,2),'Marker','.','Color', [1, 0, 0], 'MarkerSize',30);
 
-positive = getPatchAtPosition(image, flip(framePositions(i,1:2)));
+positive = getPatchAtPosition(image, flip(framePositions(frame_no,1:2)));
 
 
-[negative] = getNonOverlappingPatches(image, flip(framePositions(i,1:2)), 3);
+[negative] = getNonOverlappingPatches(image, flip(framePositions(frame_no,1:2)), 3);
 
-figure;
 imtool(positive);
 
 figure;

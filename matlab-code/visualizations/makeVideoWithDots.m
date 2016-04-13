@@ -1,5 +1,12 @@
 function makeVideoWithDots(frames_dir,framePositions, output_filename,frame_rate)
-
+% MAKEVIDEOWITHDOTS make a video with dots representing the gaze positions
+%
+% input:
+%   - frames_dir: path to the directory that contains the single frames as
+%   .png images
+%   - framePositions: the gaze positions in pixel coordinates
+%   - output_filename: name of the output video file
+%   - frame_rate: frame rate of the output video
     v = VideoWriter(output_filename);
     v.FrameRate = frame_rate;
     files = dir([frames_dir,'*.png']);

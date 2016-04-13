@@ -1,3 +1,5 @@
+% Show the countours of the used Gaussians for synthetic data generation
+
 mu1a = [2 3];   Sigma1a = [.7 .2; .2 .5];
 mu1b = [4.5 2]; Sigma1b = [.2 0; 0 .2];
 mu2  = [2 1.5]; Sigma2 = [.6 .1; .1 .7];

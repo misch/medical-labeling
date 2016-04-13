@@ -1,3 +1,6 @@
+% In each frame, show distance between the gaze position and the closest
+% true positive pixel (taken from ground truth)
+
 addpath(genpath('../'));
 dataset = 7;
 [dataset_folder, frames_dir, ~, frame_height, frame_width] = getDatasetDetails(dataset);
