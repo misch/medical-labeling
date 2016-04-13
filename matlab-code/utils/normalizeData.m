@@ -1,12 +1,11 @@
 function [NormData, mu, sigma] = normalizeData(Data)
-% Normalize the input data to lie in a box with radius 1
-% centered at the origin of the coordinate system.
+% NORMALIZEDATA normalize the input data to zero mean and 1 std
+
 %
-%
-% Input
+% input:
 %     Data: the data matrix, each row represents a data point.
 %
-% Output
+% output:
 %     NormData: the normalized data matrix.
 % 
 

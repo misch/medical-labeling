@@ -1,8 +1,7 @@
+% Run the PU-boosting for a synthetic data example
 clear;
 
 %%
-%rng('default');
-
 nbTrainSamples = 80;
 nbRounds       = 50;
 

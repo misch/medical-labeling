@@ -1,5 +1,5 @@
 function [dataset_folder, frames_dir, file_names, frame_height, frame_width, num_frames] = getDatasetDetails(dataset)
-% This functions returns the details of the specified dataset
+% GETDATASETDETAILS return the details of the specified dataset
 % Parameters:
 %   - dataset:  A scalar to indicate which of the datasets should be chosen.
 %               The datasets are assumed to be in ../data/Dataset[dataset].

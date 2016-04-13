@@ -1,6 +1,5 @@
 function plotClassifierBoundary(R,C,classif)
 figure(4);
-%subplot(3,1,3);
 MAP = zeros(R,C);
 
 for r=1:R

@@ -1,4 +1,5 @@
 function framePositions = readCSVFile(filename);
+% READCSVFILE read a gaze record from the csv file
 % This function reads the CSV-File from the gaze
 % tracker and returns the framePositions  
     try
