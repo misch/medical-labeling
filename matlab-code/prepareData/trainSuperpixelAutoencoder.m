@@ -1,4 +1,5 @@
-% train an autoencoder for later usage as feature descriptor
+%% Train an autoencoder for later usage as feature descriptor
+
 frames_dir = '../../data/Dataset2/input-frames/';
 
 % get/create some superpixels

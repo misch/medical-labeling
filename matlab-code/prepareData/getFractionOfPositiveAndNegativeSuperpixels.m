@@ -1,6 +1,13 @@
 function [interesting_frames_indices,positive_fraction] = getFractionOfPositiveAndNegativeSuperpixels(descriptors_dir, ground_truth_dir, framePositions)
-% From descriptors and gaze positions, extract positive and negative descriptors.
-
+% GETFRACTIONOFPOSITIVEANDNEGATIVESUPERPIXELS for the positive superpixels
+% extracted by some gaze records, get the amount of true positive pixels
+% inside the superpixels
+%
+% input:
+%   - descriptors_dir: path to the descriptors
+%   - ground_truth_dir: path to the ground truth directory
+%   - framePositions: the collected gaze positions and key_pressed-values
+%   of one gaze record
 file_names = dir([descriptors_dir,'*.mat']);
 key_pressed = (framePositions(:,3) > 0);
 interesting_frames = file_names(key_pressed);

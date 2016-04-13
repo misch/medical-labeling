@@ -1,9 +1,17 @@
 function [features] = getSuperpixelFeaturesBeta(image, super,betaFeature)
-% This function returns a 42xN-matrix, N being the number of superpixels
-% in the image.
+% GETSUPERPIXELFEATURESBETA get descriptors for the superpixels of an image
 % 
-% At the moment, an amount of 40 bins for the intensity historgram is
-% fixed.
+% input:
+%   - image: a gray-scale or RGB image
+%   - super: the pre-segmented superpixels as returned by the SLIC
+%   algorithm
+%   - betaFeature: an int to indicate which feature version should be
+%   chosen.
+%       1: simple relative color features (useful for color videos)
+%       2: HOG features
+%       3: autoencoded features (need to have a trained autoencoder object
+%       first (see matlab help on how to train an autoencoder))
+%
 
 if betaFeature == 1 % simple relative color features (Dataset 2)
     
@@ -31,7 +39,7 @@ if betaFeature == 1 % simple relative color features (Dataset 2)
             superpixel_idx(i+1) = NaN;
         end
     end
-elseif betaFeature == 2 % median intensity
+elseif betaFeature == 2 % hogFeatures
     n_superpixels = max(super(:))+1;
 
     featureMat = zeros(n_superpixels,227484);
@@ -43,7 +51,7 @@ elseif betaFeature == 2 % median intensity
         masked_img = image.*repmat(mask,1,1,size(image,3));
 
         if (~isempty(values))
-            featureMat(i+1,:) = [extractHOGFeatures(masked_img)];%, glcm(:)'];
+            featureMat(i+1,:) = [extractHOGFeatures(masked_img)];
             superpixel_idx(i+1) = i;
         else
             superpixel_idx(i+1) = NaN;

@@ -1,9 +1,13 @@
 function [mousePositions] =  simulateEyeTracking(video_filename)
-% Collect mouse positions (simulating eye-tracking data)
+% SIMULATEEYETRACKING Collect mouse positions (simulating eye-tracking data)
 % Follow the thing you wanna track and click to update the recorded mouse
 % position.
 %
-% mousePositions: #frames x 2 matrix containing [X,Y] positions for each
+% input:
+%   - video_filename: the filename of the video for which eye-tracking data
+%   should be simulated
+% output:
+%   -mousePositions: #frames x 2 matrix containing [X,Y] positions for each
 % frame of the video.
 
 matlab_version = version('-release')

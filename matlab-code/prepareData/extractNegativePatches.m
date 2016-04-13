@@ -1,8 +1,15 @@
 function [negatives, nROIs, frame_numbers] = extractNegativePatches(frames_dir, file_names, framePositions, frame_height, frame_width)
-% This function returns 128x128x3 image patches representing a negative Regions of Interest.
+% EXTRACTNEGATIVEPATCHES return 128x128x3 image patches representing negative Regions of Interest (patches that do not overlap with the patch around the gaze position).
+%
 % Parameters:
-%   - framePositions: the position of the positive ROI in the frame (to avoid
-%   overlaps with negative ones)
+%   - frames_dir: path to the directory that contains the input frames
+%   (usually '.../input-frames', see README.md)
+%   - file_names: a list of the file names in the folder frames_dir
+%   - framePositions: the positions and key_pressed-values of the positive ROI in the frame (to avoid
+%   overlaps with negative ones), usually taken from a csv-file with gaze
+%   records
+%   - frame_height: frame height
+%   - frame_width: frame width
 
 key_pressed = (framePositions(:,3) > 0);
 interesting_frames = file_names(key_pressed);
@@ -39,5 +46,5 @@ elseif size(negatives,3) == 3
     frame_numbers = frame_numbers(any(any(any(negatives))));
     nROIs = size(negatives,4);
 else
-    disp('Weird frame dimensions...');
+    error('Weird frame dimensions...');
 end

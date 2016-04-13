@@ -1,14 +1,24 @@
 function assembleTrainingDataSuperpixels(dataset,output_filename,csvFilename)
-    % This function can be applied when the video and the eye-tracking data is
-    % available (see ReadMe for the exact assumed file structure)
-    %
-    % Parameters:
-    %   - dataset: 
-    %         a number that indicates the data set
-    %   - output_filename:
-    %         filename to store the final training set (will be stored in
-    %         the dataset-folder)
-
+% ASSEMBLETRAININGDATASUPERPIXELS assemble a training set from
+% pre-segmented images. The superpixel containing the gaze-position is
+% considered the positive, all the other are considered negative.
+%
+%
+% This function needs the following things to be available: 
+%   - an available recording of the eye-tracking data to find the positives
+%   (csvFilename)
+%   - superpixel descriptors for each frame containing the features of all
+%   the superpixels of a frame (folder can be manually chosed while the
+%   function is running)
+%   - the input frames as png images in the folder input-frames (see also
+%   README.md)
+%
+% Input:
+%   - dataset: a int number that indicates the data set
+%   - output_filename: the name of the file where the training data should
+%   be stored. e.g. 'trainingDataSuperpixels.mat'
+%   - csvFilename: a string with the name of the csv file (the file is
+%   assumed to be in the folder 'gaze-measurements/' inside the corresponding dataset-folder (see also README.md)
 
     % Define data paths and actions
     [dataset_folder, ~, ~, frame_height, frame_width] = getDatasetDetails(dataset);

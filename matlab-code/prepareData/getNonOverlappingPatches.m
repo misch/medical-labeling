@@ -1,4 +1,12 @@
 function [patches, nPatches] = getNonOverlappingPatches(image, position, frame_dimensions)
+% GETNONOVERLAPPINGPATCHES return the 128x128 image patches that do not
+% overlap with the patch centered at a certain position.
+%
+% input:
+%   - image: the image to extract the patches from
+%   - positions: the x,y-coordinates that denotes the center of the patch
+%   that should be exluded
+%   - frame_dimensions: channels of the frame (1 for gray-scale, 3 for RGB)
     x_positions = (65:64:size(image,1));
     y_positions = (65:64:size(image,2));
 

@@ -1,8 +1,13 @@
 function [positives, nROIs, interesting_frames_indices] = extractPositivePatches(frames_dir, file_names,framePositions)
-% positives = patch / superpixel / whatev around the frame position, if key pressed.
-
-% Usage:
-% extractPositivePatches(frames_dir, file_names,framePositions)
+% EXTRACTPOSIIVEPATCHES return the positive 128x128-patches from the
+% frames where the user pressed the key. The positive patch of a frame is the one
+% centered at the recorded gaze position.
+%
+% input:
+%   - frames_dir: path to directory that contains the input frames
+%   - file_names: list of files contained in the folder (as gained with the
+%   dir() function)
+%   - framePositions: the recorded gaze positions (in pixel coordinates) and key_pressed-values
 %
 
 key_pressed = (framePositions(:,3) > 0);

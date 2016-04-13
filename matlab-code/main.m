@@ -14,7 +14,7 @@ for ii = 1:length(observations)
     assembleTrainingDataSuperpixels(dataset,['trainingSmallSuperpixelsCoocc_new',num2str(ii),'.mat'],observations(ii).name);
 end
 %%
-assembleReferenceTrainingDataSuperpixels(dataset,'trainingSmallSuperpixelsCOOCCnew_onePositivePerFrame-0_5.mat','../data/Dataset8/ground_truth-frames/');
+assembleReferenceTrainingDataSuperpixels(dataset,'trainingSmallSuperpixelsCOOCCnew_onePositivePerFrame-0_5.mat','../data/Dataset8/ground_truth-frames/',true);
 % for reference: key_pressed values of:
 % - d2: gaze observation #2
 % - d7: gaze observation #2

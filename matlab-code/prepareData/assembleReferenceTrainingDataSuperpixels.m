@@ -1,18 +1,31 @@
-function assembleReferenceTrainingDataSuperpixels(dataset,output_filename,ground_truth_dir)
-    % This function can be applied when the video and the eye-tracking data is
-    % available (see ReadMe for the exact assumed file structure)
-    %
-    % Parameters:
-    %   - dataset: 
-    %         a number that indicates the data set
-    %   - output_filename:
-    %         filename to store the final training set (will be stored in
-    %         the dataset-folder)
-
+function assembleReferenceTrainingDataSuperpixels(dataset,output_filename,ground_truth_dir,only_one_positive_per_frame)
+% ASSEMBLEREFERENCETRAININGDATASUPERPIXELS assemble a reference training
+% set with the true labels for the superpixels. For some frames (indicated
+% by key_pressed values of the gaze records), the function will collect the true labels for all the superpixels (a superpixel is considered positive, if >50% contained pixels are true positives), or gather one random true positive per frame.
+%
+% This function needs the following things to be available: 
+%   - manually labeled ground truth as png images in a folder
+%   (ground_truth_dir)
+%   - an available recording of the eye-tracking data in order to choose
+%   from what frames the labels should be taken
+%   - a folder containing superpixel descriptors of the single frames 
+% 
+% Parameters:
+%   - dataset: 
+%         a number that indicates the dataset
+%   - output_filename:
+%         filename to store the final training set (will be stored in
+%         the dataset-folder)
+%   - ground_truth_dir:
+%         a string containing the full path to the folder with the ground
+%         truth data
+%   - only_one_positive_per_frame:
+%         a boolean that indicates whether only one random positive should
+%         be gathered from the key_pressed-frames. If set to false, all the
+%         true labels will be collected.
 
     % Define data paths and actions
     [dataset_folder, ~, ~, frame_height, frame_width] = getDatasetDetails(dataset);
-    only_one_positive_per_frame = true; %todo: maybe take as argument...
 
     % Get Eye-Tracking information
     filename = [dataset_folder, 'gaze-measurements/vid_10fps2.csv']; % todo: annoying to always change when dataset changes!
@@ -119,8 +132,4 @@ function assembleReferenceTrainingDataSuperpixels(dataset,output_filename,ground
 
     save([dataset_folder,output_filename],'training_set');
     disp(['Saved training data to: ', dataset_folder, output_filename]);
-    
-    % Show, for a particular frame (frameDescriptor) what pixels are
-    % positive according to ground truth
-%     imshow(ismember(frameDescriptor.superpixels,training_set.superpixel_idx(and(training_set.frame_numbers == frameDescriptor.frame_no,training_set.labels == 1))))
 end

@@ -1,11 +1,9 @@
 function [patches, ground_truth] = extractPatchesAndLabels(image,ground_truth_image)
-% This functions returns all 128-128 patches of the image.
+% EXTRACTPATCHESANDLABELS return all 128-128 patches of the input image with the correct labels according to a ground truth.
 %
 % Parameter:
-%   - image: a MxNxQ matrix containing Q different gray-scale images of size
-%   MxN
-%   - patchSize: a 2x1 vector containing x- and y- size of the rectangular
-%   patches
+%   - image: a MxN matrix containing a gray-scale image of size MxN
+%   - ground_truth_image: a MxN binary image (ground truth)
 
 height = size(image,1);
 width = size(image,2);
@@ -33,11 +31,3 @@ for y = boundary_top_left:width-boundary_bot_right
     end
 end
 close(h2);
-
-
-
-
-% fclose(fileID);
-
-
-% massive_test = repmat(test,1,1,100000);

@@ -9,6 +9,8 @@ function [smoothedLabels] = smoothFrameLabels (data, labels, mu)
 %
 % can be used for example in testSuperpixelClassifier to smooth the obtained resulting labels: 
 %   smoothed_labels = smoothFrameLabels(classifier_results.input, classifier_results.scores>0,0.56);
+%
+% testSmoothing.m shows an example of how to use the function
 
 n = size(data,1);
 c = size(data,2);

@@ -1,5 +1,5 @@
 function [ROI] = process_ROI(unprocessed_ROI)
-% This function does the pre-processing of 128x128 RGB or gray-scale patches considered ROIs.
+% PROCESS_ROI This function does the pre-processing of 128x128 RGB or gray-scale patches considered ROIs.
 % If the input has dimensions MxNx3, it is interpreted as RGB image and
 % will first be converted to gray-scale. Otherwise, the input is considered
 % as one or many gray-scale images.

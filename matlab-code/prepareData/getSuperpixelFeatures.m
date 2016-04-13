@@ -1,9 +1,15 @@
 function [features] = getSuperpixelFeatures(image, super)
-% This function returns a 42xN-matrix, N being the number of superpixels
-% in the image.
+% GETSUPERPIXELFEATURES get descriptors for the superpixels of an image
 % 
-% At the moment, an amount of 40 bins for the intensity historgram is
-% fixed.
+% input:
+%   - image: a gray-scale or RGB image
+%   - super: the pre-segmented superpixels as returned by the SLIC
+%   algorithm
+%
+% *************************************************
+% for other (more or less experimental) features, see also
+% getSuperpixelFeaturesBeta.m
+% *************************************************
 histogram_bins = 10;
 n_superpixels = max(super(:))+1; % indexing starts at 0
 

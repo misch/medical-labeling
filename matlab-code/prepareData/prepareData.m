@@ -1,4 +1,8 @@
-% Prepare the data
+% Prepare the data such that later the training and testing of a classifier
+% can be performed.
+%   1) get the frames from a video or NIfTI-format in .png format
+%   2) generate descriptors for the images (some parameters have to be set
+%   inside this script)
 choice = questdlg(  'Do you wanna store the data to input-frames?',... % question
                     'generate input-frames (.png)',... % title
                     'Yes, generate the .png files', 'No, they already exist',... % answers

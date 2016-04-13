@@ -1,6 +1,20 @@
 function [] = createTestData_superpixels(frames_dir,superpixel_dir,frame_percentage, regularizer, superpixel_scale)
-% test_data contains superpixel-features
-% super_img is needed to back-project predicted labels to the pixels later!
+% CREATETESTDATA_SUPERPIXELS create superpixel descriptors. The correct labels are not assigned here, but instead the performance will be measured pixelwise (instead of per superpixel) directly after the classifier was applied.
+% The function stores the gathered descriptors for each frame in a single file.
+%
+% input:
+%   - frames_dir: path to the directory that contains the input-frames 
+%   - superpixel_dir: path to the directory where the descriptors for each
+%   frame will be stored
+%   - frame_percentage: int between 0-100, giving the approximate amount of frames for which the
+%   descriptors should be collected (if specific frames should be
+%   generated, the variable frame_indices inside the function should be
+%   manipulated. Usually, frame_percentage = 100
+%   - regularizer: the regularizer value that should be used for the SLIC
+%   algorithm
+%   - superpixel_scale: in how many parts the smaller image dimension
+%   should roughly be devided. The superpixel_size for SLIC is then calculated
+%   as min(width,height)/superpixel_scale
     
     file_names = dir([frames_dir, '*.png']);
     num_frames = length(file_names);

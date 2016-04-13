@@ -1,10 +1,18 @@
 function assembleTrainingDataPatches(dataset, output_filename)
-% This function can be applied when the input- and ground-truth-frames and
-% the eye-tracking data are available (use script "prepareData" to make
-% everything ready).
+% ASSEMBLETRAININGDATAPATCHES assemble a training set with the gaze
+% positions as center of the positive image patches and everything else as negatives. The
+% patches are preprocessed as suggested in Vilarino et al.
+% (http://link.springer.com/chapter/10.1007%2F978-3-540-72847-4_38).
 %
-% Parameters:
-%   - dataset: a number that indicates the data set
+% This function needs the following things to be available: 
+%   - an available recording of the eye-tracking data to find the positives
+%   - the input frames as png images in the folder input-frames (see also
+%   README.md)
+%
+% Input:
+%   - dataset: a int number that indicates the data set
+%   - output_filename: the name of the file where the training data should
+%   be stored. e.g. 'trainingDataPatches.mat'
 
 
 % Define data paths and actions
@@ -70,7 +78,6 @@ close(h)
 
 labels = [ones(nPos,1); -ones(nNeg,1)];
 
-%% ... Make correctly!!
 
 pos_gaze_positions = flip(round(framePositions(pos_frame_numbers,:),2));
 neg_gaze_positions = flip(round(framePositions(neg_frame_numbers,:),2));

@@ -1,7 +1,10 @@
 function videoToFrames(video_filename, frames_dir)
-% This script writes the single frames of a video to .png files.
-% You have to set the variables 'video_filename' and 'frames_dir'
-% correctly.
+% VIDEOTOFRAMES write the single frames of a video to .png files.
+%
+% input:
+%   - video_filename: filename of the video that should be split into the
+%   single frames
+%   - frames_dir: path to the existing folder where the .png images should be stored
 
 %% install VideoUtils Toolbox
 run 'C:\Program Files\MATLAB\R2010a\VideoUtils_v1_2_4\install.m';
