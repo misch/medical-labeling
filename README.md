@@ -3,7 +3,7 @@
 2. [File structure](#file-structure)
 3. [Gaze observations](#gaze-observations)
 4. [MATLAB code](#matlab-code)
-5. [Not yet investigated, but implemented](#not-yet-investigated,-but-implemented)
+5. [Not yet investigated, but implemented](#not-yet-investigated-but-implemented)
 
 # Towards Passive Labeling in 3D via Gaze Observation
 This repository contains the material for my Master's Thesis at Universität Bern. The project aims at generating segmentations in medical images using eye-tracking data from clinicians. This has a great potential to reduce time costs for gaining training data for supervised learning techniques in medicine, as manual labeling is very time-consuming. Various approaches have been implemented in MATLAB and described in the thesis. The problem of finding training data using eye-tracking has been reformulated. A way to solve it using Gradient Boosting has been suggested and implemented.
@@ -76,7 +76,7 @@ The MATLAB code is organized as follows:
 - **utils/** contains simple functions that make the life easier and don't belong to one specific step
 - **visualizations/** contains scripts and functions used to generate all kinds of visualizations that have been used in the thesis. Some require to first load certain data into the workspace. All this is indicated in the descriptions of the single scripts of functions.
 
-# Not yet investigated, but implemented #
+# Not yet investigated but implemented #
 
 ## Autoencoders ##
 There is a script `prepareData/trainSuperpixelautoencoder.m` that can be used to train an autoencoder for later encoding of superpixels. Once an autoencoder has been trained and the object is stored to a file, it can be used in `prepareData/getSuperpixelFeaturesBeta(...,...,3)` to encode superpixels with this autoencoder (the exact filename has to be changed in getsuperpixelFeaturesBeta.
