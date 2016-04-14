@@ -3,13 +3,13 @@
 2. [File structure](#file-structure)
 3. [Gaze observations](#gaze-observations)
 4. [MATLAB code](#matlab-code)
-5. [Not yet investigated, but implemented](#not-yet-investigated-but-implemented)
+5. [Not yet investigated but implemented](#not-yet-investigated-but-implemented)
 
 # Towards Passive Labeling in 3D via Gaze Observation
 This repository contains the material for my Master's Thesis at Universität Bern. The project aims at generating segmentations in medical images using eye-tracking data from clinicians. This has a great potential to reduce time costs for gaining training data for supervised learning techniques in medicine, as manual labeling is very time-consuming. Various approaches have been implemented in MATLAB and described in the thesis. The problem of finding training data using eye-tracking has been reformulated. A way to solve it using Gradient Boosting has been suggested and implemented.
 
 # File structure
-The MATLAB-code assumes the following data structure:
+The MATLAB-code assumes the data structure as described below. For further explanation of the content of the `data/Dataset[X]/`-folders, see also the README.txt files inside the folders. The data can be found along this git repository on the ARTORG server, but is not uploaded to the git repository.
 
 - matlab code/ 
 - NIfTI_20140122/
@@ -72,7 +72,7 @@ The MATLAB code is organized as follows:
 - **classification/** contains functions used for the classification part; that is everything that is used in the main-script from step 5) onwards.
 - **prepareData/** contains a script "prepareData" that is called in the main-script, and most of the functions that are used in it. Also the functions to generate features can be found there.
 - **pugradboost/** contains the functions and a test-script for gradient boosting with the PU-loss function. The current implementation has decision stumps as weak learner.
-- **subtightplot/** contains the subtightplot toolbox to create subplots without big margins. It was publish on Mathworks [File Exchange](http://www.mathworks.com/matlabcentral/fileexchange/39664-subtightplot)
+- **subtightplot/** contains the subtightplot toolbox to create subplots without big margins. It was published on Mathworks [File Exchange](http://www.mathworks.com/matlabcentral/fileexchange/39664-subtightplot)
 - **utils/** contains simple functions that make the life easier and don't belong to one specific step
 - **visualizations/** contains scripts and functions used to generate all kinds of visualizations that have been used in the thesis. Some require to first load certain data into the workspace. All this is indicated in the descriptions of the single scripts of functions.
 
