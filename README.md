@@ -1,7 +1,14 @@
-# Towards Passive Labeling in 3D via Gaze Observation
-This repository contains the material for my Master's Thesis at Universität Bern. It was done in coop The project aims at generating segmentations in medical images using eye-tracking data from clinicians.
+# Table of Contents
+1. [Towards Passive Labeling in 3D via Gaze Observation](#towards-passive-labeling-in-3d-via-gaze-observation)
+2. [File structure](#file-structure)
+3. [Gaze observations](#gaze-observations)
+4. [MATLAB code](#matlab-code)
+5. [Not yet investigated, but implemented](#not-yet-investigated,-but-implemented)
 
-# Assumed file-structure
+# Towards Passive Labeling in 3D via Gaze Observation
+This repository contains the material for my Master's Thesis at Universität Bern. The project aims at generating segmentations in medical images using eye-tracking data from clinicians. This has a great potential to reduce time costs for gaining training data for supervised learning techniques in medicine, as manual labeling is very time-consuming. Various approaches have been implemented in MATLAB and described in the thesis. The problem of finding training data using eye-tracking has been reformulated. A way to solve it using Gradient Boosting has been suggested and implemented.
+
+# File structure
 The MATLAB-code assumes the following data structure:
 
 - matlab code/ 
@@ -18,7 +25,7 @@ The MATLAB-code assumes the following data structure:
 - data/
   - Dataset1/
     - Video.avi (the input video)
-    - gaze-measurements/ (the recorded gaze positions in csv format -- **refer to Section "Gaze observations"**)
+    - gaze-measurements/ (the recorded gaze positions in csv format -- refer to [Gaze observations](#gaze-observations)
       - (...).csv
     - input-frames/ (single frames of the input video in png format)
       - frame_00001.png
@@ -68,3 +75,11 @@ The MATLAB code is organized as follows:
 - **subtightplot/** contains the subtightplot toolbox to create subplots without big margins. It was publish on Mathworks [File Exchange](http://www.mathworks.com/matlabcentral/fileexchange/39664-subtightplot)
 - **utils/** contains simple functions that make the life easier and don't belong to one specific step
 - **visualizations/** contains scripts and functions used to generate all kinds of visualizations that have been used in the thesis. Some require to first load certain data into the workspace. All this is indicated in the descriptions of the single scripts of functions.
+
+# Not yet investigated, but implemented #
+
+## Autoencoders ##
+There is a script `prepareData/trainSuperpixelautoencoder.m` that can be used to train an autoencoder for later encoding of superpixels. Once an autoencoder has been trained and the object is stored to a file, it can be used in `prepareData/getSuperpixelFeaturesBeta(...,...,3)` to encode superpixels with this autoencoder (the exact filename has to be changed in getsuperpixelFeaturesBeta.
+
+## Label smoothing ##
+The regularized method of [Zhou et al.](http://papers.nips.cc/paper/2506-learning-with-local-and-global-consistency.pdf) to smooth labels has been implemented, but was only very briefly tested and no results regarding this strategy are mentioned in the thesis. The function `classification/smoothFrameLabels.m` can be used to smooth the resulting labels of a classifier. In `classification/testSuperpixelClassifier` there is a commented line to show how to use this function for all the obtained labels after the classification has been performed. Other things could be thought of (e.g. it could be also applied for only a few frames at a time instead of at the end for all samples of all frames).
